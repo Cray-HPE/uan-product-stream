@@ -1,0 +1,25 @@
+# Copyright 2020 Hewlett Packard Enterprise Development LP
+#
+# User Access Node (UAN) Installation Package
+
+|------------------|
+| Package Contents |
+|------------------|
+
+INSTALL                 - installation instructions
+README                  - this file
+docker/                 - Docker images
+helm/                   - Helm Charts
+install.sh              - UAN installation script
+lib/                    - helper functions for install.sh
+manifests/              - Loftsman manifest files for the UAN
+nexus-blobstores.yaml   - Nexus Blobstore Configuration for UAN Repositories
+nexus-repositories.yaml - Nexus Repository Configurations for UAN
+rpms/                   - RPM repositories
+vendor/                 - Vendor/3rd-party content required for installation 
+
+|--------------|
+| Installation |
+|--------------|
+
+Refer to the INSTALL file in this package for installation instructions.

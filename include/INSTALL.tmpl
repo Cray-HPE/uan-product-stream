@@ -1,0 +1,40 @@
+# Copyright 2020 Hewlett Packard Enterprise Development LP
+
+User Access Node (UAN) Installation - version @version@
+
+|---------------|
+| PREREQUISITES |
+|---------------|
+1. Cray System Management (CSM) has been installed and verified including the following Helm Charts:
+   * gitea
+   * cray-product-catalog
+   * cray-cfs-api
+   * cray-cfs-operator
+   * cray-ims
+
+   Verify the installation of these components with:
+
+    ncn-m001:~/ # helm ls -n services | grep -E 'gitea|cray-cfs-operator|cray-cfs-api|cray-ims|cray-product-catalog'
+
+|--------------|
+| INSTALLATION |
+|--------------|
+1. Run ./install.sh located in this distribution as root.
+
+    ncn-m001:~/ ./install.sh
+
+|------------------------------|
+| VERIFICATION OF INSTALLATION |
+|------------------------------|
+1. Verify that UAN configuration, images, and recipes have been imported and
+   added to the cray-product-catalog ConfigMap.
+
+    ncn-m001:~/ # kubectl get cm cray-product-catalog -n services -o json | jq -r .data.uan
+
+   Review the output for the '@version@' key and confirm that the UAN
+   configuration, pre-built images, and image recipes entries exist.
+
+2. Verify that the UAN repositories are available in Nexus by viewing them in:
+   * https://nexus.<shasta domain>/#browse/browse:@name@-@major@.@minor@-sle-15sp1
+   * https://nexus.<shasta domain>/#browse/browse:@name@-@major@.@minor@.@patch@-sle-15sp1
+

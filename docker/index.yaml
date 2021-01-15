@@ -1,0 +1,7 @@
+dtr.dev.cray.com:
+  tls-verify: true
+  images:
+    cray/cray-uan-config:
+    - 0.1.9
+    cray/cray-uan-image-recipe:
+    - 0.1.9
