@@ -28,6 +28,8 @@ function setup_command_options {
 
 function copy_manifests {
     rsync -aq "${ROOTDIR}/manifests/" "${BUILDDIR}/manifests/"
+    # Set any dynamic variables in the UAN manifest
+    sed -i.bak -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
 }
 
 function setup_nexus_repos {
@@ -100,9 +102,6 @@ BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 [[ -d "$BUILDDIR" ]] && rm -fr "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 mkdir -p "${BUILDDIR}/lib"
-
-# Set any dynamic variables in the UAN manifest
-sed -i '' -e "s/@product_version@/${VERSION}/g" manifests/uan.yaml
 
 # Create the Release Distribution
 setup_command_options "$@"

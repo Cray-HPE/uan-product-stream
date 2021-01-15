@@ -15,7 +15,11 @@ set -eo pipefail
 
 version=$(git describe --tags --match 'v*' | sed -e 's/^v//')
 if [[ ! -z $(git status -s) ]]; then
-    echo ${version}'-dirty'
+    if [[ ! -n ${BUILD_NUMBER} ]]; then
+        echo ${version}'-dirty'
+    else  # don't attach -dirty to pipeline builds
+        echo ${version}
+    fi
 else
     echo ${version}
 fi
