@@ -32,6 +32,21 @@ function copy_manifests {
     sed -i.bak -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
 }
 
+function copy_docs {
+    DATE="`date`"
+    rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
+    # Set any dynamic variables in the UAN docs
+    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -type f`;
+    do
+        sed -i.bak -e "s/@product_version@/${VERSION}/g" "$docfile"
+        sed -i.bak -e "s/@date@/${DATE}/g" "$docfile"
+    done
+    for bakfile in `find "${BUILDDIR}/docs/" -name "*.bak" -type f`;
+    do
+        rm $bakfile
+    done
+}
+
 function setup_nexus_repos {
     # generate Nexus blob store configuration
     sed s/@name@/${NAME}/g nexus-blobstores.yaml.tmpl | generate-nexus-config blobstore > "${BUILDDIR}/nexus-blobstores.yaml"
@@ -106,6 +121,7 @@ mkdir -p "${BUILDDIR}/lib"
 # Create the Release Distribution
 setup_command_options "$@"
 copy_manifests
+copy_docs
 sync_install_content
 setup_nexus_repos
 if [[ $IS_ONLINE == false ]] ; then
