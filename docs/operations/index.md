@@ -13,7 +13,7 @@ required to properly configure and boot User Access Nodes (UAN).
 
 * [Overall Workflow](#workflow)
 * [UAN Image Pre-boot Configuration](#preboot)
-* [Customizing UAN images](#imgcustomization)
+* [Configuring UAN images](#imgconfiguration)
 * [Preparing UAN Boot Session Templates](#bostemplate)
 * [Booting UAN Nodes](#bootuan)
 
@@ -46,6 +46,57 @@ The overall workflow for preparing UAN images for boot is as follows:
           that should be configured on the UANs.
 
 <a name="preboot"></a>
+## UAN Image Customization (Workaround to Enable required systemd services CASMCMS-6636)
+
+1. Create an IMS job to customize the UAN image rootfs by following the procedures in the
+   ***HPE Cray EX System Administration Guide*** section ***11.4 Customize an Image Root Using IMS***.
+
+1. SSH to the IMS image customization host (IMS_SSH_HOST) and edit the following file in the image.
+
+   1. Edit `/usr/lib/systemd/system-preset/89-cray-uan-default.preset` and ensure it has the following
+      content.
+
+   ```bash
+   #
+   # Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+   #
+   # Cray services
+   enable amd-fix-xGMI-width.service
+   enable cfs-state-reporter.service
+   enable cray-heartbeat.service
+   enable cray-hugepage-setup.service
+   enable cray-memory-spread.service
+   enable cray-node-identity.service
+   enable cray-orca.service
+   enable cray-power-mon.service
+   enable cray-printk.service
+   enable jacsd.service
+   enable kdump-spire-watcher.service
+   enable mlx-set-irq-affinity.service
+   enable palsd.service
+   enable cray-switchboard-sshd.service
+   # non-Cray services
+   enable acpid.service
+   enable chronyd.service
+   disable firewalld.service
+   enable kdump.service
+   enable ldmsd-bootstrap.service
+   enable msr-safe.service
+   enable ras-mc-ctl.service
+   enable rasdaemon.service
+   enable spire-agent.service
+   enable sshd.service
+   enable wicked.service
+   ```
+
+1. Run `/tmp/images.sh` in the image chroot before exiting the image to rebuild the initrd.
+
+1. Follow the remaining instructions in section ***11.4 Customize an Image Root Using IMS*** to
+   complete the image customization.  
+
+   **NOTE** Be sure to record the new resultant image ID for use in the
+            in the remaining procedures where an image is referenced.
+
 ## UAN Image Pre-boot Configuration
 
 1. Clone the UAN configuration management repository. The repository is located
@@ -77,6 +128,68 @@ The overall workflow for preparing UAN images for boot is as follows:
    Switched to a new branch 'integration'
    Already up to date.
    ```
+
+   ***WORKAROUND FOR UAN NETWORKING (CASMCMS-6644)***
+
+1. Apply uan_interfaces role workaround and group_vars needed for UAN CAN and LDAP support.  
+
+   1. Copy the `uan_interfaces.tgz` and `group_vars.tgz` files from CSS to the top
+      of the UAN configuration management repository. Use your Data Center credentials.
+
+      ```bash
+      ncn-m001:~/ $ scp <dc_username>@dclogin:/cray/css/users/keopp/uan/*.tgz .
+      ```
+
+   1. Expand the two tar files to install the workaround.
+
+      ```bash
+      ncn-m001:~/ $ tar zxf uan_interfaces.tgz
+      ncn-m001:~/ $ tar zxf group_vars.tgz
+      ```
+
+   1. Apply the uan_interfaces role workaround to the Ansible configuration.
+
+      ```bash
+      ncn-m001:~/ $ git add group_vars/all/can.yml
+      ncn-m001:~/ $ git add group_vars/all/ldap.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/defaults/main.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/file/ifcfg-bond-slaves
+      ncn-m001:~/ $ git add roles/uan_interfaces/file/ifcfg-nmn0
+      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/customer_interfaces.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/main.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/can-v2.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-down.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-up.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-bond0.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-vlan007.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-x.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-bond0.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-nmn0.j2
+      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-vlan007.j2
+      ncn-m001:~/ $ git commit -m "Apply CAN workaround and LDAP config"
+      ```
+
+   1. Push the changes to the repository using the proper credentials.
+
+      ```bash
+       ncn-m001:~/ $ git push --set-upstream origin integration
+       Username for 'https://api-gw-service-nmn.local': crayvcs
+       Password for 'https://crayvcs@api-gw-service-nmn.local':
+       # [... output removed ...]
+       remote: Processed 1 references in total
+       To https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
+        * [new branch]      integration -> integration
+        Branch 'integration' set up to track remote branch 'integration' from 'origin'.
+      ```
+
+      Obtain the password for the `crayvcs` user from the Kubernetes secret.
+
+      ```bash
+      ncn-m001:~/ $ kubectl get secret -n services vcs-user-credentials \
+                    --template={{.data.vcs_password}} | base64 --decode
+   
+      # <== password output ==>
+      ```
 
 1. Apply any customizations and modifications to the Ansible configuration.
    Variables should be defined and overridden in the Ansible inventory locations
@@ -131,8 +244,8 @@ The overall workflow for preparing UAN images for boot is as follows:
    ncn-m001:~/ $ cd ..
    ```
 
-<a name="imgcustomization"></a>
-## Customizing UAN images
+<a name="imgconfiguration"></a>
+## Configuring UAN images
 
 After the configuration parameters have been stored in a branch in the UAN git
 repository, invoke the Configuration Framework Service (CFS) to customize the
@@ -217,6 +330,10 @@ image.
 
    **FIXME** Determine if this is the default/good session template
 
+   **NOTE** The value for **nmn0_netdev** in the kernel_parameters string must be set to **net0** for UAN
+            hardware with one PCIe card installed.  It must be set to **net2** when a second PCI
+            card is installed, regardless of whether or not it is being used.
+
    ```bash
     ncn-m001:~/ $ cat uan-sessiontemplate-@product_version@.json
 
@@ -224,7 +341,7 @@ image.
       "boot_sets": {
         "uan": {
           "boot_ordinal": 2,
-          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 nmn0_netdev=net0 spire_join_token=${SPIRE_JOIN_TOKEN}",
+          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 nmn0_netdev=net0 spire_join_token=${SPIRE_JOIN_TOKEN}",
           "network": "nmn",
           "node_list": [
             # [ ... List of Application Nodes ...]
