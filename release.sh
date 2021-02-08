@@ -79,7 +79,6 @@ function sync_repo_content {
 
 function sync_install_content {
     rsync -aq "${ROOTDIR}/vendor/stash.us.cray.com/scm/shastarelm/release/lib/install.sh" "${BUILDDIR}/lib/install.sh"
-    rsync -aq "${ROOTDIR}/uninstall.sh" "${BUILDDIR}/"
 
     sed -e "s/@major@/${MAJOR}/g
             s/@minor@/${MINOR}/g
