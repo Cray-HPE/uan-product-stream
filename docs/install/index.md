@@ -45,7 +45,6 @@ this section.
 ## Run the Installation Script (Online Install)
 
 If the Cray EX system is configured for online installations, use this section.
-Otherwise, skip to the next section for offline (air-gapped) installation.
 
 1. Run the UAN installation script with the `online` option:
 
