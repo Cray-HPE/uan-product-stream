@@ -214,6 +214,5 @@ capable of installation on the system.
 
     ```bash
     ncn-m001:~/ $ kubectl get cm -n services cray-product-catalog -o json | jq '.data | has("cos")'
-
     true
     ```

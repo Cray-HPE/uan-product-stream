@@ -104,9 +104,6 @@ The overall workflow for preparing UAN images for boot is as follows:
    `cray-product-catalog` Kubernetes ConfigMap in the `clone_url` key. Replace
    the hostname with `api-gw-service-nmm.local` when cloning the repository.
 
-   This clone can be done from a master node or a worker node. Do not attempt from the PIT
-   node as it may not have the proper SSL certification..
-
    ```bash
    ncn-m001:~/ $ git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
    # [... output removed ...]
