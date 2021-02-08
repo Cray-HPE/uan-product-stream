@@ -15,12 +15,9 @@ source "${ROOTDIR}/lib/install.sh"
 
 : "${RELEASE:="$(basename "$(realpath "$ROOTDIR")")"}"
 
-# TODO figure out where to actually get customizations from
-: "${CUSTOMIZATIONS:="/opt/cray/site-info/customizations.yaml"}"
-
-# Generate manifests with customizations
+# Generate manifests
 mkdir -p "${ROOTDIR}/build/manifests"
-manifestgen -i "${ROOTDIR}/manifests/uan.yaml" -c "$CUSTOMIZATIONS" -o "${ROOTDIR}/build/manifests/uan.yaml"
+manifestgen -i "${ROOTDIR}/manifests/uan.yaml" -o "${ROOTDIR}/build/manifests/uan.yaml"
 
 load-install-deps
 
@@ -35,4 +32,3 @@ clean-install-deps
 
 # Deploy manifests
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
-

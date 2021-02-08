@@ -12,8 +12,8 @@ verifying the installation is successful.
 ## Contents
 
 * [Download and Prepare the UAN Software Package](#prep)
-* [Run the Installation Script (Online Install)](#online)
 * [Run the Installation Script (Offline/air-gapped Install)](#offline)
+* [Run the Installation Script (Online Install)](#online)
 * [Installation Verification](#verify)
 
 ---
@@ -22,38 +22,11 @@ verifying the installation is successful.
 ## Download and Prepare the UAN Software Package
 
 1. Download the UAN software package and place it on the system.
-2. Unpackage the file using the commands below.
+2. Unpackage the file and change into the directory with the installation content.
 
     ```bash
     ncn-m001:~ $ tar zxf uan-@product_version@.tar.gz
     ncn-m001:~ $ cd uan-@product_version@/
-    ```
-
-3. Locate the system customizations file and configure UAN Helm customizations,
-if applicable. Relevant customizations can be found in the following sections of
-the `customizations.yaml` files:
-    * `spec.kubernetes.services.cray-uan-install.cray-import-config`
-    * `spec.kubernetes.services.cray-uan-install.cray-import-kiwi-recipe-image`.
-
-4. Set the location of the `customizations.yaml` file.
-
-    ```bash
-    ncn-m001:~/ $ export CUSTOMIZATIONS=<path to customizations.yaml file>
-    ```
-
-    By default, the UAN installation assumes a location of `/opt/cray/site-info/customizations.yaml`
-    for the customizations file.
-
-<a name="online"></a>
-## Run the Installation Script (Online Install)
-
-If the Cray EX system is configured for online installations, use this section.
-Otherwise, skip to the next section for offline (air-gapped) installation.
-
-1. Run the UAN installation script with the `online` option:
-
-    ```bash
-    ncn-m001:~/ $ ./install.sh --online
     ```
 
 <a name="offline"></a>
@@ -66,6 +39,18 @@ this section.
 
     ```bash
     ncn-m001:~/ $ ./install.sh
+    ```
+
+<a name="online"></a>
+## Run the Installation Script (Online Install)
+
+If the Cray EX system is configured for online installations, use this section.
+Otherwise, skip to the next section for offline (air-gapped) installation.
+
+1. Run the UAN installation script with the `online` option:
+
+    ```bash
+    ncn-m001:~/ $ ./install.sh --online
     ```
 
 <a name="verify"></a>
