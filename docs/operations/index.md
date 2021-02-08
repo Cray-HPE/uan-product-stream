@@ -104,6 +104,9 @@ The overall workflow for preparing UAN images for boot is as follows:
    `cray-product-catalog` Kubernetes ConfigMap in the `clone_url` key. Replace
    the hostname with `api-gw-service-nmm.local` when cloning the repository.
 
+   This clone can be done from a master node or a worker node. Do not attempt from the PIT
+   node as it may not have the proper SSL certification..
+
    ```bash
    ncn-m001:~/ $ git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
    # [... output removed ...]
@@ -115,7 +118,7 @@ The overall workflow for preparing UAN images for boot is as follows:
 
 1. Create a branch using the imported branch from the installation to customize
    the UAN image. This imported branch will be reported in the
-   `cray-product-catalog` Kubernetes ConfigMap in the `import_branch` key. The
+   `cray-product-catalog` Kubernetes ConfigMap in the `import_branch` key under the UAN section. The
    format is `cray/uan/@product_version@`. In this guide, an `integration`
    branch is used for examples.
 
@@ -135,6 +138,11 @@ The overall workflow for preparing UAN images for boot is as follows:
 
    1. Copy the `uan_interfaces.tgz` and `group_vars.tgz` files from CSS to the top
       of the UAN configuration management repository. Use your Data Center credentials.
+      dclogin may not be available from your particular machine. You may need to download
+      it onto your laptop first and then push it up to the machine.
+
+      ##FIXEME## We need to put these files someplace accessible from the installation 
+      machine.
 
       ```bash
       ncn-m001:~/ $ scp <dc_username>@dclogin:/cray/css/users/keopp/uan/*.tgz .
@@ -153,18 +161,12 @@ The overall workflow for preparing UAN images for boot is as follows:
       ncn-m001:~/ $ git add group_vars/all/can.yml
       ncn-m001:~/ $ git add group_vars/all/ldap.yml
       ncn-m001:~/ $ git add roles/uan_interfaces/defaults/main.yml
-      ncn-m001:~/ $ git add roles/uan_interfaces/file/ifcfg-bond-slaves
-      ncn-m001:~/ $ git add roles/uan_interfaces/file/ifcfg-nmn0
-      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/customer_interfaces.yml
+      ncn-m001:~/ $ git add roles/uan_interfaces/files/ifcfg-nmn0
       ncn-m001:~/ $ git add roles/uan_interfaces/tasks/main.yml
       ncn-m001:~/ $ git add roles/uan_interfaces/tasks/can-v2.yml
       ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-down.j2
       ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-up.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-bond0.j2
       ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-vlan007.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-x.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-bond0.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-nmn0.j2
       ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-vlan007.j2
       ncn-m001:~/ $ git commit -m "Apply CAN workaround and LDAP config"
       ```
@@ -205,6 +207,10 @@ The overall workflow for preparing UAN images for boot is as follows:
     1 file changed, 1 insertion(+)
     create mode 100644 group_vars/Application/vars.yml
    ```
+
+   ##FIXME## - These instructions are too vague to be actionable. I realize that
+   this is a potentially complicate section, but I had no idea what to do while
+   reading these.
 
    ##FIXME## - UAN ansible configuration guide - listing role parameters
 
@@ -277,6 +283,9 @@ image.
    ```
 
 1. Add the configuration to CFS using the JSON input file.
+
+   Note: The uan-config-@product_version@ is an input parameter that you get to
+   set yourself.
 
     ```bash
     ncn-m001:~/ $ cray cfs configurations update uan-config-@product_version@ \
@@ -389,7 +398,7 @@ image.
 1. Create a BOS session to boot the UAN nodes.
 
     ```bash
-    ncn-m001:~/ $ cray bos v1 session create --template--uuid uan-sessiontemplate-@product_version@
+    ncn-m001:~/ $ cray bos v1 session create --template--uuid uan-sessiontemplate-@product_version@ --operation reboot
     ```
 
 1. Retrieve the BOS session id from the previous command.
