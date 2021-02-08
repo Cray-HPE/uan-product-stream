@@ -47,6 +47,24 @@ Access Nodes (UAN) on Cray EX systems.
 <a name="biosconfig"></a>
 ## BIOS configuration
 
+The following command forces the node to reboot into BIOS.
+$HOST is the hostname (xname) of the BMC of the node you want to configure.
+
+```bash
+ipmitool -U $user -P $password -H $HOST -I lanplus chassis bootdev bios
+```
+
+Watch the node's console via either conman or by using the command
+
+```bash
+ipmitool -U $user -P $password -H $HOST -I lanplus sol activate
+```
+
+##FIXME## Provide a link to conman documentation.
+
+While watching the console, you will see a prompt to hit
+ESC+9. Do so to access the BIOS System Utilities.
+
 1. For each UAN, ensure that OCP Slot 1 Port 1 is the only port with Boot Mode
    set to PXE. All other ports should have Boot Mode set to Disabled.
 
