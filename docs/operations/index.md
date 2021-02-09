@@ -16,6 +16,7 @@ required to properly configure and boot User Access Nodes (UAN).
 * [Configuring UAN images](#imgconfiguration)
 * [Preparing UAN Boot Session Templates](#bostemplate)
 * [Booting UAN Nodes](#bootuan)
+* [Slingshot Diagnostics](#slingshotdiags)
 
 ---
 
@@ -430,3 +431,31 @@ image.
     ```bash
     ncn-m001:~/ $ cray cfs sessions list --tags bos_session=$BOS_SESSION --status running --format json
     ```
+
+<a name="slingshotdiags"></a>
+## Slingshot Diagnostics
+
+The default UAN image/recipe includes the Slingshot Diagnostics package, but
+that RPM is not included in the release.  This leads to several different
+scenarios with respect to using the default image/recipe and how to take
+advantage of the diagnostics if needed.
+
+If the user wishes to build a new UAN image based on the default recipe, the
+lines including the Slingshot Diagnostics RPM must be removed.
+1. Edit `images/kiwi-ng/cray-sles15sp1-uan-cos/config-template.xml.j2` and remove
+   the lines:
+   ```bash
+        <!-- SECTION: Slingshot Diagnostic package -->
+        <package name="cray-diags-fabric"/>
+   ```
+
+1. Continue with the other recipe modifications as outlined in the 
+   ***HPE Cray EX System Administration Guide*** sections
+   ***11.2 Upload and Register an Image Recipe***,
+   ***11.3 Build an Image Using IMS REST Service***, and 
+   ***11.4 Customize an Image Root Using IMS***.
+
+If the user wishes to include the Slingshot Diagnosic package but also make
+modifications to the default image, the default image may be customized by
+using the procedure described in ***HPE Cray EX System Administration Guide***
+section ***11.4 Customize an Image Root Using IMS***.
