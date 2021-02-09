@@ -104,9 +104,6 @@ The overall workflow for preparing UAN images for boot is as follows:
    `cray-product-catalog` Kubernetes ConfigMap in the `clone_url` key. Replace
    the hostname with `api-gw-service-nmm.local` when cloning the repository.
 
-   This clone can be done from a master node or a worker node. Do not attempt from the PIT
-   node as it may not have the proper SSL certification..
-
    ```bash
    ncn-m001:~/ $ git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
    # [... output removed ...]
@@ -350,7 +347,7 @@ image.
       "boot_sets": {
         "uan": {
           "boot_ordinal": 2,
-          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 nmn0_netdev=net0 spire_join_token=${SPIRE_JOIN_TOKEN}",
+          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 ifmap=net0:nmn0 spire_join_token=${SPIRE_JOIN_TOKEN}",
           "network": "nmn",
           "node_list": [
             # [ ... List of Application Nodes ...]
