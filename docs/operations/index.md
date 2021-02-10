@@ -16,6 +16,7 @@ required to properly configure and boot User Access Nodes (UAN).
 * [Configuring UAN images](#imgconfiguration)
 * [Preparing UAN Boot Session Templates](#bostemplate)
 * [Booting UAN Nodes](#bootuan)
+* [Slingshot Diagnostics](#slingshotdiags)
 
 ---
 
@@ -205,11 +206,8 @@ The overall workflow for preparing UAN images for boot is as follows:
     create mode 100644 group_vars/Application/vars.yml
    ```
 
-   ##FIXME## - These instructions are too vague to be actionable. I realize that
-   this is a potentially complicate section, but I had no idea what to do while
-   reading these.
-
-   ##FIXME## - UAN ansible configuration guide - listing role parameters
+   ##FIXME## - UAN ansible configuration guide - listing role parameters to help
+               the user with Ansible configuration for UAN roles.
 
    See the [Ansible Best Practices Guide](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization)
    with directory layouts for inventory.
@@ -352,7 +350,7 @@ image.
           "node_list": [
             # [ ... List of Application Nodes ...]
           ],
-          "path": "s3://boot-images/0e54050a-c43c-4534-ba38-7191838e348d/manifest.json",
+          "path": "s3://boot-images/0e54050a-c43c-4534-ba38-7191838e348d/manifest.json",  # <-- replace with image id from image customization
           "rootfs_provider": "cpss3",
           "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
           "type": "s3"
@@ -378,7 +376,6 @@ image.
     x3000c0s22b0n0
     ```
 
-
 1. Register the session template with BOS.
 
     ```bash
@@ -395,7 +392,7 @@ image.
 1. Create a BOS session to boot the UAN nodes.
 
     ```bash
-    ncn-m001:~/ $ cray bos v1 session create --template--uuid uan-sessiontemplate-@product_version@ --operation reboot
+    ncn-m001:~/ $ cray bos v1 session create --template-uuid uan-sessiontemplate-@product_version@ --operation reboot
     ```
 
 1. Retrieve the BOS session id from the previous command.
@@ -430,3 +427,31 @@ image.
     ```bash
     ncn-m001:~/ $ cray cfs sessions list --tags bos_session=$BOS_SESSION --status running --format json
     ```
+
+<a name="slingshotdiags"></a>
+## Slingshot Diagnostics
+
+The default UAN image/recipe includes the Slingshot Diagnostics package, but
+that RPM is not included in the release.  This leads to several different
+scenarios with respect to using the default image/recipe and how to take
+advantage of the diagnostics if needed.
+
+If the user wishes to build a new UAN image based on the default recipe, the
+lines including the Slingshot Diagnostics RPM must be removed.
+1. Edit `images/kiwi-ng/cray-sles15sp1-uan-cos/config-template.xml.j2` and remove
+   the lines:
+   ```bash
+        <!-- SECTION: Slingshot Diagnostic package -->
+        <package name="cray-diags-fabric"/>
+   ```
+
+1. Continue with the other recipe modifications as outlined in the 
+   ***HPE Cray EX System Administration Guide*** sections
+   ***11.2 Upload and Register an Image Recipe***,
+   ***11.3 Build an Image Using IMS REST Service***, and 
+   ***11.4 Customize an Image Root Using IMS***.
+
+If the user wishes to include the Slingshot Diagnosic package but also make
+modifications to the default image, the default image may be customized by
+using the procedure described in ***HPE Cray EX System Administration Guide***
+section ***11.4 Customize an Image Root Using IMS***.
