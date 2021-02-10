@@ -26,7 +26,9 @@ nexus-setup blobstores   "${ROOTDIR}/nexus-blobstores.yaml"
 nexus-setup repositories "${ROOTDIR}/nexus-repositories.yaml"
 
 # Upload repository contents for offline installs
-[[ -x "${ROOTDIR}/lib/nexus-upload.sh" ]] && "${ROOTDIR}/lib/nexus-upload.sh"
+export SKOPEO_IMAGE=${SKOPEO_IMAGE}
+export CRAY_NEXUS_SETUP_IMAGE=${CRAY_NEXUS_SETUP_IMAGE}
+[[ -f "${ROOTDIR}/lib/nexus-upload.sh" ]] && . "${ROOTDIR}/lib/nexus-upload.sh"
 
 clean-install-deps
 
