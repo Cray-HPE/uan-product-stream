@@ -309,7 +309,7 @@ image.
     ncn-m001:~/ $ cray cfs sessions create --name uan-config-@product_version@ \
                       --configuration-name uan-config-@product_version@ \
                       --target-definition image \
-                      --target-group Application c880251d-b275-463f-8279-e6033f61578b
+                      --target-group Application c880251d-b275-463f-8279-e6033f61578b \
                       --format json
 
     # <== output removed ==>
