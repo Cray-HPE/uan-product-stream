@@ -47,57 +47,6 @@ The overall workflow for preparing UAN images for boot is as follows:
           that should be configured on the UANs.
 
 <a name="preboot"></a>
-## UAN Image Customization (Workaround to Enable required systemd services CASMCMS-6636)
-
-1. Create an IMS job to customize the UAN image rootfs by following the procedures in the
-   ***HPE Cray EX System Administration Guide*** section ***11.4 Customize an Image Root Using IMS***.
-
-1. SSH to the IMS image customization host (IMS_SSH_HOST) and edit the following file in the image.
-
-   1. Edit `/usr/lib/systemd/system-preset/89-cray-uan-default.preset` and ensure it has the following
-      content.
-
-   ```bash
-   #
-   # Copyright 2020-2021 Hewlett Packard Enterprise Development LP
-   #
-   # Cray services
-   enable amd-fix-xGMI-width.service
-   enable cfs-state-reporter.service
-   enable cray-heartbeat.service
-   enable cray-hugepage-setup.service
-   enable cray-memory-spread.service
-   enable cray-node-identity.service
-   enable cray-orca.service
-   enable cray-power-mon.service
-   enable cray-printk.service
-   enable jacsd.service
-   enable kdump-spire-watcher.service
-   enable mlx-set-irq-affinity.service
-   enable palsd.service
-   enable cray-switchboard-sshd.service
-   # non-Cray services
-   enable acpid.service
-   enable chronyd.service
-   disable firewalld.service
-   enable kdump.service
-   enable ldmsd-bootstrap.service
-   enable msr-safe.service
-   enable ras-mc-ctl.service
-   enable rasdaemon.service
-   enable spire-agent.service
-   enable sshd.service
-   enable wicked.service
-   ```
-
-1. Run `/tmp/images.sh` in the image chroot before exiting the image to rebuild the initrd.
-
-1. Follow the remaining instructions in section ***11.4 Customize an Image Root Using IMS*** to
-   complete the image customization.  
-
-   **NOTE** Be sure to record the new resultant image ID for use in the
-            in the remaining procedures where an image is referenced.
-
 ## UAN Image Pre-boot Configuration
 
 1. Clone the UAN configuration management repository. The repository is located
