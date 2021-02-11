@@ -161,26 +161,26 @@ The overall workflow for preparing UAN images for boot is as follows:
    See the [Ansible Best Practices Guide](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization)
    with directory layouts for inventory.
 
+1. Obtain the password for the `crayvcs` user from the Kubernetes secret for use
+   in the next command.
+
+   ```bash
+   ncn-m001:~/ $ kubectl get secret -n services vcs-user-credentials \
+                     --template={{.data.vcs_password}} | base64 --decode
+   # <== password output ==>
+   ```
+
 1. Push the changes to the repository using the proper credentials.
 
    ```bash
     ncn-m001:~/ $ git push --set-upstream origin integration
     Username for 'https://api-gw-service-nmn.local': crayvcs
-    Password for 'https://crayvcs@api-gw-service-nmn.local':
+    Password for 'https://crayvcs@api-gw-service-nmn.local':  # <-- from previous command
     # [... output removed ...]
     remote: Processed 1 references in total
     To https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
      * [new branch]      integration -> integration
      Branch 'integration' set up to track remote branch 'integration' from 'origin'.
-   ```
-
-   Obtain the password for the `crayvcs` user from the Kubernetes secret.
-
-   ```bash
-   ncn-m001:~/ $ kubectl get secret -n services vcs-user-credentials \
-                     --template={{.data.vcs_password}} | base64 --decode
-   
-   # <== password output ==>
    ```
 
 1. Capture the most recent commit for reference in setting up a CFS
@@ -228,9 +228,6 @@ image.
 
 1. Add the configuration to CFS using the JSON input file.
 
-   Note: The uan-config-@product_version@ is an input parameter that you get to
-   set yourself.
-
     ```bash
     ncn-m001:~/ $ cray cfs configurations update uan-config-@product_version@ \
                       --file ./uan-config-@product_version@.json \
@@ -274,14 +271,27 @@ image.
     0e54050a-c43c-4534-ba38-7191838e348d
     ```
 
+    Retain this ID value for crafting a BOS session template in the next section.
+
 <a name="bostemplate"></a>
 ## Preparing UAN Boot Session Templates
+
+1. Retrieve the xnames of the UAN nodes from the Hardware State Manager (HSM).
+
+    ```bash
+    ncn-m001:~ $ cray hsm state components list --role Application --subrole UAN --format json | jq -r .Components[].ID
+
+    x3000c0s19b0n0
+    x3000c0s24b0n0
+    x3000c0s20b0n0
+    x3000c0s22b0n0
+    ```
+
+    Retain these node names for crafting a BOS session template in the next step.
 
 1. Construct a BOS boot session template for the UAN using the xnames of the
    Application nodes, the customized image ID from the previous section, and
    the CFS configuration session name from the previous section.
-
-   **FIXME** Determine if this is the default/good session template
 
    **NOTE** The value for **nmn0_netdev** in the kernel_parameters string must be set to **net0** for UAN
             hardware with one PCIe card installed.  It must be set to **net2** when a second PCI
@@ -312,18 +322,6 @@ image.
       "name": "uan-sessiontemplate-@product_version@"
     }
    ```
-
-   **NOTE**: Retrieve the xnames of the UAN nodes from the Hardware State
-             Manager (HSM).
-
-    ```bash
-    ncn-m001:~ $ cray hsm state components list --role Application --subrole UAN --format json | jq -r .Components[].ID
-
-    x3000c0s19b0n0
-    x3000c0s24b0n0
-    x3000c0s20b0n0
-    x3000c0s22b0n0
-    ```
 
 1. Register the session template with BOS.
 
