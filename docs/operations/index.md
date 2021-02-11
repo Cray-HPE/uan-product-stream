@@ -395,10 +395,10 @@ lines including the Slingshot Diagnostics RPM must be removed.
    ```
 
 1. Continue with the other recipe modifications as outlined in the 
-   ***HPE Cray EX System Administration Guide*** sections
-   ***11.2 Upload and Register an Image Recipe***,
-   ***11.3 Build an Image Using IMS REST Service***, and 
-   ***11.4 Customize an Image Root Using IMS***.
+   ***HPE Cray EX System Administration Guide*** sections:
+   * 11.2 Upload and Register an Image Recipe,
+   * 11.3 Build an Image Using IMS REST Service, and 
+   * 11.4 Customize an Image Root Using IMS.
 
 If the user wishes to include the Slingshot Diagnosic package but also make
 modifications to the default image, the default image may be customized by

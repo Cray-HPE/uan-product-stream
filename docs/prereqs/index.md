@@ -216,3 +216,22 @@ capable of installation on the system.
     ncn-m001:~/ $ kubectl get cm -n services cray-product-catalog -o json | jq '.data | has("cos")'
     true
     ```
+
+1. Ensure that Data Virtualization Service (DVS) and LNet are configured on the
+   nodes which are running Content Projection Service (CPS) cps-cm-pm pods.
+
+    1. Determine how many nodes should be running cps-cm-pm pods:
+
+       ```bash
+       ncn-m001:~ $ kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers | wc -l
+       3
+       ```
+
+    1. Ensure those nodes have the DVS modules loaded:
+
+        ```bash
+        ncn-m001:~ $ for node in `kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers`; do
+            ssh $node "lsmod | grep '^dvs '"
+        done | wc -l
+        3
+        ```
