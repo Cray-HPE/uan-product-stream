@@ -293,9 +293,19 @@ image.
    Application nodes, the customized image ID from the previous section, and
    the CFS configuration session name from the previous section.
 
-   **NOTE** The value for **nmn0_netdev** in the kernel_parameters string must be set to **net0** for UAN
-            hardware with one PCIe card installed.  It must be set to **net2** when a second PCI
-            card is installed, regardless of whether or not it is being used.
+   **NOTE** The value for **ifmap=netX:nmn0** in the kernel_parameters string must be set accordingly
+            for the following UAN configurations.  It is normally going to be **ifmap=net2:nmn0** on UANs
+            that are also configured to use the CAN network.
+   - **ifmap=net0:nmn0**
+     - HPE DL325 or DL385 Hardware:
+       - A single OCP PCIe card is installed
+     - Gigabyte Hardware
+       - No additional PCIe cards installed other than the built-in LOM ports
+   - **ifmap=net2:nmn0**
+     - HPE DL325 or DL385 Hardware:
+       - A second PCIe card installed regardless of whether it is being used
+     - Gigabyte Hardware
+       - A PCIe card is installed in addition to the built-in LOM ports regardless of whether it is being used
 
    ```bash
     ncn-m001:~/ $ cat uan-sessiontemplate-@product_version@.json
@@ -304,7 +314,7 @@ image.
       "boot_sets": {
         "uan": {
           "boot_ordinal": 2,
-          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 ifmap=net0:nmn0 spire_join_token=${SPIRE_JOIN_TOKEN}",
+          "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell turbo_boost_limit=999 ifmap=net2:nmn0 spire_join_token=${SPIRE_JOIN_TOKEN}",
           "network": "nmn",
           "node_list": [
             # [ ... List of Application Nodes ...]
