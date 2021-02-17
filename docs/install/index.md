@@ -57,7 +57,12 @@ If the Cray EX system is configured for online installations, use this section.
 
 1. Verify that the UAN configuration, images, and recipes have been imported and
    added to the `cray-product-catalog` ConfigMap in the Kubernetes `services`
-   namespace.
+   namespace. Ensure that an entry exists with the @product_version@ version,
+   and that the `configuration`, `images`, and `recipes` sections contain
+   information similar to the output below.
+
+   **NOTE**: The output from the command below may contain more than one version
+             of the UAN product if previous versions have been installed.
 
    ```bash
    ncn-m001:~ $ kubectl get cm cray-product-catalog -n services -o json | jq -r .data.uan
@@ -76,7 +81,8 @@ If the Cray EX system is configured for online installations, use this section.
        cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:
          id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a
    ```
-2. Verify that the UAN RPM repositories have been created in Nexus. Navigate to
+
+1. Verify that the UAN RPM repositories have been created in Nexus. Navigate to
    `https://nexus.<shasta domain>/#browse/browse` to view the list of
    repositories. Ensure that the following repositories are present:
    * uan-2.0.0-sle-15sp1
