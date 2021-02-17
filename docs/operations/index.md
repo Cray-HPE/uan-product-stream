@@ -92,13 +92,12 @@ The overall workflow for preparing UAN images for boot is as follows:
       machine.
 
       ```bash
-      ncn-m001:~/ $ scp <dc_username>@dclogin:/cray/css/users/keopp/uan/*.tgz .
+      ncn-m001:~/ $ scp <dc_username>@dclogin:/cray/css/users/keopp/uan/group_vars.tgz .
       ```
 
    1. Expand the two tar files to install the workaround.
 
       ```bash
-      ncn-m001:~/ $ tar zxf uan_interfaces.tgz
       ncn-m001:~/ $ tar zxf group_vars.tgz
       ```
 
@@ -107,14 +106,6 @@ The overall workflow for preparing UAN images for boot is as follows:
       ```bash
       ncn-m001:~/ $ git add group_vars/all/can.yml
       ncn-m001:~/ $ git add group_vars/all/ldap.yml
-      ncn-m001:~/ $ git add roles/uan_interfaces/defaults/main.yml
-      ncn-m001:~/ $ git add roles/uan_interfaces/files/ifcfg-nmn0
-      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/main.yml
-      ncn-m001:~/ $ git add roles/uan_interfaces/tasks/can-v2.yml
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-down.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/can-up.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifcfg-vlan007.j2
-      ncn-m001:~/ $ git add roles/uan_interfaces/templates/ifroute-vlan007.j2
       ncn-m001:~/ $ git commit -m "Apply CAN workaround and LDAP config"
       ```
 
