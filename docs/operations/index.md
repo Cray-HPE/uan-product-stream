@@ -12,6 +12,7 @@ required to properly configure and boot User Access Nodes (UAN).
 ## Contents
 
 * [Overall Workflow](#workflow)
+* [UAN Product Catalog Entry](#catalog)
 * [UAN Image Pre-boot Configuration](#preboot)
 * [Configuring UAN images](#imgconfiguration)
 * [Preparing UAN Boot Session Templates](#bostemplate)
@@ -46,13 +47,38 @@ The overall workflow for preparing UAN images for boot is as follows:
           products (e.g. workload managers, Cray Programming Environment, etc)
           that should be configured on the UANs.
 
+<a name="catalog"></a>
+## UAN Product Catalog Entry
+
+Upon successful installation of the UAN product, the UAN configuration, image
+recipe(s), and pre-built boot image(s) are catalogued in the `cray-product-catalog`
+Kubernetes ConfigMap.
+
+```bash
+ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .data.uan
+@product_version@:
+  configuration:
+    clone_url: https://vcs.<domain>/vcs/cray/uan-config-management.git # <--- Gitea clone url
+    commit: 6658ea9e75f5f0f73f78941202664e9631a63726                   # <--- Git commit id
+    import_branch: cray/uan/@product_version@                          # <--- Git branch with configuration
+    import_date: 2021-02-02 19:14:18.399670
+    ssh_url: git@vcs.<domain>:cray/uan-config-management.git
+  images:
+    cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:                       # <--- IMS image name
+      id: c880251d-b275-463f-8279-e6033f61578b                         # <--- IMS image id
+  recipes:
+    cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:                       # <--- IMS recipe name
+      id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a                         # <--- IMS recipe id
+```
+
 <a name="preboot"></a>
 ## UAN Image Pre-boot Configuration
 
 1. Clone the UAN configuration management repository. The repository is located
    in the VCS/Gitea service and the location is reported in the
-   `cray-product-catalog` Kubernetes ConfigMap in the `clone_url` key. Replace
-   the hostname with `api-gw-service-nmm.local` when cloning the repository.
+   `cray-product-catalog` Kubernetes ConfigMap in the `configuration.clone_url`
+   key. Replace the hostname with `api-gw-service-nmm.local` when cloning the
+   repository.
 
    ```bash
    ncn-m001:~/ $ git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
@@ -65,13 +91,16 @@ The overall workflow for preparing UAN images for boot is as follows:
 
 1. Create a branch using the imported branch from the installation to customize
    the UAN image. This imported branch will be reported in the
-   `cray-product-catalog` Kubernetes ConfigMap in the `import_branch` key under the UAN section. The
-   format is `cray/uan/@product_version@`. In this guide, an `integration`
-   branch is used for examples.
+   `cray-product-catalog` Kubernetes ConfigMap in the `configuration.import_branch`
+   key under the UAN section. The format is `cray/uan/@product_version@`. In
+   this guide, an `integration` branch is used for examples, but the name can
+   be any valid git branch name.
 
     **WARNING**: _You cannot make changes to the `cray/uan/@product_version@`
                  branch that was created by the UAN installation. By default,
-                 modification is not allowed on this branch._
+                 modification is not allowed on this branch._ Use a branching
+                 strategy that allows for new UAN installations to be merged
+                 easily into your branch.
 
    ```bash
    ncn-m001:~/ $ git checkout -b integration && git merge cray/uan/@product_version@
@@ -88,7 +117,7 @@ The overall workflow for preparing UAN images for boot is as follows:
       dclogin may not be available from your particular machine. You may need to download
       it onto your laptop first and then push it up to the machine.
 
-      ##FIXEME## We need to put these files someplace accessible from the installation 
+      ##FIXEME## We need to put these files someplace accessible from the installation
       machine.
 
       ```bash
@@ -210,7 +239,7 @@ image.
          "name": "uan-integration-@product_version@",
          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
          "playbook": "site.yml",
-         "commit": "ecece54b1eb65d484444c4a5ca0b244b329f4667"
+         "commit": "<git commit id>"  # <--- From git rev-parse command in previous section
        }
        # { ... add configuration layers for other products here, if desired ... }
      ]
@@ -228,7 +257,7 @@ image.
       "layers": [
         {
           "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
-          "commit": "ecece54b1eb65d484444c4a5ca0b244b329f4667",
+          "commit": "<git commit id",
           "name": "uan-integration-@product_version@",
           "playbook": "site.yml"
         }  # <-- Additional layers not shown
@@ -246,7 +275,7 @@ image.
     ncn-m001:~/ $ cray cfs sessions create --name uan-config-@product_version@ \
                       --configuration-name uan-config-@product_version@ \
                       --target-definition image \
-                      --target-group Application c880251d-b275-463f-8279-e6033f61578b \
+                      --target-group Application <IMS image ID> \  # <--- from product catalog
                       --format json
 
     # <== output removed ==>
@@ -298,9 +327,9 @@ image.
           "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=1 rd.shell turbo_boost_limit=999 ifmap=net0:nmn0 spire_join_token=${SPIRE_JOIN_TOKEN}",
           "network": "nmn",
           "node_list": [
-            # [ ... List of Application Nodes ...]
+            # [ ... List of Application Nodes from cray hsm state command ...]
           ],
-          "path": "s3://boot-images/0e54050a-c43c-4534-ba38-7191838e348d/manifest.json",  # <-- replace with image id from image customization
+          "path": "s3://boot-images/<IMS image id>/manifest.json",  # <-- result_id from CFS image customization session
           "rootfs_provider": "cpss3",
           "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
           "type": "s3"
@@ -330,13 +359,35 @@ image.
 1. Create a BOS session to boot the UAN nodes.
 
     ```bash
-    ncn-m001:~/ $ cray bos v1 session create --template-uuid uan-sessiontemplate-@product_version@ --operation reboot
+    ncn-m001:~/ $ cray bos v1 session create --template-uuid uan-sessiontemplate-@product_version@ --operation reboot --format json | tee session.json
+
+   {
+     "links": [
+       {
+         "href": "/v1/session/89680d0a-3a6b-4569-a1a1-e275b71fce7d",
+         "jobId": "boa-89680d0a-3a6b-4569-a1a1-e275b71fce7d",
+         "rel": "session",
+         "type": "GET"
+       },
+       {
+         "href": "/v1/session/89680d0a-3a6b-4569-a1a1-e275b71fce7d/status",
+         "rel": "status",
+         "type": "GET"
+       }
+     ],
+     "operation": "reboot",
+     "templateUuid": "uan-sessiontemplate-@product_version@"
+   }
+
     ```
 
-1. Retrieve the BOS session id from the previous command.
+1. Retrieve the BOS session id from the previous command's output.
 
     ```bash
-    ncn-m001:~/ $ BOS_SESSION=89680d0a-3a6b-4569-a1a1-e275b71fce7d
+    ncn-m001:~/ $ BOS_SESSION=$(jq -r '.links[] | select(.rel=="session") | .href' session.json | cut -d '/' -f4)
+
+    ncn-m001:~/ $ echo $BOS_SESSION
+    89680d0a-3a6b-4569-a1a1-e275b71fce7d
     ```
 
 1. Retrieve the Boot Orchestration Agent (BOA) Kubernetes job name for the BOS session.
