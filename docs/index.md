@@ -40,5 +40,5 @@ and operational procedures for Cray EX User Access Nodes (UAN).
     Topics:
     * Building UAN images from recipes
     * Customizing UANs Manually
-    * [Debugging UAN Booting Issues](advanced/debug_boot)
-    * [Debugging UAN Configuration Issues](advanced/debug_config)
+    * [Debugging UAN Booting Issues](advanced/debug_boot.md)
+    * [Debugging UAN Configuration Issues](advanced/debug_config.md)
