@@ -32,17 +32,31 @@ Access Nodes (UAN) on Cray EX systems.
 <a name="bmcconfig"></a>
 ## BMC Configuration
 
-1. Ensure IPMI is configured for each UAN.
+### For HPE/iLO based UAN nodes
 
-        ##FIXME## Ask dmb for a documented procedure.
+To verify the BMC configuration of the node, you must first establish a SSH tunnel in order to access
+the BMC web gui interface.
 
-1. Ensure a `root` user has been setup for each UAN.
+1. Find the IP or hostname for each UAN node
+   
+        # UAN_HOST=uan01-mgmt
 
-        ##FIXME## Ask dmb for a documented procedure.
+1. Create a tunnel to the UAN BMC
+   
+        # HOST=shasta-ncn-m001
+        # ssh -L 8443:$UAN_HOST:443 $HOST
 
-1. Ensure that the BMC has been configured for DHCP.
+After the connection is established, visit https://127.0.0.1:8443 in your local browser to access the
+BMC web gui. Login to the web gui using default credentials, and then verify the IPMI setting and user
+settings using the steps below.
 
-        ##FIXME## Ask dmb for a documented procedure.
+1. On the "main page" edit the Network settings (click the pencil)
+   
+   ![](images/HPE_BMC_configuration_step_1.png)
+   
+1. Check IPMI/DCMI over LAN is enabled:
+   
+   ![](images/HPE_BMC_configuration_step_2.png)
 
 <a name="biosconfig"></a>
 ## BIOS configuration
