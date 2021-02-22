@@ -35,9 +35,10 @@ and operational procedures for Cray EX User Access Nodes (UAN).
     * Preparing UAN Boot Session Templates
     * Booting UAN Nodes
 
-1. [Advanced Topics](advanced/index.md) __FIXME__
+1. [Advanced Topics](advanced/index.md)
 
     Topics:
-    * Building UAN images from recipes
-    * Customizing UANs Manually
-    * Debugging UAN configuration and booting issues
+    * Building the UAN image using the Cray Image Management System (IMS)
+
+[comment]: <> (    * Customizing UANs Manually)
+[comment]: <> (    * Debugging UAN configuration and booting issues)
