@@ -4,21 +4,18 @@
 >
 > build date: @date@
 
-This section describes advanced topics for working with User Access Nodes (UAN).
+This section describes advanced topics for installing and operating User
+Access Nodes (UAN) on Cray EX systems.
 
 ---
 
 ## Contents
 
-* [Building UAN Images from Recipes](#recipes)
-* [Customizing UANs Manually](#customize)
-* [Debugging UAN Booting Issues](debug_boot.md)
-* [Debugging UAN Configuration Issues](debug_config.md)
+* [Building the UAN image using the Cray Image Management System (IMS)](#buildrecipe)
 
 ---
 
-<a name="recipes"></a>
-## Building UAN images from recipes
+<a name="buildrecipe"></a>
 
 The Cray EX User Access Node product installer automatically registers a recipe with the Cray Image Management System 
 (IMS). This recipe can be used to (re-)build the UAN image following the instructions below.
@@ -63,4 +60,4 @@ In future releases of the UAN product, work will be undertaken to resolve these 
 <a name="customize"></a>
 ## Customizing UANs Manually
 
-
+---
