@@ -214,9 +214,19 @@ ncn-m001:~ $ sat firmware -x <xname of BMC>
 
 <a name="swprereq"></a>
 ## Software Prerequisites
+Run the pre-install goss tests to determine if the UAN release is
+capable of installation on the system.  This does require that goss
+be installed where the tests are running, such as on a master node.
 
-Perform the following pre-install checks to determine if the UAN release is
-capable of installation on the system.
+    ```bash
+    ncn-m001:~ $ ./validate-pre-install.sh 
+    ...............
+    
+    Total Duration: 1.304s
+    Count: 15, Failed: 0, Skipped: 0
+    ```
+
+Alternatively, perform each of the following checks manually.
 
 1. The `cray` CLI tool, `manifestgen`, and `loftsman` are installed on the system.
 

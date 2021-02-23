@@ -32,6 +32,10 @@ function copy_manifests {
     sed -i.bak -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
 }
 
+function copy_tests {
+    rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
+}
+
 function copy_docs {
     DATE="`date`"
     rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
@@ -101,6 +105,8 @@ function sync_install_content {
         rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
         rsync -aq "${ROOTDIR}/include/nexus-upload.sh" "${BUILDDIR}/lib/nexus-upload.sh"
     fi
+
+    rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
 }
 
 function package_distribution {
@@ -126,6 +132,7 @@ mkdir -p "${BUILDDIR}/lib"
 # Create the Release Distribution
 setup_command_options "$@"
 copy_manifests
+copy_tests
 copy_docs
 sync_install_content
 setup_nexus_repos
