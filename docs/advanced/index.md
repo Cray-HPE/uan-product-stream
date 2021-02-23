@@ -1,4 +1,4 @@
-# Cray EX User Access Node Installation Advanced Topics
+# Cray EX User Access Nodes Advanced Topics
 
 > version: @product_version@
 >
@@ -54,3 +54,10 @@ In future releases of the UAN product, work will be undertaken to resolve these 
 
 1. Using the IMS_RECIPE_ID, follow the instuctions in the _Build an Image Using IMS REST Service_ section of the 
    _HPE Cray EX System Administraion Guide_ to build the UAN Image.
+
+---
+
+<a name="customize"></a>
+## Customizing UANs Manually
+
+---
