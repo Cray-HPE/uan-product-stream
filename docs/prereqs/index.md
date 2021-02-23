@@ -38,11 +38,11 @@ To verify the BMC configuration of the node, you must first establish a SSH tunn
 the BMC web gui interface.
 
 1. Find the IP or hostname for each UAN node
-   
+
         # UAN_HOST=uan01-mgmt
 
 1. Create a tunnel to the UAN BMC
-   
+
         # HOST=shasta-ncn-m001
         # ssh -L 8443:$UAN_HOST:443 $HOST
 
@@ -51,15 +51,17 @@ BMC web gui. Login to the web gui using default credentials, and then verify the
 settings using the steps below.
 
 1. On the "main page" edit the Network settings (click the pencil)
-   
+
    ![](images/HPE_BMC_configuration_step_1.png)
-   
+
 1. Check IPMI/DCMI over LAN is enabled:
-   
+
    ![](images/HPE_BMC_configuration_step_2.png)
 
 <a name="biosconfig"></a>
 ## BIOS configuration
+
+### For HPE/iLO based UAN nodes
 
 The following command forces the node to reboot into BIOS.
 $HOST is the hostname (xname) of the BMC of the node you want to configure.
@@ -89,15 +91,15 @@ ESC+9. Do so to access the BIOS System Utilities.
 
         Slot 1 Port 1 : Marvell FastLinQ 41000 Series -   [Disabled]        # <----
         2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
-        
+
         Slot 1 Port 2 : Marvell FastLinQ 41000 Series -   [Disabled]        # <----
         2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
-        
+
         Slot 2 Port 1 : Network Controller                [Disabled]        # <----
         OCP Slot 10 Port 1 : Marvell FastLinQ 41000       [Network Boot]    # <----
         Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
         Adapter - NIC
-        
+
         OCP Slot 10 Port 2 : Marvell FastLinQ 41000       [Disabled]        # <----
         Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
         Adapter - NIC
@@ -158,7 +160,44 @@ ESC+9. Do so to access the BIOS System Utilities.
         NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv4)
         OCP Slot 10 Port 1 : Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter -
         NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv6)
-        ------------------------- 
+        -------------------------
+
+### For Gigabyte based UAN nodes
+
+While watching the console, you will see a prompt to hit <DEL\> to enter the setup. Do so to access the setup utility.
+
+From the Boot menu set the Boot Option #1 to Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection.  Set all others to Disabled.
+
+````
+�  Boot Option #1������������������������� Boot Option #1 �����������������������Ŀ                 �
+�                � Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection �                �
+�                � USB Device                                                     �                �
+�  Boot Option #2� Hard Disk                                                      �                �
+�  Boot Option #3� CD/DVD                                                         �  �������������ĳ
+�  Boot Option #4� UEFI AP:UEFI: Built-in EFI Shell                               �  een           �
+�  Boot Option #5� Disabled                                                       �              � �
+�                ������������������������������������������������������������������
+
+````
+Ensure that the Boot mode select is set to [UEFI]
+````
+�  Boot mode select                     [UEFI]                        �                            �
+````
+
+Go to the Save & Exit and save the settings (select Yes to confirm and hit enter).  This will cause the node to reboot.
+
+If the BIOS settings do not persist it may be necessary to run the following ipmi commands in addition to changing the BIOS settings above.  If the node BMC is named x3000c0s27b0 run the following:
+
+```bash
+# Power off the node
+ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 power off
+# Perform a reset
+ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 mc reset cold
+# Set the PXE boot in the options
+ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
+# Power on the node
+ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 power on
+```
 
 <a name="uanfw"></a>
 ## UAN BMC Firmware
