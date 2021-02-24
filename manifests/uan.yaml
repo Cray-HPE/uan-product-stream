@@ -8,12 +8,18 @@ spec:
     namespace: services
     values:
       cray-import-config:
+        catalog:
+          image:
+            tag: 0.0.4
         config_image:
           name: cray-uan-config
           tag: 0.1.28
         import_job:
           CF_IMPORT_PRODUCT_VERSION: "@product_version@"
       cray-import-kiwi-recipe-image:
+        catalog:
+          image:
+            tag: 0.0.4
         import_image:
           name: cray-uan-image-recipe
           tag: 0.1.28
