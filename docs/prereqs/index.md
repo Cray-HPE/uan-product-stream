@@ -186,17 +186,17 @@ Ensure that the Boot mode select is set to [UEFI]
 
 Go to the Save & Exit and save the settings (select Yes to confirm and hit enter).  This will cause the node to reboot.
 
-If the BIOS settings do not persist it may be necessary to run the following ipmi commands in addition to changing the BIOS settings above.  If the node BMC is named x3000c0s27b0 run the following:
+If the BIOS settings do not persist it may be necessary to run the following ipmi commands in addition to changing the BIOS settings above.  If the node BMC is named x3000c0s27b0 run the following (substitute your user and password for *** below):
 
 ```bash
 # Power off the node
-ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 power off
+ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power off
 # Perform a reset
-ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 mc reset cold
+ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 mc reset cold
 # Set the PXE boot in the options
-ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
+ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
 # Power on the node
-ipmitool -I lanplus -U root -P initial0 -H x3000c0s27b0 power on
+ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power on
 ```
 
 <a name="uanfw"></a>
