@@ -1,5 +1,5 @@
 http://helmrepo.dev.cray.com:8080/:
   charts:
     cray-uan-install:
-    - 1.0.35
+    - 1.0.36
 

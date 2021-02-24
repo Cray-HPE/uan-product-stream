@@ -98,9 +98,7 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
 
     **WARNING**: _You cannot make changes to the `cray/uan/@product_version@`
                  branch that was created by the UAN installation. By default,
-                 modification is not allowed on this branch._ Use a branching
-                 strategy that allows for new UAN installations to be merged
-                 easily into your branch.
+                 modification is not allowed on this branch._
 
    ```bash
    ncn-m001:~/ $ git checkout -b integration && git merge cray/uan/@product_version@
@@ -108,63 +106,27 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
    Already up to date.
    ```
 
-   ***WORKAROUND FOR UAN NETWORKING (CASMCMS-6644)***
+1. Apply site-specific customizations and modifications to the Ansible
+   configuration for the UAN nodes and commit the changes.
 
-1. Apply uan_interfaces role workaround and group_vars needed for UAN CAN and LDAP support.  
+   The default Ansible play to configure UAN nodes is located in the base of the
+   `uan-config-management` repository in `site.yml`. The roles that are executed
+   in this play allow for non-default configuration as required for the system.
 
-   1. Copy the `uan_interfaces.tgz` and `group_vars.tgz` files from CSS to the top
-      of the UAN configuration management repository. Use your Data Center credentials.
-      dclogin may not be available from your particular machine. You may need to download
-      it onto your laptop first and then push it up to the machine.
+   Consult the individual Ansible role `README.md` files in the
+   `uan-config-management` repository `roles` directory for information on
+   configuring individual role variables. Roles prefixed with `uan_` are
+   specific to UAN configuration and include network interfaces, disk, LDAP,
+   software packages, and message of the day roles.
 
-      ##FIXEME## We need to put these files someplace accessible from the installation
-      machine.
-
-      ```bash
-      ncn-m001:~/ $ scp <dc_username>@dclogin:/cray/css/users/keopp/uan/group_vars.tgz .
-      ```
-
-   1. Expand the two tar files to install the workaround.
-
-      ```bash
-      ncn-m001:~/ $ tar zxf group_vars.tgz
-      ```
-
-   1. Apply the uan_interfaces role workaround to the Ansible configuration.
-
-      ```bash
-      ncn-m001:~/ $ git add group_vars/all/can.yml
-      ncn-m001:~/ $ git add group_vars/all/ldap.yml
-      ncn-m001:~/ $ git commit -m "Apply CAN workaround and LDAP config"
-      ```
-
-   1. Push the changes to the repository using the proper credentials.
-
-      ```bash
-       ncn-m001:~/ $ git push --set-upstream origin integration
-       Username for 'https://api-gw-service-nmn.local': crayvcs
-       Password for 'https://crayvcs@api-gw-service-nmn.local':
-       # [... output removed ...]
-       remote: Processed 1 references in total
-       To https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
-        * [new branch]      integration -> integration
-        Branch 'integration' set up to track remote branch 'integration' from 'origin'.
-      ```
-
-      Obtain the password for the `crayvcs` user from the Kubernetes secret.
-
-      ```bash
-      ncn-m001:~/ $ kubectl get secret -n services vcs-user-credentials \
-                    --template={{.data.vcs_password}} | base64 --decode
-   
-      # <== password output ==>
-      ```
-
-1. Apply any customizations and modifications to the Ansible configuration.
    Variables should be defined and overridden in the Ansible inventory locations
-   of the repository and **not** in the Ansible plays and roles defaults. The
-   following example shows how to add a `vars.yml` file to the `Application`
-   group variables file.
+   of the repository as shown below and **not** in the `site.yml` play and role
+   default files. See the [Ansible Best Practices Guide](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization)
+   with directory layouts for inventory.
+
+   The following example shows adding a sample `vars.yml` file containing
+   site-specific configuration values to the `Application` group variable
+   location.
 
    ```bash
     ncn-m001:~/ $ vim group_vars/Application/vars.yml
@@ -174,12 +136,6 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
     1 file changed, 1 insertion(+)
     create mode 100644 group_vars/Application/vars.yml
    ```
-
-   ##FIXME## - UAN ansible configuration guide - listing role parameters to help
-               the user with Ansible configuration for UAN roles.
-
-   See the [Ansible Best Practices Guide](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization)
-   with directory layouts for inventory.
 
 1. Obtain the password for the `crayvcs` user from the Kubernetes secret for use
    in the next command.
@@ -228,7 +184,9 @@ image.
 
    **NOTE**: Gather the git repository clone URL, commit, and top-level play
              for each configuration layer (i.e. Cray product) and add them to
-             the CFS configuration for the UAN, if desired. See the product
+             the CFS configuration for the UAN, if desired. This guide shows
+             only the configuration of the UAN, but additional layers can be
+             added to configure them in a single CFS session. See the product
              manuals for further information on configuring other Cray products.
 
    ```bash

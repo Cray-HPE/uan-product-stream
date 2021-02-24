@@ -82,6 +82,25 @@ If the Cray EX system is configured for online installations, use this section.
          id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a
    ```
 
+   If the previous command does not show the @product_version@ content, check
+   the Kubernetes jobs responsible for importing the configuration content:
+
+   ```bash
+   ncn-m001:~ $ kubectl get pods -n services -l job-name=uan-config-import-@product_version@
+   NAME                             READY   STATUS      RESTARTS   AGE
+   uan-config-import-@product_version@-gsvrc   0/3     Completed   0          5m
+   ```
+
+   and the image and recipe content:
+
+   ```bash
+   ncn-m001:~ $ kubectl get pods -n services -l job-name=uan-image-recipe-import-@product_version@
+   NAME                                   READY   STATUS      RESTARTS   AGE
+   uan-image-recipe-import-@product_version@-2fvr7   0/3     Completed   0          6m
+   ```
+
+   to ensure they have successfully completed.
+
 1. Verify that the UAN RPM repositories have been created in Nexus. Navigate to
    `https://nexus.<shasta domain>/#browse/browse` to view the list of
    repositories. Ensure that the following repositories are present:
