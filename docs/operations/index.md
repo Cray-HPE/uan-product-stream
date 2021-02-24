@@ -281,6 +281,46 @@ image.
     # <== output removed ==>
     ```
 
+    ***WORKAROUND FOR CFS SESSION NOT COMPLETING (CASMCMS-6699)***
+   
+    Due to an issue with the CFS teardown container, CFS Sessions targeting IMS images will
+    not complete without manual intervention. Follow the steps below to set the IMS `complete`
+    flag. Once setting the `complete` flag, CFS should complete successfully.
+   
+    1. Locate the pod performing the CFS customizations
+    
+       ```bash   
+       # kubectl get pods -n services | grep $(cray cfs sessions describe uan-config-1.9.9 --format json | jq -r '.status.session.job') | awk '{print $1}'
+       cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk
+       ```
+   
+    1. Watch the `ansible-0` container and wait for ansible to complete successfully.
+       
+       ```bash
+       # kubectl logs -n services -f cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk -c ansible-0
+       ...
+       PLAY RECAP *********************************************************************
+       cray-shasta-uan-cos-sles15sp1.x86_64-0.1.21-ecozzi_cfs_uan-config-1.9.9 : ok=35   changed=21   unreachable=0    failed=0    skipped=103  rescued=0    ignored=0
+       ```
+       
+    1. Determine the IMS Pod being used to customize the image
+       
+       ```bash
+       ncn-m001:~ # kubectl logs -n services -f cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk -c inventory | grep -m 1 job
+       2021-02-15 21:33:12,705 - INFO    - cray.cfs.inventory.image - IMS status=creating for IMS image='08350e63-bf31-48a6-a9aa-25986cdaec97' job='ff27bf2c-9420-4379-989e-eedccd8b962a'. Elapsed time=0s
+       ncn-m001:~ # IMS_JOB=ff27bf2c-9420-4379-989e-eedccd8b962a
+       ncn-m001:~ # kubectl get pods -n ims | grep -m 1 $IMS_JOB
+       cray-ims-ff27bf2c-9420-4379-989e-eedccd8b962a-customize-zd7vt   0/2     Running   0          32m
+       ```
+       
+    1. Access the IMS Customizations pod and touch the complete flag. Note: CFS uses an IMS Jailed environment
+       so the location of the complete flag is `/mnt/image/image-root/tmp/complete`.
+       
+       ```bash
+       # kubectl exec -it -n ims cray-ims-ff27bf2c-9420-4379-989e-eedccd8b962a-customize-zd7vt -c sshd -- sh
+       sh-4.4# touch /mnt/image/image-root/tmp/complete
+       ```
+
 1. When the CFS configuration session for the image customization has completed,
    record the ID of the IMS image that was created as a result of the
    customization.
