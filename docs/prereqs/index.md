@@ -50,7 +50,7 @@ After the connection is established, visit https://127.0.0.1:8443 in your local 
 BMC web gui. Login to the web gui using default credentials, and then verify the IPMI setting and user
 settings using the steps below.
 
-1. On the "main page" edit the Network settings (click the pencil)
+1. On the "main page" edit the Network settings under the Security (side menu) Access Settings (top menu) and click the pencil next to the Network heading.
 
    ![](images/HPE_BMC_configuration_step_1.png)
 
