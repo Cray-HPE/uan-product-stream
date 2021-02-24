@@ -232,7 +232,9 @@ capable of installation on the system.
     ```
 
 1. Ensure that Data Virtualization Service (DVS) and LNet are configured on the
-   nodes which are running Content Projection Service (CPS) cps-cm-pm pods.
+   nodes which are running Content Projection Service (CPS) cps-cm-pm pods. The UAN
+   product can be installed prior to this configuration being complete, but the
+   the DVS modules must be loaded prior to booting UAN nodes.
 
     1. Determine how many nodes should be running cps-cm-pm pods:
 
