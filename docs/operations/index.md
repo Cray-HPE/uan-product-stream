@@ -124,6 +124,9 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
    default files. See the [Ansible Best Practices Guide](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization)
    with directory layouts for inventory.
 
+   **WARNING**: Never place sensitive information such as passwords in the git
+                repository.
+
    The following example shows adding a sample `vars.yml` file containing
    site-specific configuration values to the `Application` group variable
    location.
