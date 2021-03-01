@@ -13,7 +13,10 @@ Access Nodes (UAN) on Cray EX systems.
 
 * [Management Network Switch Configuration](#switchprereq)
 * [BMC Configuration](#bmcconfig)
+  * [HPE/iLO-based UAN nodes](#bmcconfig-hpe)
 * [BIOS configuration](#biosconfig)
+  * [HPE/iLO-based UAN nodes](#biosconfig-hpe)
+  * [Gigabyte-based UAN nodes](#biosconfig-gig)
 * [UAN BMC Firmware](#uanfw)
 * [Software Prerequisites](#swprereq)
 
@@ -32,25 +35,28 @@ Access Nodes (UAN) on Cray EX systems.
 <a name="bmcconfig"></a>
 ## BMC Configuration
 
-### For HPE/iLO based UAN nodes
+<a name="bmcconfig-hpe"></a>
+### HPE/iLO-based UAN nodes
 
-To verify the BMC configuration of the node, you must first establish a SSH tunnel in order to access
-the BMC web gui interface.
+To verify the BMC configuration of each UAN node, you must first establish a SSH
+tunnel in order to access the BMC web GUI interface.
 
-1. Find the IP or hostname for each UAN node
+1. Find the IP or hostname for each UAN node:
 
         # UAN_HOST=uan01-mgmt
 
-1. Create a tunnel to the UAN BMC
+1. Create a tunnel to the UAN BMC:
 
         # HOST=shasta-ncn-m001
         # ssh -L 8443:$UAN_HOST:443 $HOST
 
-After the connection is established, visit https://127.0.0.1:8443 in your local browser to access the
-BMC web gui. Login to the web gui using default credentials, and then verify the IPMI setting and user
-settings using the steps below.
+1. After the connection is established, visit `https://127.0.0.1:8443` in your
+   local browser to access the BMC web GUI. Login to the web GUI using default
+   credentials, and then verify the IPMI setting and user settings using the
+   steps below.
 
-1. On the "main page" edit the Network settings under the Security (side menu) Access Settings (top menu) and click the pencil next to the Network heading.
+1. On the "main page" edit the Network settings under the Security (side menu)
+   Access Settings (top menu) and click the pencil next to the Network heading.
 
    ![](images/HPE_BMC_configuration_step_1.png)
 
@@ -61,25 +67,26 @@ settings using the steps below.
 <a name="biosconfig"></a>
 ## BIOS configuration
 
-### For HPE/iLO based UAN nodes
+<a name="biosconfig-hpe"></a>
+### HPE/iLO-based UAN nodes
 
-The following command forces the node to reboot into BIOS.
-$HOST is the hostname (xname) of the BMC of the node you want to configure.
+1. Force the node to reboot into BIOS with the following command. `$HOST` is the
+   hostname (xname) of the BMC of the node to configure.
 
-```bash
-ipmitool -U $user -P $password -H $HOST -I lanplus chassis bootdev bios
-```
+   ```bash
+   ncn-m001:~ $ ipmitool -U $user -P $password -H $HOST -I lanplus chassis bootdev bios
+   ```
 
-Watch the node's console via either conman or by using the command
+1. Watch the node's console via either conman or by using the command
 
-```bash
-ipmitool -U $user -P $password -H $HOST -I lanplus sol activate
-```
+   ```bash
+   ncn-m001:~ $ ipmitool -U $user -P $password -H $HOST -I lanplus sol activate
+   ```
 
-##FIXME## Provide a link to conman documentation.
+   ##FIXME## Provide a link to conman documentation.
 
-While watching the console, you will see a prompt to hit
-ESC+9. Do so to access the BIOS System Utilities.
+1. While watching the console, look for a prompt to enter `ESC+9`. Do so to
+   access the BIOS System Utilities.
 
 1. For each UAN, ensure that OCP Slot 1 Port 1 is the only port with Boot Mode
    set to PXE. All other ports should have Boot Mode set to Disabled.
@@ -162,42 +169,53 @@ ESC+9. Do so to access the BIOS System Utilities.
         NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv6)
         -------------------------
 
-### For Gigabyte based UAN nodes
+<a name="biosconfig-gig"></a>
+### Gigabyte-based UAN nodes
 
-While watching the console, you will see a prompt to hit <DEL\> to enter the setup. Do so to access the setup utility.
+1. While watching the console, look for a prompt to press `<DEL\>` to enter the
+   setup. Do so to access the setup utility.
 
-From the Boot menu set the Boot Option #1 to Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection.  Set all others to Disabled.
+1. From the Boot menu set the Boot Option #1 to `Network:UEFI: PXE IP4 Intel(R)
+   I350 Gigabit Network Connection`. Set all others to Disabled.
 
-````
-�  Boot Option #1������������������������� Boot Option #1 �����������������������Ŀ                 �
-�                � Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection �                �
-�                � USB Device                                                     �                �
-�  Boot Option #2� Hard Disk                                                      �                �
-�  Boot Option #3� CD/DVD                                                         �  �������������ĳ
-�  Boot Option #4� UEFI AP:UEFI: Built-in EFI Shell                               �  een           �
-�  Boot Option #5� Disabled                                                       �              � �
-�                ������������������������������������������������������������������
+   ```
+   �  Boot Option #1������������������������� Boot Option #1 �����������������������Ŀ                 �
+   �                � Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection �                �
+   �                � USB Device                                                     �                �
+   �  Boot Option #2� Hard Disk                                                      �                �
+   �  Boot Option #3� CD/DVD                                                         �  �������������ĳ
+   �  Boot Option #4� UEFI AP:UEFI: Built-in EFI Shell                               �  een           �
+   �  Boot Option #5� Disabled                                                       �              � �
+   �                ������������������������������������������������������������������
+   ```
 
-````
-Ensure that the Boot mode select is set to [UEFI]
-````
-�  Boot mode select                     [UEFI]                        �                            �
-````
+1. Ensure that the Boot mode select is set to `[UEFI]`.
 
-Go to the Save & Exit and save the settings (select Yes to confirm and hit enter).  This will cause the node to reboot.
+   ```
+   �  Boot mode select                     [UEFI]                        �                            �
+   ```
 
-If the BIOS settings do not persist it may be necessary to run the following ipmi commands in addition to changing the BIOS settings above.  If the node BMC is named x3000c0s27b0 run the following (substitute your user and password for *** below):
+1. Go to the Save & Exit and save the settings (select Yes to confirm and hit
+   enter).  This will cause the node to reboot.
 
-```bash
-# Power off the node
-ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power off
-# Perform a reset
-ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 mc reset cold
-# Set the PXE boot in the options
-ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
-# Power on the node
-ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power on
-```
+1. If the BIOS settings do not persist it may be necessary to run the following
+   `ipmi` commands in addition to changing the BIOS settings above. For example,
+   if the node BMC is named `x3000c0s27b0` run the following (substitute proper
+   username and password for `***` below):
+
+   ```bash
+   # Power off the node
+   ncn-m001:~ $ ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power off
+
+   # Perform a reset
+   ncn-m001:~ $ ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 mc reset cold
+
+   # Set the PXE boot in the options
+   ncn-m001:~ $ ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
+
+   # Power on the node
+   ncn-m001:~ $ ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power on
+   ```
 
 <a name="uanfw"></a>
 ## UAN BMC Firmware
@@ -271,22 +289,27 @@ capable of installation on the system.
     ```
 
 1. Ensure that Data Virtualization Service (DVS) and LNet are configured on the
-   nodes which are running Content Projection Service (CPS) cps-cm-pm pods. The UAN
-   product can be installed prior to this configuration being complete, but the
-   the DVS modules must be loaded prior to booting UAN nodes.
+   nodes which are running the Content Projection Service (CPS) cps-cm-pm pods
+   provided by COS. The UAN product can be installed prior to this configuration
+   being complete, but the the DVS modules must be loaded prior to booting UAN
+   nodes.
 
-    1. Determine how many nodes should be running cps-cm-pm pods:
+   1. Determine which nodes are running cps-cm-pm pods:
+
+      ```bash
+      ncn-m001:~ $ kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers
+      ncn-w001
+      ncn-w002
+      ```
+      More nodes or a different set of nodes may be displayed.
+
+   1. Ensure the same nodes from the previous command have the DVS modules
+      loaded:
 
        ```bash
-       ncn-m001:~ $ kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers | wc -l
-       3
+       ncn-m001:~ $ for node in `kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers`; do
+           ssh $node "lsmod | grep '^dvs '"
+       done
+       ncn-w001
+       ncn-w002
        ```
-
-    1. Ensure those nodes have the DVS modules loaded:
-
-        ```bash
-        ncn-m001:~ $ for node in `kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers`; do
-            ssh $node "lsmod | grep '^dvs '"
-        done | wc -l
-        3
-        ```
