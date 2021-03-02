@@ -1,0 +1,103 @@
+# Copyright 2021 Hewlett Packard Enterprise Development LP
+command:
+  cli_installed:
+    title: Cray CLI is installed
+    meta:
+      desc: Validates that the Cray CLI is installed
+      sev: 0
+    exec: "which cray"
+    stdout:
+    - "/usr/bin/cray"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  manifestgen_installed:
+    title: Manifestgen is installed
+    meta:
+      desc: Validates that Manifestgen is installed
+      sev: 0
+    exec: "which manifestgen"
+    stdout:
+    - "/usr/bin/manifestgen"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  loftsman_installed:
+    title: Loftsman is installed
+    meta:
+      desc: Validates that Loftsman is installed
+      sev: 0
+    exec: "which loftsman"
+    stdout:
+    - "/usr/bin/loftsman"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  helm_installed:
+    title: Helm is installed
+    meta:
+      desc: Validates that Helm is installed
+      sev: 0
+    exec: "which helm"
+    stdout:
+    - "/usr/bin/helm"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  helm_version:
+    title: Helm version is correct
+    meta:
+      desc: Validates that Helm is version 3 or greater
+      sev: 0
+    exec: "[ $(helm version --short | sed -e 's/^v//' -e 's/\\..*//') -ge 3 ]"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  jq_installed:
+    title: jq is installed
+    meta:
+      desc: Validates that jq is installed
+      sev: 0
+    exec: "which jq"
+    stdout:
+    - "/usr/bin/jq"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  csm_software_installed:
+    title: CSM software is installed
+    meta:
+      desc: Validates Cray System Management software is installed
+      sev: 0
+    exec: "helm ls -n services -f '^gitea$|cray-cfs-operator|cray-cfs-api|cray-ims|cray-product-catalog' -o json | jq -r '.[] | .status + \" \" + .name'"
+    stdout:
+    - "deployed cray-cfs-api"
+    - "deployed cray-cfs-operator"
+    - "deployed cray-ims"
+    - "deployed cray-product-catalog"
+    - "deployed gitea"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  cos_installed:
+    title: COS is installed
+    meta:
+      desc: Validates the HPE Cray OS is installed
+      sev: 0
+    exec: "kubectl get cm -n services cray-product-catalog -o json | jq '.data | has(\"cos\")'"
+    stdout:
+    - "true"
+    exit-status: 0
+    timeout: 1000
+    skip: false
+  dvs_configured:
+    title: DVS is configured
+    meta:
+      desc: Ensures the Data Virtualization Service is configured on the nodes which are running the Content Projection Service
+      sev: 0
+    exec: "/usr/bin/env bash {{.Env.GOSS_BASE}}/scripts/dvs_installed_check.sh"
+    stdout:
+    - "PASS"
+    exit-status: 0
+    timeout: 10000
+    skip: false

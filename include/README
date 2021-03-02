@@ -19,7 +19,8 @@ manifests/                     - Loftsman manifest files for the UAN
 nexus-blobstores.yaml          - Nexus Blobstore Configuration for UAN Repositories
 nexus-repositories.yaml        - Nexus Repository Configurations for UAN
 rpms/                          - RPM repositories (offline installs only)
-vendor/                        - Vendor/3rd-party content required for installation 
+vendor/                        - Vendor/3rd-party content required for installation
+tests/                         - tests for validating the state of the system
 
 |--------------|
 | Installation |
