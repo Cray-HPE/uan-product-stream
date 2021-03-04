@@ -70,11 +70,11 @@ tunnel in order to access the BMC web GUI interface.
 <a name="biosconfig-hpe"></a>
 ### HPE/iLO-based UAN nodes
 
-1. Force the node to reboot into BIOS with the following command. `$HOST` is the
+1. Ensure that the BIOS is set to efiboot. `$HOST` is the
    hostname (xname) of the BMC of the node to configure.
 
    ```bash
-   ncn-m001:~ $ ipmitool -U $user -P $password -H $HOST -I lanplus chassis bootdev bios
+   ncn-m001:~ $ ipmitool -U $user -P $password -H $HOST -I lanplus chassis bootdev pxe options=efiboot,persistent
    ```
 
 1. Watch the node's console via either conman or by using the command
@@ -237,9 +237,9 @@ capable of installation on the system.  This does require that goss
 be installed where the tests are running, such as on a master node.
 
     ```bash
-    ncn-m001:~ $ ./validate-pre-install.sh 
+    ncn-m001:~ $ ./validate-pre-install.sh
     ...............
-    
+
     Total Duration: 1.304s
     Count: 15, Failed: 0, Skipped: 0
     ```
