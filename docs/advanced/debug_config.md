@@ -21,9 +21,9 @@ This section describes debugging configuration issues with User Access Nodes (UA
 
 Configuration of UAN nodes is performed by the *Configuration Framework Service (CFS)*.  The Ansible
 roles involved in UAN configuration are listed in the `site.yml` file in the uan-config-management git
-repository in gitea.
+repository in VCS.
 
-The UAN specific roles involved in post-boot UAN node configuration are:
+The UAN-specific roles involved in post-boot UAN node configuration are:
 1. uan_disk_config
 
     1. Configures the first disk with a scratch and swap partition mounted at /scratch and /swap.
@@ -31,15 +31,15 @@ The UAN specific roles involved in post-boot UAN node configuration are:
 
 1. uan_packages
 
-    1. Installs any rpm packages listed in the uan-config-management repo.
+    1. Installs any RPM packages listed in the uan-config-management repo.
 
 1. uan_interfaces
 
     1. Sets up the networking configuration for the UAN nodes.
 
-        1. Default is not to setup a CAN connnection or default route.  If CAN is enabled, the
-        default route will be on the CAN.  Otherwise, a default route will need to be setup in 
-        the customer interfaces definitions.
+        1. Default is not to setup the Shasta Customer Access Network (CAN) connnection or default route.
+        If CAN is enabled, the default route will be on the CAN.  Otherwise, a default route will need to
+        be setup in the customer interfaces definitions.
 
 1. uan_motd
 
@@ -168,7 +168,7 @@ setup have been related to switch configuration and cabling to the proper set of
 ### User Authentication Configuration (LDAP)
 
 The configuration of LDAP is dependent on having either the Customer Access Network configured or having 
-a customer provided network configured that can route to the LDAP servers.  If the UAN only has the nmn0
+a customer-provided network configured that can route to the LDAP servers.  If the UAN only has the nmn0
 interface active, there is no routing to networks outside the Cray EX system.
 
 ### External Filesystem Configuration

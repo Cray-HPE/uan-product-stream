@@ -27,7 +27,7 @@ and which configuration data set to use if post-boot configuration is enabled.
 
 Booting is performed in three phases:
 
-1. **PXE** boot an ipxe binary that will load the initrd of the desired UAN image to boot.
+1. **PXE** boot an iPXE binary that will load the initrd of the desired UAN image to boot.
 
 1. Boot the **initrd (dracut)** image which configures the UAN for booting the UAN image.  This consists of
 several phases.
@@ -40,10 +40,10 @@ several phases.
 
 1. Boot the **UAN image** rootfs.
 
-The following sections provide insights into trouble shooting problems if the phases mentioned above.
+The following sections provide insights into troubleshooting problems in the phases mentioned above.
 
 It is **highly recommended** to configure a `root` user in the UAN image for use in debugging.  Add the
-root users password information from `/etc/shadow` on a worker node to `group_vars/Application/passwd.yml`
+root user's password information from `/etc/shadow` on a worker node to `group_vars/Application/passwd.yml`
 in the `uan-config-management.git` repository using the `UAN Image Pre-boot Configuration` procedure.
 The contents of `group_vars/Application/passwd.yml` should look similar to the following:
 
@@ -66,7 +66,7 @@ to configure the UAN for PXE booting.
 <a name="dracut"></a>
 ## Initrd/Dracut Issues
 
-Failures in dracut are often related to the wrong interface being named `nmn0` or to multiple entries
+Failures in dracut are often related to the wrong interface being named `nmn0`, or to multiple entries
 for the UAN xname in DNS as a result of multiple interfaces making DHCP requests.  This can lead to IP
 address mismatches in the dvs_node_map.  DNS will setup entries based on DHCP leases.
 
@@ -79,15 +79,15 @@ See [UAN Operational Tasks](../operations/index.md) for details on how to config
 For UAN nodes that have more than one PCI card installed, `ifmap=net2:nmn0` is the correct setting.  If only
 one PCI card is install, `ifmap=net0:nmn0` is normally the correct setting.
 
-The Content Projection Service and Data Virtualization Service (DVS) are required for image boot.  These are
-configured in dracut to retrieve the rootfs and mount it.  If the image fails to download, check that DVS
-and CPS are both healthy and DVS is running on all worker nodes.
+CPS and DVS are required for image boot.  These are configured in dracut to retrieve the rootfs and mount
+it.  If the image fails to download, check that DVS and CPS are both healthy, and DVS is running on all
+worker nodes.
 
 <a name="image_boot"></a>
 ## Image Boot Issues
 
 Once dracut exits, the rootfs will be booted.  Failures seen in this phase tend to be failure of `spire-agent`
-and/or failure of `cfs-state-reporter` to start.  The `cfs-state-reporter` tells BOA that the node is ready and
+and/or `cfs-state-reporter` to start.  The `cfs-state-reporter` tells BOA that the node is ready and
 allows BOA to start CFS for post-boot configuration.  If `cfs-state-reporter` does not start, check if the
 `spire-agent` has started.  The `cfs-state-reporter` depends on the `spire-agent`.
 
