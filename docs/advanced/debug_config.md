@@ -50,11 +50,11 @@ The UAN specific roles involved in post-boot UAN node configuration are:
     1. Optionally will configure the connection to LDAP servers.
 
 <a name="cfs"></a>
-## Customization Framework Service
+## Configuration Framework Service
 
-The Customization Framework Service (CFS) can run against an image to make changes that all nodes using
-the image will get, or against individual nodes after they have booted, to make changes on the individual
-nodes.
+The Configuration Framework Service (CFS) can apply configuration data to both images and nodes.  
+When the configuration is being applied to nodes, the nodes must be booted and accessible via ssh over
+the Node Management Network.
 
 The best way to debug CFS failures is to look at the CFS log file for the session that failed.  To get
 a list of CFS sessions sorted so the latest is at the bottom of the list, run the following command on
@@ -154,14 +154,14 @@ There are three phases to the configuration of UAN interfaces on the UAN nodes.
 
         1. Uses the second port of the 25Gb OCP card and a second 25Gb card on HPE DL hardware
 
-        1. Uses the both ports of the 40Gb card on Gigabyte hardware
+        1. Uses both ports of the 40Gb card on Gigabyte hardware
 
 1. Setup Customer-defined Networks
 
 The debugging process for uan_interfaces is to look for errors in the CFS session log for the nodes then
 log into the node (usually via the conman console) and debug networking using standard network debug techniques.
 
-***NOTE***: The is also the off-node part of networking to be considered.  Most errors with NMN and CAN network
+***NOTE***: There is also the off-node part of networking to be considered.  Most errors with NMN and CAN network
 setup have been related to switch configuration and cabling to the proper set of switches.
 
 

@@ -42,7 +42,15 @@ several phases.
 
 The following sections provide insights into trouble shooting problems if the phases mentioned above.
 
-It is **highly recommended** to install a `root` user in the UAN image for use in debugging.
+It is **highly recommended** to configure a `root` user in the UAN image for use in debugging.  Add the
+root users password information from `/etc/shadow` on a worker node to `group_vars/Application/passwd.yml`
+in the `uan-config-management.git` repository using the `UAN Image Pre-boot Configuration` procedure.
+The contents of `group_vars/Application/passwd.yml` should look similar to the following:
+
+```bash
+---
+root_passwd: $6$LmQ/PlWlKixK$VL4ueaZ8YoKOV6yYMA9iH0gCl8F4C/3yC.jMIGfOK6F61h6d.iZ6/QB0NLyex1J7AtOsYvqeycmLj2fQcLjfE1
+```
 
 <a name="pxe"></a>
 ## PXE Issues
