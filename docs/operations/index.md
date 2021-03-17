@@ -251,17 +251,17 @@ image.
     1. Locate the pod performing the CFS customizations
     
        ```bash   
-       # kubectl get pods -n services | grep $(cray cfs sessions describe uan-config-1.9.9 --format json | jq -r '.status.session.job') | awk '{print $1}'
-       cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk
+       # kubectl get pods -n services | grep $(cray cfs sessions describe uan-config-@product_version@ --format json | jq -r '.status.session.job') | awk '{print $1}'
+       cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk  # <--- Kubernetes pod ID
        ```
    
     1. Watch the `ansible-0` container and wait for ansible to complete successfully.
        
        ```bash
-       # kubectl logs -n services -f cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk -c ansible-0
+       # kubectl logs -n services -f -c ansible-0 cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk # <--- Kubernetes pod ID
        ...
        PLAY RECAP *********************************************************************
-       cray-shasta-uan-cos-sles15sp1.x86_64-0.1.21-ecozzi_cfs_uan-config-1.9.9 : ok=35   changed=21   unreachable=0    failed=0    skipped=103  rescued=0    ignored=0
+       cray-shasta-uan-cos-sles15sp1.x86_64-0.1.21-ecozzi_cfs_uan-config-@product_version@ : ok=35   changed=21   unreachable=0    failed=0    skipped=103  rescued=0    ignored=0
        ```
        
     1. Determine the IMS Pod being used to customize the image
