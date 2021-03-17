@@ -243,6 +243,10 @@ be installed where the tests are running, such as on a master node.
     Total Duration: 1.304s
     Count: 15, Failed: 0, Skipped: 0
     ```
+Note: The Goss test 'uans_same_in_sls_and_hsm' gives a false positive failure. Re-run 
+the underlying script ./tests/goss/scripts/uan_preflight_same_in_sls_and_hsm.py 
+to see whether it produces errors or not. If there are errors, address them. If the 
+test passes, there is no issue.
 
 Alternatively, perform each of the following checks manually.
 
