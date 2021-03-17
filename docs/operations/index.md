@@ -18,6 +18,7 @@ required to properly configure and boot User Access Nodes (UAN).
 * [Preparing UAN Boot Session Templates](#bostemplate)
 * [Booting UAN Nodes](#bootuan)
 * [Slingshot Diagnostics](#slingshotdiags)
+* [NSCD Enablement](#nscd)
 
 ---
 
@@ -139,6 +140,58 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
     1 file changed, 1 insertion(+)
     create mode 100644 group_vars/Application/vars.yml
    ```
+
+1. Mountain cabinet support
+
+   ***WORKAROUND FOR MOUNTAIN CABINET SUPPORT (CASMCMS-6886)***
+
+   There may be a mismatch in the naming of the Mountain Node Management Network in the
+   System Layout Service versus what the `uan_interfaces` configuration role is expecting.  The
+   following steps should be followed if the system has Mountain Cabinets.
+
+   1. Check SLS for the `MNMN` network name.  Perform the following commands on a management node.
+
+       ```bash
+       ncn-m001:~/ $ export TOKEN=$(curl -k -s -S -d grant_type=client_credentials -d client_id=admin-client -d client_secret=`kubectl get secrets admin-client-auth -o jsonpath='{.data.client-secret}' | base64 -d` https://api-gw-service-nmn.local/keycloak/realms/shasta/protocol/openid-connect/token | jq -r '.access_token')
+
+       ncn-m001:~/ $ curl -s -k -H "Authorization: Bearer ${TOKEN}" https://api_gw_service.local/apis/sls/v1/networks | jq | grep MNMN
+       ```
+
+   1. If a match is found for the `MNMN` network name in the previous step, nothing more needs to be done
+      to support Mountain cabinets.  
+      
+   1. If there was no match, follow these next steps to configure the `uan_interfaces`
+      role to work with the new name for `MNMN`.
+
+       1. Run the following command to determine the new name for the Mountain Node Management Network.
+
+           ```bash
+           ncn-m001:~/ $ curl -s -k -H "Authorization: Bearer ${TOKEN}" https://api_gw_service.local/apis/sls/v1/networks | grep Mountain -B1
+
+          "Name": "HMN_MTN",
+          "FullName": "Mountain Hardware Management Network",
+          --
+          "Name": "NMN_MTN",             # <-- this is the new name
+          "FullName": "Mountain Node Management Network",
+          ```
+
+    1. Edit `roles/uan_interfaces/tasks/main.yml` and change `MNMN` on line 36 to the value found in the
+       previous step.
+       (In this example, `NMN_MTN`)
+
+       ```bash
+       - name: Get Mountain NMN Services Network info from SLS
+         local_action:
+           module: uri
+           url: http://cray-sls/v1/search/networks?name=MNMN   # <-- change this line
+           method: GET
+         register: sls_mnmn_svcs
+         ignore_errors: yes
+
+       ### Stage and commit the change
+       ncn-m001:~/ $ git add group_vars/Application/vars.yml
+       ncn-m001:~/ $ git commit -m "Add Mountain cabinet support"
+       ```
 
 1. Obtain the password for the `crayvcs` user from the Kubernetes secret for use
    in the next command.
@@ -314,15 +367,15 @@ image.
    Application nodes, the customized image ID from the previous section, and
    the CFS configuration session name from the previous section.
 
-   **NOTE** The value for **ifmap=netX:nmn0** in the kernel_parameters string must be set accordingly
-            for the following UAN configurations.  It is normally going to be **ifmap=net2:nmn0** on UANs
-            that are also configured to use the CAN network.
-   - **ifmap=net0:nmn0**
+   **NOTE** The value for **ifmap=netX:nmn0,lan0:hsn0,lan1:hsn1** in the kernel_parameters string must be
+            set accordingly for the following UAN configurations.  It is normally going to be
+            **ifmap=net2:nmn0** on UANs that are also configured to use the CAN network.
+   - **ifmap=net0:nmn0,lan0:hsn0,lan1:hsn1**
      - HPE DL325 or DL385 Hardware:
        - A single OCP PCIe card is installed
      - Gigabyte Hardware
        - No additional PCIe cards installed other than the built-in LOM ports
-   - **ifmap=net2:nmn0**
+   - **ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1**
      - HPE DL325 or DL385 Hardware:
        - A second PCIe card installed regardless of whether it is being used
      - Gigabyte Hardware
@@ -455,3 +508,65 @@ If the user wishes to include the Slingshot Diagnosic package but also make
 modifications to the default image, the default image may be customized by
 using the procedure described in ***HPE Cray EX System Administration Guide***
 section ***11.4 Customize an Image Root Using IMS***.
+
+<a name="nscd"></a>
+## NSCD
+***WORKAROUND FOR NSCD NOT STARTING ON BOOT (CASMCMS-6886)***
+
+The `nscd` service is not currently enabled by default and `systemd` does not start it at boot time.
+There are two ways to start `nscd` on UAN nodes, manually starting or enabling the service
+in the UAN image.  While restarting `nscd` manually has to be performed each time the UAN is rebooted,
+enabling `nscd` in the image only has to be done once and all UANs that use the image will have `nscd`
+started automatically on boot.
+
+1. Manually starting `nscd` on the UAN node.
+
+    1. Log into the UAN
+
+    1. Start `nscd` using systemctl
+
+    ```bash
+    uan01~: systemctl start nscd
+    ```
+
+1. Enable `nscd` in the UAN image
+
+    1. Determine the ID of the image used by the UAN.  This can be found in the BOS session template used
+       to boot the UAN.  
+
+       ```bash
+       {
+          "boot_sets": {
+            "uan": {
+              "boot_ordinal": 2,
+              "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=340M hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell turbo_boost_limit=999 ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1 spire_join_token=${SPIRE_JOIN_TOKEN}",
+            "network": "nmn",
+            "node_list": [
+              # [ ... List of Application Nodes from cray hsm state command ...]
+            ],
+            "path": "s3://boot-images/<IMS image id>/manifest.json",  # <-- image ID is here
+            "rootfs_provider": "cpss3",
+            "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
+            "type": "s3"
+            }
+          },
+          "cfs": {
+            "configuration": "uan-config-@product_version@"
+          },
+          "enable_cfs": true,
+          "name": "uan-sessiontemplate-@product_version@"
+        }
+        ```
+
+     1. Use the *Customize an Image Root Using IMS* procedure in the *HPE Cray EX System Administration
+        Guide* to enable the `nscd` service in the image by running the following commands in the
+        image chroot.
+
+        ```bash
+        systemctl enable nscd.service
+
+        /tmp/images.sh
+        ```
+
+      1. Once you have the new resultant image ID from the previous step, use that ID in the BOS
+         session template and boot the UAN nodes.
