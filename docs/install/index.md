@@ -28,7 +28,11 @@ verifying the installation is successful.
     ncn-m001:~ $ tar zxf uan-@product_version@.tar.gz
     ncn-m001:~ $ cd uan-@product_version@/
     ```
-
+3. Apply the patch
+**`IMPORTANT`** Before proceeding refer to the "UAN Patch Assembly" section of the Shasta Install Guide 
+to apply any needed patch content for UAN. It is critical to perform these steps to ensure that the correct
+UAN release artifacts are deployed.
+ 
 <a name="offline"></a>
 ## Run the Installation Script (Offline/air-gapped Install)
 
