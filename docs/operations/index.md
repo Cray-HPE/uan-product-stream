@@ -27,6 +27,8 @@ required to properly configure and boot User Access Nodes (UAN).
 
 The overall workflow for preparing UAN images for boot is as follows:
 
+1. Generate a password hash for the root user and load it into the HashiCorp
+   vault. This password hash will be installed to the UAN nodes by CFS. 
 1. Clone the UAN configuration git repository and create a new branch based on
    the branch imported by the UAN installation.
 1. Update the configuration content and push the changes to the newly created
@@ -73,8 +75,33 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
 ```
 
 <a name="preboot"></a>
-## UAN Image Pre-boot Configuration
+## UAN Pre-boot Configuration
 
+1. Generate the password HASH for the root user. Replace `PASSWORD` with the root password you wish to
+   use.
+
+   ```bash
+   ncn-m001:~/ $ openssl passwd -6 -salt $(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c4) PASSWORD
+   ```
+1. Get the HashiCorp Vault root token:
+  
+   ```bash
+   ncn-m001:~/ $ kubectl get secrets -n vault cray-vault-unseal-keys -o jsonpath='{.data.vault-root}' | base64 -d; echo
+   ```
+
+1. Write the password HASH from step 1 to the HashiCorp Vault.  The `vault login` command will request a
+   token.  That token value is the output of step 2 above.  The `vault read secret/uan` is to verify the
+   HASH was stored correctly.  This password HASH will be written to the UAN for the root user by CFS.
+
+   ***NOTE***: It is important to enclose the HASH in single quotes to preserve any special characters.
+
+   ```bash
+   ncn-m001:~/ $ kubectl exec -itn vault cray-vault-0 -- sh
+   export VAULT_ADDR=http://cray-vault:8200
+   vault login
+   vault write secret/uan root_password='HASH'
+   vault read secret/uan
+   ```
 1. Clone the UAN configuration management repository. The repository is located
    in the VCS/Gitea service and the location is reported in the
    `cray-product-catalog` Kubernetes ConfigMap in the `configuration.clone_url`
