@@ -1,7 +1,7 @@
 Copyright 2021 Hewlett Packard Enterprise Development LP
 
 
-# UAN 2.0.1 Patch Upgrade Guide
+# UAN 2.0.2 Patch Upgrade Guide
 
 - [About](#about)
   - [Release-Specific Procedures](#release-specific-procedures)
@@ -24,7 +24,7 @@ standard Linux and associated tooling.
 Select procedures are annotated to indicate they are only applicable to
 specific Shasta patch releases.
 
-> **`WARNING:`** Follow this procedure only when upgrading to UAN 2.0.1.
+> **`WARNING:`** Follow this procedure only when upgrading to UAN 2.0.2.
 
 > **`WARNING:`** Follow this procedure only when upgrading from UAN 2.0.0.
 
@@ -34,7 +34,7 @@ specific Shasta patch releases.
 
 For convenience these procedures use the following environment variables:
 
-- `UAN_RELEASE` - The UAN release version, e.g., `2.0.1`.
+- `UAN_RELEASE` - The UAN release version, e.g., `2.0.2`.
 - `UAN_DISTDIR` - The directory of the _extracted_ UAN release distribution.
 
 
