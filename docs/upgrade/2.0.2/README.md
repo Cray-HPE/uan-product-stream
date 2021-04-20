@@ -176,6 +176,11 @@ Product Catalog, follow these steps to add the missing repository entry.
       <repository type="rpm-md" alias="SUSE-SLE-Module-Server-Applications-15-SP1-x86_64-Pool" priority="4" imageinclude="true">
         <source path="https://packages.local/repository/SUSE-SLE-Module-Server-Applications-15-SP1-x86_64-Pool/"/>
       </repository>
+
+      <!-- SUSE SLE15sp1 packages, Nexus repo -->
+      <repository type="rpm-md" alias="SUSE-SLE-Module-Server-Applications-15-SP1-x86_64-Updates" priority="4" imageinclude="true">
+        <source path="https://packages.local/repository/SUSE-SLE-Module-Server-Applications-15-SP1-x86_64-Updates/"/>
+      </repository>
       ```
 1. Package the new recipe and update the artifacts storage.
 
