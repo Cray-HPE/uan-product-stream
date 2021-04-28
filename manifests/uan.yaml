@@ -4,7 +4,7 @@ metadata:
 spec:
   charts:
   - name: cray-uan-install
-    version: 1.1.27-20210426151625+16dba76
+    version: 1.1.27
     namespace: services
     values:
       cray-import-config:
@@ -13,7 +13,7 @@ spec:
             tag: 0.0.4
         config_image:
           name: cray-uan-config
-          tag: 0.2.22-20210426151625_16dba76
+          tag: 0.2.22
         import_job:
           CF_IMPORT_PRODUCT_VERSION: "@product_version@"
       cray-import-kiwi-recipe-image:
@@ -22,7 +22,7 @@ spec:
             tag: 0.0.4
         import_image:
           name: cray-uan-image-recipe
-          tag: 0.2.22-20210426151626_16dba76
+          tag: 0.2.22
         import_job:
           name: "uan-image-recipe-import-@product_version@"
           PRODUCT_VERSION: "@product_version@"

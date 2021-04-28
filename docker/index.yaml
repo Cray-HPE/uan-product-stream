@@ -1,10 +1,9 @@
 arti.dev.cray.com:
   tls-verify: true
   images:
-    uan-docker-unstable-local/cray-uan-config:
-    - 0.2.22-20210426151625_16dba76
-    uan-docker-unstable-local/cray-uan-image-recipe:
-    - 0.2.22-20210426151626_16dba76
+    uan-docker-stable-local/cray-uan-config:
+    - 0.2.22
+    uan-docker-stable-local/cray-uan-image-recipe:
+    - 0.2.22
     csm-docker-stable-local/cray-product-catalog-update:
     - 0.2.0
-
