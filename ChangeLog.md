@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.0] - 2021-05-28
+## [2.1.0] - 2021-04-28
 - CASMUSER-2613: Update UAN to SLES15SP2
 - Added a Changelog
 - Switched references of dtr to arti

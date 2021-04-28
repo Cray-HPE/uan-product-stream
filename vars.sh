@@ -10,12 +10,12 @@ MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
 
 # For building and installing a master distribution, use 'master' here.
-UAN_RELEASE_VERSION=master
-UAN_RELEASE_PREFIX=dev
+#UAN_RELEASE_VERSION=master
+#UAN_RELEASE_PREFIX=dev
 
 # For building and installing a release distribution, use the DST Shasta release
 # here and comment above.
-#UAN_RELEASE_VERSION=shasta-1.4
-#UAN_RELEASE_PREFIX=release
+UAN_RELEASE_VERSION=shasta-1.5
+UAN_RELEASE_PREFIX=release
 
 BLOBLET_URL="http://dst.us.cray.com/dstrepo/bloblets/${NAME}/${UAN_RELEASE_PREFIX}/${UAN_RELEASE_VERSION}"
