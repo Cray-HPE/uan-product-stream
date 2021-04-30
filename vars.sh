@@ -15,7 +15,7 @@ PATCH=`./vendor/semver get patch ${VERSION}`
 
 # For building and installing a release distribution, use the DST Shasta release
 # here and comment above.
-UAN_RELEASE_VERSION=shasta-1.4
+UAN_RELEASE_VERSION=shasta-1.5
 UAN_RELEASE_PREFIX=release
 
 BLOBLET_URL="http://dst.us.cray.com/dstrepo/bloblets/${NAME}/${UAN_RELEASE_PREFIX}/${UAN_RELEASE_VERSION}"
