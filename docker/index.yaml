@@ -1,10 +1,9 @@
-dtr.dev.cray.com:
+arti.dev.cray.com:
   tls-verify: true
   images:
-    cray/cray-uan-config:
-    - 0.2.21
-    cray/cray-uan-image-recipe:
-    - 0.2.21
-    cray/cray-product-catalog-update:
-    - 0.0.4
-
+    uan-docker-stable-local/cray-uan-config:
+    - 0.2.22
+    uan-docker-stable-local/cray-uan-image-recipe:
+    - 0.2.22
+    csm-docker-stable-local/cray-product-catalog-update:
+    - 0.2.0

@@ -79,10 +79,10 @@ If the Cray EX system is configured for online installations, use this section.
        import_date: 2021-07-28 03:26:00.399670
        ssh_url: git@vcs.<shasta domain>:cray/uan-config-management.git
      images:
-       cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:
+       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:
          id: c880251d-b275-463f-8279-e6033f61578b
      recipes:
-       cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:
+       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:
          id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a
    ```
 
@@ -108,8 +108,8 @@ If the Cray EX system is configured for online installations, use this section.
 1. Verify that the UAN RPM repositories have been created in Nexus. Navigate to
    `https://nexus.<shasta domain>/#browse/browse` to view the list of
    repositories. Ensure that the following repositories are present:
-   * uan-2.0.0-sle-15sp1
-   * uan-2.0-sle-15sp1
+   * uan-2.1.0-sle-15sp2
+   * uan-2.1-sle-15sp2
 
    Alternatively, use the Nexus REST API to display the repositories prefixed
    with the name `uan`:
@@ -117,6 +117,6 @@ If the Cray EX system is configured for online installations, use this section.
    ```bash
    ncn-m001:~/ $ curl -s -k https://packages.local/service/rest/v1/repositories | jq -r '.[] | select(.name | startswith("uan")) | .name'
 
-   uan-2.0-sle-15sp1
-   uan-2.0.0-sle-15sp1
+   uan-2.1-sle-15sp2
+   uan-2.1.0-sle-15sp2
    ```
