@@ -2,9 +2,9 @@ dtr.dev.cray.com:
   tls-verify: true
   images:
     cray/cray-uan-config:
-    - 0.1.37-20210429213450+d24d4ba
+    - 0.1.37
     cray/cray-uan-image-recipe:
-    - 0.1.37-20210429213450+d24d4ba
+    - 0.1.37
     cray/cray-product-catalog-update:
     - 0.0.4
 
