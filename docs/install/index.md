@@ -79,10 +79,10 @@ If the Cray EX system is configured for online installations, use this section.
        import_date: 2021-07-28 03:26:00.399670
        ssh_url: git@vcs.<shasta domain>:cray/uan-config-management.git
      images:
-       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:
+       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24:
          id: c880251d-b275-463f-8279-e6033f61578b
      recipes:
-       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:
+       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24:
          id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a
    ```
 
