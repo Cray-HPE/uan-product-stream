@@ -1,4 +1,4 @@
 http://helmrepo.dev.cray.com:8080/:
   charts:
     cray-uan-install:
-    - 1.1.27
+    - 1.1.29

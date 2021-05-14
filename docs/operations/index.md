@@ -67,10 +67,10 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
     import_date: 2021-02-02 19:14:18.399670
     ssh_url: git@vcs.<domain>:cray/uan-config-management.git
   images:
-    cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:                       # <--- IMS image name
+    cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24:                       # <--- IMS image name
       id: c880251d-b275-463f-8279-e6033f61578b                         # <--- IMS image id
   recipes:
-    cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22:                       # <--- IMS recipe name
+    cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24:                       # <--- IMS recipe name
       id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a                         # <--- IMS recipe id
 ```
 
@@ -341,7 +341,7 @@ image.
        # kubectl logs -n services -f -c ansible-0 cfs-fa57cde4-d01e-4512-9687-1c0c7db28ea7-fwmxk # <--- Kubernetes pod ID
        ...
        PLAY RECAP *********************************************************************
-       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.22-ecozzi_cfs_uan-config-@product_version@ : ok=35   changed=21   unreachable=0    failed=0    skipped=103  rescued=0    ignored=0
+       cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24-ecozzi_cfs_uan-config-@product_version@ : ok=35   changed=21   unreachable=0    failed=0    skipped=103  rescued=0    ignored=0
        ```
        
     1. Determine the IMS Pod being used to customize the image
