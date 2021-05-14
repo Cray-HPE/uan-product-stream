@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.0] - 2021-04-28
+## [2.1.0] - 2021-05-14
+- CASMUSER-2608: Update site.yml and the uan recipe for GPU support
+- CASMUSER-2709: Fix builds to use master or stable correctly
+- CASMUSER-2709: Fix logic to find and replace ARTIFACT_BRANCH
+- CASMUSER-2692: Include goss and diagnostics package
 - CASMUSER-2613: Update UAN to SLES15SP2
 - Added a Changelog
 - Switched references of dtr to arti
