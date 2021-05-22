@@ -17,3 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update versions for sles15sp2 change
 - CASMUSER-2687: Add CDST GUI packages
 - CASMUSER-2613: Add some GPU packages that are present in the COS image
+- CASMUSER-2711: Modify the layout of container images to work with existing helm charts
+- CASMUSER-2711: Update release version to get the correct UAN rpms
+- CASMUSER-2714: Update Slingshot repo to 1.1
