@@ -38,10 +38,6 @@ and operational procedures for Cray EX User Access Nodes (UAN).
 1. [Advanced Topics](advanced/index.md)
 
     Topics:
-    * Building the UAN image using the Cray Image Management System (IMS)
-    * Customizing UANs Manually
-[comment]: <> (    * Debugging UAN configuration and booting issues)
-    * Building UAN images from recipes
     * Customizing UANs Manually
     * [Debugging UAN Booting Issues](advanced/debug_boot.md)
     * [Debugging UAN Configuration Issues](advanced/debug_config.md)
