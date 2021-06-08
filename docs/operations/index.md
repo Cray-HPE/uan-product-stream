@@ -13,6 +13,7 @@ required to properly configure and boot User Access Nodes (UAN).
 
 * [Overall Workflow](#workflow)
 * [UAN Product Catalog Entry](#catalog)
+* [Building the UAN image using the Cray Image Management System (IMS)](#buildrecipe)
 * [UAN Image Pre-boot Configuration](#preboot)
 * [Configuring UAN images](#imgconfiguration)
 * [Preparing UAN Boot Session Templates](#bostemplate)
@@ -27,6 +28,7 @@ required to properly configure and boot User Access Nodes (UAN).
 
 The overall workflow for preparing UAN images for boot is as follows:
 
+1. Build the UAN image from the provided recipe using IMS
 1. Generate a password hash for the root user and load it into the HashiCorp
    vault. This password hash will be installed to the UAN nodes by CFS. 
 1. Clone the UAN configuration git repository and create a new branch based on
@@ -73,6 +75,51 @@ ncn-m001:~ $ kubectl get cm -n services cray-product-catalog -o json | jq -r .da
     cray-shasta-uan-cos-sles15sp2.x86_64-0.2.24:                       # <--- IMS recipe name
       id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a                         # <--- IMS recipe id
 ```
+<a name="buildrecipe"></a>
+## Building the UAN image using the Cray Image Management System (IMS)
+
+The Cray EX User Access Node product installer automatically registers a recipe with the Cray Image Management System
+(IMS). This recipe can be used to (re-)build the UAN image following the instructions below.
+
+**NOTES**
+
+The Cray EX User Access Node (UAN) recipe currently requires rpms that are not installed with the UAN product. The UAN
+recipe can only be built after the Cray OS (COS) and Slingshot products are also installed on the system.  In future 
+releases of the UAN product, work will be undertaken to resolve these dependency issues.
+
+As the UAN relies on rpms not packaged with the UAN product, it is required that a new UAN image must be built from
+the provided recipe.
+
+1. Locate the UAN Image Recipe within the Cray Image Management System (IMS).
+
+    ```bash
+    ncn-m001:~/ $ cray ims recipes list --format json | jq '.[] | select(.name | contains("uan"))'
+    {
+      "created": "2021-02-17T15:19:48.549383+00:00",
+      "id": "4a5d1178-80ad-4151-af1b-bbe1480958d1",  <<-- Note this ID
+      "link": {
+        "etag": "3c3b292364f7739da966c9cdae096964",
+        "path": "s3://ims/recipes/4a5d1178-80ad-4151-af1b-bbe1480958d1/recipe.tar.gz",
+        "type": "s3"
+      },
+      "linux_distribution": "sles15",
+      "name": "cray-shasta-uan-cos-sles15sp2.x86_64-@product_version@",
+      "recipe_type": "kiwi-ng"
+    }
+   ```
+
+   If successful, create a variable for the IMS recipe `id` in the returned data.
+    ```bash
+    ncn-m001:~/ $ export IMS_RECIPE_ID=4a5d1178-80ad-4151-af1b-bbe1480958d1
+    ```
+
+1. Using the IMS_RECIPE_ID, follow the instuctions in the _Build an Image Using IMS REST Service_ section of the
+   _HPE Cray EX System Administraion Guide_ to build the UAN Image.
+
+1. Provided the UAN image build is successful, save the resultant image ID from IMS for later use.
+    ```bash
+    ncn-m001:~/ $ export IMS_RESULTANT_IMAGE_ID=2940faf4-e779-45ce-a047-fa7fb805e76a
+    ```
 
 <a name="preboot"></a>
 ## UAN Pre-boot Configuration
@@ -309,14 +356,15 @@ image.
 
 1. Create a CFS session to do pre-boot image customization of the UAN image.
 
-   Retrieve the image ID (stored in the Image Management Service (IMS)) from the
-   product catalog and the CFS configuration name from the previous step.
+   Retrieve the resultant image ID (stored in the Image Management Service (IMS)) created during the
+   [Building the UAN image using the Cray Image Management System (IMS)](#buildrecipe) procedure 
+   and the CFS configuration name from the previous step.
 
     ```bash
     ncn-m001:~/ $ cray cfs sessions create --name uan-config-@product_version@ \
                       --configuration-name uan-config-@product_version@ \
                       --target-definition image \
-                      --target-group Application <IMS image ID> \  # <--- from product catalog
+                      --target-group Application <IMS resultant image ID> \  # <--- from IMS after building the UAN recipe
                       --format json
 
     # <== output removed ==>
