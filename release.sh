@@ -81,8 +81,8 @@ function sync_repo_content {
     mkdir "${BUILDDIR}/docker/arti.dev.cray.com/cray"
     mv ${BUILDDIR}/docker/arti.dev.cray.com/csm-docker-stable-local/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
     mv ${BUILDDIR}/docker/arti.dev.cray.com/uan-docker-stable-local/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    rm "${BUILDDIR}/docker/arti.dev.cray.com/csm-docker-stable-local"
-    rm "${BUILDDIR}/docker/arti.dev.cray.com/uan-docker-stable-local"
+    rmdir "${BUILDDIR}/docker/arti.dev.cray.com/csm-docker-stable-local"
+    rmdir "${BUILDDIR}/docker/arti.dev.cray.com/uan-docker-stable-local"
 
     # sync uan repos from bloblet
     reposync "${BLOBLET_URL}/rpms/cray-sles15-sp1-ncn/" "${BUILDDIR}/rpms/cray-sles15-sp1-ncn/"
