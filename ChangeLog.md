@@ -20,3 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CASMUSER-2711: Modify the layout of container images to work with existing helm charts
 - CASMUSER-2711: Update release version to get the correct UAN rpms
 - CASMUSER-2714: Update Slingshot repo to 1.1
+- CASMUSER-2740: Update Slingshot repo to 1.2
+- CASMUSER-2742: Update Slingshot repo to 1.3
