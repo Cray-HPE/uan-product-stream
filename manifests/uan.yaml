@@ -10,7 +10,7 @@ spec:
       cray-import-config:
         catalog:
           image:
-            tag: 0.0.4
+            tag: 0.4.2
         config_image:
           name: cray-uan-config
           tag: 0.2.26
@@ -19,7 +19,7 @@ spec:
       cray-import-kiwi-recipe-image:
         catalog:
           image:
-            tag: 0.0.4
+            tag: 0.4.2
         import_image:
           name: cray-uan-image-recipe
           tag: 0.2.26

@@ -6,4 +6,4 @@ arti.dev.cray.com:
     uan-docker-stable-local/cray-uan-image-recipe:
     - 0.2.26
     csm-docker-stable-local/cray-product-catalog-update:
-    - 0.2.0
+    - 0.4.2
