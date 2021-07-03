@@ -1,0 +1,12 @@
+---
+title: Install Software
+---
+
+# Install 
+
+_include install_sw/prerequisites.md
+
+_include install_sw/overview.md
+
+_include install_sw/steps.md
+

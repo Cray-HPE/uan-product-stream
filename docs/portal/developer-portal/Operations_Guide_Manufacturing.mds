@@ -1,0 +1,11 @@
+---
+title: Manufacturing Operations Guide 
+---
+
+_include install_hw.md
+
+_include install_sw.md
+
+_include admin_sw.md
+
+_include taxonomy.md

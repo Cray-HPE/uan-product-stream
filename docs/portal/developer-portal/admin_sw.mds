@@ -1,0 +1,21 @@
+---
+title: Software Administration 
+---
+
+# Configuration
+
+_include admin/config.md
+
+---
+
+# Management
+
+_include admin/backup.md
+
+---
+
+# Security
+
+_include admin/secure.md
+
+---
