@@ -45,8 +45,8 @@ YAML_SRC = $(patsubst %.page.yaml,%.yaml,$(wildcard $(YAML)) )
 
 # Need dependency when .mds contains other mds's and add to clean
 
-Operations_Guide_Customer.md: taxonomy.md install_sw.md admin_sw.md
-Operations_Guide_Manufacturing.md: taxonomy.md install_sw.md install_hw.md admin_sw.md
+#Operations_Guide_Customer.md: taxonomy.md install_sw.md admin_sw.md
+#Operations_Guide_Manufacturing.md: taxonomy.md install_sw.md install_hw.md admin_sw.md
 
 MDOBJECTS = $(patsubst %.mds,%.md,$(MDS_SRC))
 
