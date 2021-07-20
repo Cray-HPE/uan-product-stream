@@ -10,21 +10,29 @@ Build or rebuild the UAN image using either the default UAN image or the default
 
     Build or rebuild the UAN image using either the default UAN image or image recipe. Both of these are supplied by the UAN product stream installer
 
-The Cray EX User Access Node \(UAN\) recipe currently requires the Slingshot Diagnostics package, which is not installed with the UAN product itself. Therefore, the UAN recipe can only be built after either the Slingshot product is installed, or the Slingshot Diagnostics package is removed from the recipe.
+The Cray EX User Access Node \(UAN\) recipe currently requires the Slingshot packages, which are not installed with the UAN product itself. Therefore, the UAN recipe can only be built after either the Slingshot product is installed, or after the Slingshot packages are removed from the recipe.
+
+UAN images built without the Slingshot packages are not able to mount Lustre filesystems. Therefore, the UANs that run those images are limited in usefulness.
 
 1. Determine if the Slingshot product stream is installed on the HPE Cray EX system.
 
-    The Slingshot Diagnostics RPM must be removed from the default recipe if the Slingshot product is not installed.
+    The Slingshot Diagnostics RPM and the following packages must be removed from the default recipe if the Slingshot product is not installed:
+    - slingshot-firmware-management
+    - slingshot-firmware-mellanox
+    - slingshot-utils
 
-2. Modify the default UAN recipe to remove the Slingshot diagnostic package. Skip this step if the Slingshot package is installed.
+2. Modify the default UAN recipe to remove the Slingshot packages. Skip this step if the Slingshot packages are not installed.
 
     1. Perform [Upload and Register an Image Recipe](Upload_and_Register_an_Image_Recipe.md) to download and extract the UAN image recipe, cray-sles15sp1-uan-cos, but stop before the step that modifies the recipe.
 
     2. Open the file config-template.xml.j2 within the recipe for editing and remove these lines:
 
-        ```bash
+        ```xml
          <!-- SECTION: Slingshot Diagnostic package -->
              <package name="cray-diags-fabric"/>
+             <package name="slingshot-firmware-management"/>
+             <package name="slingshot-firmware-mellanox"/>
+             <package name="slingshot-utils"/>
         ```
 
     3. Resume the procedure [Upload and Register an Image Recipe](Upload_and_Register_an_Image_Recipe.md), starting with the step that locates the directory that contains the Kiwi-NG image description files.

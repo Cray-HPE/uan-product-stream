@@ -34,58 +34,10 @@ Boot UANs using BOS.
     
     ```
 
-    The first attempt to reboot the UANs will most likely fail. The UAN boot may hang and the UAN console will look similar to the following:
-
-    ```bash
-    2021-03-19 01:32:41 dracut-initqueue[420]: DVS: node map generated.
-    2021-03-19 01:32:41 katlas: init_module: katlas loaded, currently disabled
-    2021-03-19 01:32:41
-    2021-03-19 01:32:41 DVS: Revision: kbuild Built: Mar 17 2021 @ 15:14:05 against LNet 2.12.4
-    2021-03-19 01:32:41 DVS debugfs: Revision: kbuild Built: Mar 17 2021 @ 15:14:05 against LNet 2.12.4
-    2021-03-19 01:32:41 dracut-initqueue[420]: DVS: loadDVS: successfully added 10 new nodes into map.
-    2021-03-19 01:32:41 ed dvsproc module.
-    2021-03-19 01:32:41 DVS: message size checks complete.
-    2021-03-19 01:32:41 dracut-initqueuedvs_thread_generator: Watching pool DVS-IPC_msg (id 0)
-    2021-03-19 01:32:41 [420]: DVS: loaded dvs module.
-    2021-03-19 01:32:41 dracut-initqueue[420]: mount is: /opt/cray/cps-utils/bin/cpsmount.sh -a api-gw-service-nmn.local -t dvs -T 300 -i nmn0 -e 3116cf653e84d265cf8da94956f34d9e-181 s3://boot-images/763213c7-3d5f-4f2f-9d8a-ac6086583f43/rootfs /tmp/cps
-    2021-03-19 01:32:41 dracut-initqueue[420]: 2021/03/19 01:31:01 cpsmount_helper Version: 1.0.0
-    2021-03-19 01:32:47 dracut-initqueue[420]: 2021/03/19 01:31:07 Adding content: s3://boot-images/763213c7-3d5f-4f2f-9d8a-ac6086583f43/rootfs 3116cf653e84d265cf8da94956f34d9e-181 dvs
-    2021-03-19 01:33:02 dracut-initqueue[420]: 2021/03/19 01:31:22 WARN: readyForMount=false type=dvs ready=0 total=2
-    2021-03-19 01:33:18 dracut-initqueue[420]: 2021/03/19 01:31:38 WARN: readyForMount=false type=dvs ready=0 total=2
-    2021-03-19 01:33:28 dracut-initqueue[420]: 2021/03/19 01:31:48 2 dvs servers [10.252.1.7 10.252.1.8]
-    ```
-
-    If this occurs, repeat the BOS command.
-
-2. Verify that the Day Zero patch was applied correctly during [Create UAN Boot Images](Create_UAN_Boot_Images.md). Skip this step if the patch has already been verified.
-
-    1. SSH into a newly-booted UAN.
-
-        ```bash
-        ncn-m001# ssh uan01-nmn
-        Last login: Wed Mar 17 19:10:12 2021 from 10.252.1.12
-        uan01# 
-        ```
-
-    2. Verify that the DVS RPM versions match what exists in the 1.4.0-p2/rpms directory.
-
-        ```bash
-        uan01# rpm -qa | grep 'cray-dvs.\*2\\.12' | sort
-        cray-dvs-compute-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64
-        cray-dvs-devel-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64
-        cray-dvs-kmp-cray_shasta_c-2.12_4.0.102_k4.12.14_197.78_9.1.58-7.0.1.0_8.1__g30d29e7a.x86_64
-        ```
-
-    3. Log out of the UAN.
-
-        ```bash
-        uan01# exit
-        ```
-
 3. Retrieve the BOS session ID from the output of the previous command.
 
     ```bash
-    ncn-m001# export BOS_SESSION=$(jq -r '.links[] | select(.rel=="session") |\
+    ncn-m001# export BOS_SESSION=$(jq -r '.links[] | select(.rel=="session") |
      .href' session.json | cut -d '/' -f4)
     ncn-m001# echo $BOS_SESSION
     89680d0a-3a6b-4569-a1a1-e275b71fce7d
@@ -94,7 +46,7 @@ Boot UANs using BOS.
 4. Retrieve the Boot Orchestration Agent \(BOA\) Kubernetes job name for the BOS session.
 
     ```bash
-    ncn-m001# BOA_JOB_NAME=$(cray bos session describe $BOS_SESSION --format json | jq -r .boa_job_name)
+    ncn-m001# BOA_JOB_NAME=$(cray bos session describe $BOS_SESSION --format json | jq -r .job)
     ```
 
 5. Retrieve the Kuberenetes pod name for the BOA assigned to run this session.

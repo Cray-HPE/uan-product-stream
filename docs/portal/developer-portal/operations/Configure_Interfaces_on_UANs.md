@@ -26,10 +26,10 @@ Set arbitrary network interfaces on UANs by editing a configuration file.
     ncn-w001# git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
     ```
 
-4. Change to the config-management directory.
+4. Change to the uan-config-management directory.
 
     ```bash
-    ncn-w001# cd config-management
+    ncn-w001# cd uanconfig-management
     ```
 
 5. Edit the host\_vars/<xname\>/customer\_net.yml file and configure the values as needed.

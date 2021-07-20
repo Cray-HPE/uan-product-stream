@@ -124,17 +124,17 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     **Warning:** Never place sensitive information such as passwords in the git repository.
 
-    The following example shows how to add a vars.yml file containing site-specific configuration values to the `Application` group variable location.
+    The following example shows how to add a vars.yml file containing site-specific configuration values to the `Application_UAN` group variable location.
 
     These and other Ansible files do not necessarily need to be modified for UAN image creation.
 
     ```bash
-    ncn-m001# vim group_vars/Application/vars.yml
-    ncn-m001# git add group_vars/Application/vars.yml
+    ncn-m001# vim group_vars/Application_UAN/vars.yml
+    ncn-m001# git add group_vars/Application_UAN/vars.yml
     ncn-m001# git commit -m "Add vars.yml customizations"
     [integration ecece54] Add vars.yml customizations
      1 file changed, 1 insertion(+)
-     create mode 100644 group_vars/Application/vars.yml
+     create mode 100644 group_vars/Application_UAN/vars.yml
     ```
 
 11. Verify that the System Layout Service \(SLS\) and the uan\_interfaces configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
@@ -185,9 +185,8 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process is initiating the Configuration Framework Service \(CFS\) to customize the image.
 
-14.
 
-    |CONFIGURE UAN IMAGES|
+    **CONFIGURE UAN IMAGES**
 
 15. Create a JSON input file for generating a CFS configuration for the UAN.
 
@@ -235,260 +234,13 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     }
     ```
 
-17. Modify the UAN image to include the 1.4.0 day zero rpms .
-
-    1. Untar the 1.4.0 Day Zero Patch tarball if it is not untarred already.
-
-        ```bash
-        ncn-m001# tar -xvf shasta-1.4.0-p2.tar
-        1.4.0-p2/
-        1.4.0-p2/csm/
-        1.4.0-p2/csm/csm-0.8.22-0.9.0.patch.gz
-        1.4.0-p2/csm/csm-0.8.22-0.9.0.patch.gz.md5sum
-        1.4.0-p2/uan/
-        1.4.0-p2/uan/uan-2.0.0-uan-2.0.0.patch.gz
-        1.4.0-p2/uan/uan-2.0.0-uan-2.0.0.patch.gz.md5sum
-        1.4.0-p2/rpms/
-        1.4.0-p2/rpms/cray-dvs-compute-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64.rpm
-        1.4.0-p2/rpms/cray-dvs-devel-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64.rpm
-        1.4.0-p2/rpms/cray-dvs-kmp-cray_shasta_c-2.12_4.0.102_k4.12.14_197.78_9.1.58-7.0.1.0_8.1__g30d29e7a.x86_64.rpm
-        1.4.0-p2/rpms/cray-network-config-1.1.7-20210318094806_b409053-sles15sp1.x86_64.rpm
-        1.4.0-p2/rpms/slingshot-network-config-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm
-        1.4.0-p2/rpms/slingshot-network-config-full-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm
-        1.4.0-p2/rpms/cray-dvs-compute-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64.rpm.md5sum
-        1.4.0-p2/rpms/cray-dvs-devel-2.12_4.0.102-7.0.1.0_8.1__g30d29e7a.x86_64.rpm.md5sum
-        1.4.0-p2/rpms/cray-dvs-kmp-cray_shasta_c-2.12_4.0.102_k4.12.14_197.78_9.1.58-7.0.1.0_8.1__g30d29e7a.x86_64.rpm.md5sum
-        1.4.0-p2/rpms/cray-network-config-1.1.7-20210318094806_b409053-sles15sp1.x86_64.rpm.md5sum
-        1.4.0-p2/rpms/slingshot-network-config-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm.md5sum
-        1.4.0-p2/rpms/slingshot-network-config-full-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm.md5sum
-        ```
-
-    2. Download the rootfs image specified in the UAN product catalog.
-
-        Replace IMAGE\_ID in the following export command with the IMS image id recorded in Step 1.
-
-        ```bash
-        ncn-m001# export UAN_IMAGE_ID=IMAGE_ID
-        ncn-m001# cray artifacts get boot-images ${UAN_IMAGE_ID}/rootfs \
-        ${UAN_IMAGE_ID}.squashfs
-        ncn-m001# la ${UAN_IMAGE_ID}.squashfs
-        -rw-r--r-- 1 root root 1.5G Mar 17 19:35 f3ba09d7-e3c2-4b80-9d86-0ee2c48c2214.squashfs
-        ```
-
-    3. Mount the squashfs file and copy its contents to a different directory.
-
-        ```bash
-        ncn-m001# mkdir mnt
-        ncn-m001# mount -t squashfs ${UAN_IMAGE_ID}.squashfs mnt -o ro,loop
-        ncn-m001# cp -a mnt UAN-1.4.0-day-zero
-        ncn-m001# umount mnt
-        ncn-m001# rmdir mnt
-        ```
-
-    4. Copy the new RPMs into the new image directory.
-
-        ```bash
-        ncn-m001# cp 1.4.0-p2/rpms/* UAN-1.4.0-day-zero/
-        ncn-m001# cd UAN-1.4.0-day-zero/
-        ```
-
-    5. Chroot into the new image directory.
-
-        ```bash
-        ncn-m001# chroot . bash
-        ```
-
-    6. Update, erase, and install RPMs in the new image directory.
-
-        ```bash
-        chroot-ncn-m001# rpm -Uv cray-dvs-*.rpm
-        chroot-ncn-m001# rpm -e cray-network-config
-        chroot-ncn-m001# rpm -e slingshot-network-config-full
-        chroot-ncn-m001# rpm -e slingshot-network-config
-        chroot-ncn-m001# rpm -iv slingshot-network-config-full-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm \ 
-        slingshot-network-config-1.1.7-20210318093253_83fab52-sles15sp1.x86_64.rpm \ 
-        cray-network-config-1.1.7-20210318094806_b409053-sles15sp1.x86_64.rpm
-        ```
-
-    7. Generate a new initrd to match the updated image by running the /tmp/images.sh script. Then wait for this script to complete before continuing.
-
-        ```bash
-        chroot-ncn-m001# /tmp/images.sh
-        ```
-
-        The output of this script will contain error messages. These error messages can be ignored as long as the message dracut: *** Creating initramfs image file appears at the end.
-
-    8. Copy the /boot/initrd and /boot/vmlinuz files out of the chroot environment and into a temporary location on the file system of the node.
-
-    9. Exit the chroot environment and delete the packages.
-
-        ```bash
-        chroot-ncn-m001# exit
-        exit
-        ncn-m001# rm *.rpm
-        ncn-m001# cd ..
-        ```
-
-    10. Verify that there is only one subdirectory in the lib/modules directory of the image.
-
-        The existence of more than one subdirectory indicates a mismatch between the kernel of the image and the DVS RPMS that were installed in the previous step.
-
-        ```bash
-        ncn-m001# la UAN-1.4.0-day-zero/lib/modules/
-        total 8.0K
-        drwxr-xr-x 3 root root   49 Feb 25 17:50 ./
-        drwxr-xr-x 8 root root 4.0K Feb 25 17:52 ../
-        drwxr-xr-x 6 root root 4.0K Mar 17 19:49 4.12.14-197.78_9.1.58-cray_shasta_c/  
-        ```
-
-    11. Resquash the new image directory.
-
-        ```bash
-        ncn-m001# mksquashfs UAN-1.4.0-day-zero UAN-1.4.0-day-zero.squashfs
-        Parallel mksquashfs: Using 64 processors
-        Creating 4.0 filesystem on UAN-1.4.0-day-zero.squashfs, block size 131072.
-        ...  
-        ```
-
-    12. Create a new IMS image registration and save the id field in an environment variable.
-
-        ```bash
-        ncn-m001# cray ims images create --name UAN-1.4.0-day-zero
-        name = "UAN-1.4.0-day-zero"
-        created = "2021-03-17T20:23:05.576754+00:00"
-        id = "ac31e971-f990-4b5f-821d-c0c18daefb6e"
-        ncn-m001# export NEW_IMAGE_ID=ac31e971-f990-4b5f-821d-c0c18daefb6e  
-        ```
-
-    13. Upload the new image, initrd, and kernel to S3 using the id from the previous step.
-
-        ```bash
-        ncn-m001# cray artifacts create boot-images ${NEW_IMAGE_ID}/rootfs \
-        UAN-1.4.0-day-zero.squashfs
-        artifact = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.rootfs"
-        Key = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.rootfs" 
-        ncn-m001# cray artifacts create boot-images ${NEW_IMAGE_ID}/initrd \
-        initrd
-        artifact = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.initrd"
-        Key = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.initrd" 
-        ncn-m001# cray artifacts create boot-images ${NEW_IMAGE_ID}/kernel \
-        vmlinuz
-        artifact = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.kernel"
-        Key = "ac31e971-f990-4b5f-821d-c0c18daefb6e/UAN-1.4.0-day-zero.kernel" 
-        ```
-
-    14. Obtain the md5sum of the squashfs image, initrd, and kernel.
-
-        ```bash
-        ncn-m001# md5sum UAN-1.4.0-day-zero.squashfs initrd vmlinuz
-        cb6a8934ad3c483e740c648238800e93  UAN-1.4.0-day-zero.squashfs
-        3fd8a72a49a409f70140fabe11bdac25  initrd
-        5edcf3fd42ab1eccfbf1e52008dac5b9  vmlinuz
-        ```
-
-    15. Use the image id from Step 1 to print out all the IMS details about the current UAN image.
-
-        ```bash
-        ncn-m001# cray ims images describe c880251d-b275-463f-8279-e6033f61578b
-        created = "2021-03-24T18:00:24.464755+00:00"
-        id = "c880251d-b275-463f-8279-e6033f61578b"
-        name = "cray-shasta-uan-cos-sles15sp1.x86_64-0.1.32"[link]
-        etag = "d4e09fb028d5d99e4a0d4d9b9d930e13"
-        path = "s3://boot-images/c880251d-b275-463f-8279-e6033f61578b/manifest.json"
-        type = "s3"
-        ```
-
-    16. Use the path of the manifest.json file to download that JSON to a local file. Omit everything before the image id in the cray artifacts get boot-images command, as shown in the following example.
-
-        ```bash
-        ncn-m001# cray artifacts get boot-images \
-        c880251d-b275-463f-8279-e6033f61578b/manifest.json uan-manifest.json
-        ncn-m001# cat uan-manifest.json
-        {
-            "artifacts": [
-                {
-                    "link": {
-                        "etag": "6d04c3a4546888ee740d7149eaecea68",
-                        "path": "s3://boot-images/c880251d-b275-463f-8279-e6033f61578b/rootfs",
-                        "type": "s3"
-                    },
-                    "md5": "a159b94238fc5bfe80045889226b33a3",
-                    "type": "application/vnd.cray.image.rootfs.squashfs"
-                },
-                {
-                    "link": {
-                        "etag": "6d04c3a4546888ee740d7149eaecea68",
-                        "path": "s3://boot-images/c880251d-b275-463f-8279-e6033f61578b/kernel",
-                        "type": "s3"
-                    },
-                    "md5": "175f0c1363c9e3a4840b08570a923bc5",
-                    "type": "application/vnd.cray.image.kernel"
-                },
-                {
-                    "link": {
-                        "etag": "6d04c3a4546888ee740d7149eaecea68",
-                        "path": "s3://boot-images/c880251d-b275-463f-8279-e6033f61578b/initrd",
-                        "type": "s3"
-                    },
-                    "md5": "0094629e4da25226c75b113760eeabf7",
-                    "type": "application/vnd.cray.image.initrd"
-                }
-            ],
-            "created" : "20210317153136",
-            "version": "1.0"
-        }
-        ```
-
-        Alternatively, a mainfest.json can be created from scratch. In that case, create a new hexadecimal value for the `etag` if the image referred to by the manifest does not already have one. The `etag` field can not be left blank.
-
-    17. Replace the path and md5 values of the initrd, kernel, and rootfs with the values obtained in substeps m and n.
-
-    18. Update the value for the `"created"` line in the manifest with the output of the following command:
-
-        ```bash
-        ncn-m001# date '+%Y%m%d%H%M%S'
-        ```
-
-    19. Verify that the modified JSON file is still valid.
-
-        ```bash
-        ncn-m001# cat manifest.json | jq
-        ```
-
-    20. Save the changes to the file.
-
-    21. Upload the updated manifest.json file.
-
-        ```bash
-        ncn-m001# cray artifacts create boot-images \
-        ${NEW_IMAGE_ID}/manifest.json uan-manifest.json
-        artifact = "ac31e971-f990-4b5f-821d-c0c18daefb6e/manifest.json"
-        Key = "ac31e971-f990-4b5f-821d-c0c18daefb6e/manifest.json"  
-        ```
-
-    22. Update the IMS image to use the new uan-manifest.json file.
-
-        ```bash
-        ncn-m001# cray ims images update ${NEW_IMAGE_ID} \
-        --link-type s3 --link-path s3://boot-images/${NEW_IMAGE_ID}/manifest.json \
-        --link-etag 6d04c3a4546888ee740d7149eaecea68
-        created = "2021-03-17T20:23:05.576754+00:00"
-        id = "ac31e971-f990-4b5f-821d-c0c18daefb6e"
-        name = "UAN-1.4.0-day-zero"
-         
-        [link]
-        etag = "6d04c3a4546888ee740d7149eaecea68"
-        path = "s3://boot-images/ac31e971-f990-4b5f-821d-c0c18daefb6e/manifest.json"
-        type = "s3"  
-        ```
-
 18. Create a CFS session to perform preboot image customization of the UAN image.
 
     ```bash
     ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
                       --configuration-name uan-config-PRODUCT_VERSION \
                       --target-definition image \
-                      --target-group Application $NEW_IMAGE_ID \
+                      --target-group Application_UAN \
                       --format json
     ```
 
