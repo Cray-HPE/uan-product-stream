@@ -1,21 +1,3 @@
-# Cray EX User Access Nodes Advanced Topics
-
-> version: @product_version@
->
-> build date: @date@
-
-This section describes advanced topics for installing and operating User
-Access Nodes (UAN) on Cray EX systems.
-
----
-
-## Contents
-
-* [Customizing UANs Manually](#customize)
-
----
-
-<a name="customize"></a>
 ## Customizing UAN Images Manually
 
 1. Locate the UAN Image you want to customize from the Cray Image Management System (IMS).
