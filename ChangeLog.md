@@ -23,3 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CASMUSER-2740: Update Slingshot repo to 1.2
 - CASMUSER-2742: Update Slingshot repo to 1.3
 - CASMUSER-2744: Update cray-product-catalog-update to latest version
+- CASMUSER-2745: Add single-request option to uan_interfaces
+- STP-2670: Restructure docs as Markdown
+- CASMUSER-2748: Fix recipe format for profiles and preferences to work with new kiwi-ng
