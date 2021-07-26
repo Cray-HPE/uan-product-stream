@@ -26,3 +26,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CASMUSER-2745: Add single-request option to uan_interfaces
 - STP-2670: Restructure docs as Markdown
 - CASMUSER-2748: Fix recipe format for profiles and preferences to work with new kiwi-ng
+- CASMUSER-2737: Run uan_ldap only during node configuration
