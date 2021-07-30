@@ -106,15 +106,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     Already up to date.
     ```
 
-9. Configure a root user in the UAN image by adding the encrypted password of the root user from /etc/shadow on an NCN worker to the file group\_vars/Application/passwd.yml. Skip this step if the root user is already configured in the image.
-
-    Hewlett Packard Enterprise recommends configuring a root user in the UAN image for troubleshooting purposes. The entry for root user password will resemble the following example:
-
-    ```bash
-    root_passwd: $6$LmQ/PlWlKixK$VL4ueaZ8YoKOV6yYMA9iH0gCl8F4C/3yC.jMIGfOK6F61h6d.iZ6/QB0NLyex1J7AtOsYvqeycmLj2fQcLjfE1
-    ```
-
-10. Apply any site-specific customizations and modifications to the Ansible configuration for the UAN nodes and commit the changes.
+9. Apply any site-specific customizations and modifications to the Ansible configuration for the UAN nodes and commit the changes.
 
     The default Ansible play to configure UAN nodes is site.yml in the base of the uan-config-management repository. The roles that are executed in this play allow for nondefault configuration as required for the system.
 
@@ -137,7 +129,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
      create mode 100644 group_vars/Application_UAN/vars.yml
     ```
 
-11. Verify that the System Layout Service \(SLS\) and the uan\_interfaces configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
+10. Verify that the System Layout Service \(SLS\) and the uan\_interfaces configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
 
     1. Edit the roles/uan\_interfaces/tasks/main.yml file and change the line that reads `url: http://cray-sls/v1/search/networks?name=MNMN` to read `url: http://cray-sls/v1/search/networks?name=NMN_MTN`.
 
@@ -160,7 +152,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
         ncn-m# git commit -m "Add Mountain cabinet support"
         ```
 
-12. Push the changes to the repository using the proper credentials, including the password obtained previously.
+11. Push the changes to the repository using the proper credentials, including the password obtained previously.
 
     ```bash
     ncn-m001# git push --set-upstream origin integration
@@ -173,7 +165,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
       Branch 'integration' set up to track remote branch 'integration' from 'origin'.
     ```
 
-13. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
+12. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
 
     ```bash
     ncn-m001# git rev-parse --verify HEAD
@@ -188,7 +180,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     **CONFIGURE UAN IMAGES**
 
-15. Create a JSON input file for generating a CFS configuration for the UAN.
+13. Create a JSON input file for generating a CFS configuration for the UAN.
 
     Gather the git repository clone URL, commit, and top-level play for each configuration layer \(that is, Cray product\). Add them to the CFS configuration for the UAN, if wanted.
 
@@ -212,7 +204,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     }
     ```
 
-16. Add the configuration to CFS using the JSON input file.
+14. Add the configuration to CFS using the JSON input file.
 
     In the following example, the JSON file created in the previous step is named uan-config-PRODUCT\_VERSION.json only the details for the UAN layer are shown.
 
@@ -234,17 +226,17 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     }
     ```
 
-18. Create a CFS session to perform preboot image customization of the UAN image.
+15. Create a CFS session to perform preboot image customization of the UAN image.
 
     ```bash
     ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
                       --configuration-name uan-config-PRODUCT_VERSION \
                       --target-definition image \
-                      --target-group Application_UAN \
+                      --target-group Application_UAN IMAGE_ID\
                       --format json
     ```
 
-19. Wait until the CFS configuration session for the image customization to complete. Then record the ID of the IMS image created by CFS.
+16. Wait until the CFS configuration session for the image customization to complete. Then record the ID of the IMS image created by CFS.
 
     The following command will produce output while the process is running. If the CFS session completes successfully, an IMS image ID will appear in the output.
 
@@ -252,9 +244,9 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     ncn-m001# cray cfs sessions describe uan-config-PRODUCT_VERSION --format json | jq
     ```
 
-20. |PREPARE UAN BOOT SESSION TEMPLATES|
+17. |PREPARE UAN BOOT SESSION TEMPLATES|
 
-21. Retrieve the xnames of the UAN nodes from the Hardware State Manager \(HSM\).
+18. Retrieve the xnames of the UAN nodes from the Hardware State Manager \(HSM\).
 
     These xnames are needed for Step 20.
 
@@ -266,7 +258,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     x3000c0s22b0n0
     ```
 
-22. Determine the correct value for the ifmap option in the `kernel_parameters` string for the type of UAN.
+19. Determine the correct value for the ifmap option in the `kernel_parameters` string for the type of UAN.
 
     - Use ifmap=net0:nmn0,lan0:hsn0,lan1:hsn1 if the UANs are:
         - Either HPE DL325 or DL385 server that have a single OCP PCIe card installed.
@@ -274,7 +266,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     - Use ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1 if the UANs are:
         - Either HPE DL325 or DL385 servers which have a second OCP PCIe card installed, regardless if it is being used or not.
         - Gigabyte servers that have a PCIe network card installed in addition to the built-in LOM ports, regardless if it is being used or not.
-23. Construct a JSON BOS boot session template for the UAN.
+20. Construct a JSON BOS boot session template for the UAN.
 
     1. Populate the template with the following information:
 
@@ -310,7 +302,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     3. Save the template with a descriptive name, such as uan-sessiontemplate-PRODUCT\_VERSION.json.
 
-24. Register the session template with BOS.
+21. Register the session template with BOS.
 
     The following command uses the JSON session template file to save a session template in BOS. This step allows administrators to boot UANs by referring to the session template name.
 
