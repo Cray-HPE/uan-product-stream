@@ -121,3 +121,18 @@ Before the UAN product can be installed on HPE UANs, specific network interface 
             NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv6)
             ------------------------- 
     ```
+
+8. Ensure that the time is set correctly. If the time is not set correctly, PXE booting issues may occur.
+
+    ```bash
+    -----------------------
+            System Utilities
+
+            System Information > Summary
+
+            System Name                                       HPE ProLiant DL385 Gen10 Plus
+            ...lines omitted...
+
+            Date and Time                                     2021-08-09T12:59:45-34:07
+            ------------------------- 
+    ```
