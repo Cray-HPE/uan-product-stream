@@ -226,6 +226,13 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     }
     ```
 
+   The UAN layer must be first as it configures the network interfaces that may be required by subsequent layers. When other products are added to the CFS configuration used to boot UANs, the suggested order of the layers would be:
+   1. UAN
+   2. CPE (Cray Programming Environment)
+   3. Workload Manager (Either Slurm or PBS Pro)
+   4. Analytics
+   5. customer
+
 15. Create a CFS session to perform preboot image customization of the UAN image.
 
     ```bash
