@@ -114,7 +114,7 @@ swap_dd_command: "/usr/bin/dd if=/dev/zero of={{ uan_swap }}/{{ swap_file }} bs=
 Value to set the swapiness in sysctl.
 
 ```yaml
-swap_swappiness: 10
+swap_swappiness: "10"
 ```
 
 #### Dependencies
