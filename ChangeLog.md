@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- CASMTRIAGE-1878: Use the updated default CAN alias in SLS as configured by csi
+- CASMTRIAGE-1870: Fix kdump with packages required by COS
+- CASMTRIAGE-1875: Set swappiness value to a string
+- CASMTRIAGE-1872: Add steps to set the BIOS EFITIME and troubleshoot x509 cert issues.
+- CASMTRIAGE-1854: Add suggestion on the ordering of CFS layers
+
+## [2.1.1] - 2021-07-30
+- CASMUSER-2737: uan_ldap runs only at node configuration and pick up other changes including Slingshot repo 1.3
 
 ## [2.1.0] - 2021-05-14
 - CASMUSER-2608: Update site.yml and the uan recipe for GPU support

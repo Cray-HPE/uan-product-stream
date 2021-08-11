@@ -14,13 +14,15 @@ Before the UAN product can be installed on Gigabyte UANs, specific network inter
 
 5. Ensure that the Boot mode select is set to `[UEFI]`.
 
-6. Select **Save & Exit** to save the settings.
+6. Confirm that the time is set correctly. If the time is not accurate, correct it now to prevent issues PXE booting.
 
-7. Select **Yes** to confirm and press the **Enter** key.
+7. Select **Save & Exit** to save the settings.
+
+8. Select **Yes** to confirm and press the **Enter** key.
 
     The UAN will reboot.
 
-8. **Optional:**Run the following IPMI commands if the BIOS settings do not persist.
+9. **Optional:**Run the following IPMI commands if the BIOS settings do not persist.
 
     In these example commands, the BMC of the UAN is x3000c0s27b0. Replace USERNAME and PASSWORD with username and password of the BMC of the UAN. These commands do the following:
 
