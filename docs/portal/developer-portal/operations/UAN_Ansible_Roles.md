@@ -149,7 +149,7 @@ Available variables are listed below, along with default values (see defaults/ma
 ##### `uan_can_setup`
 
 `uan_can_setup` configures the Customer Access Network (CAN) on UAN nodes. If
-this value is falsey no CAN is configured on the nodes.
+this value is false no CAN is configured on the nodes.
 
 ```yaml
 uan_can_setup: no
@@ -189,7 +189,7 @@ sls_can_name: "CAN"
 
 ##### `customer_uan_interfaces`
 
-`customer_uan_interfaces` is as list of interface names used for constructing
+`customer_uan_interfaces` is a list of interface names used for constructing
 `ifcfg-<customer_uan_interfaces.name>` files. Define ifcfg fields for each
 interface here. Field names are converted to uppercase in the generated
 `ifcfg-<name>` file(s).
@@ -217,7 +217,7 @@ customer_uan_interfaces:
 
 ##### `customer_uan_routes`
 
-`customer_uan_routes` is as list of interface routes used for constructing
+`customer_uan_routes` is a list of interface routes used for constructing
 `ifroute-<customer_uan_routes.name>` files.
 
 ```yaml
@@ -237,7 +237,7 @@ customer_uan_routes:
 
 ##### `customer_uan_rules`
 
-`customer_uan_rules` is as list of interface rules used for constructing
+`customer_uan_rules` is a list of interface rules used for constructing
 `ifrule-<customer_uan_routes.name>` files.
 
 ```yaml
