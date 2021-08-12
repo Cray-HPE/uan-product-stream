@@ -70,3 +70,12 @@ uan# systemctl status cfs-state-reporter
    Active: inactive (dead) since Wed 2021-02-24 14:29:51 CST; 19h ago
  Main PID: 3827 (code=exited, status=0/SUCCESS)
 ```
+
+There may be errors related to failing to load kernel modules during the boot:
+
+```bash
+FAILED Failed to start Load Kernel Modules.
+See 'systemctl status systemd-modules-load.service' for details.
+```
+
+Provided the UAN boots and completes post boot customizations, these messages may be ignored.
