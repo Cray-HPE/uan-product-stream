@@ -1,6 +1,6 @@
 ## Configure the BIOS of a Gigabyte UAN
 
-Configure the network interface and boot settings required by Gigabyte UANs.
+Perform this procedure to configure the network interface and boot settings required by Gigabyte UANs.
 
 Before the UAN product can be installed on Gigabyte UANs, specific network interface and boot settings must be configured in the BIOS.
 
@@ -12,9 +12,11 @@ Before the UAN product can be installed on Gigabyte UANs, specific network inter
 
 4. Set all other **Boot Option** fields to `Disabled`.
 
-5. Ensure that the Boot mode select is set to `[UEFI]`.
+5. Ensure that the boot mode is set to `[UEFI]`.
 
-6. Confirm that the time is set correctly. If the time is not accurate, correct it now to prevent issues PXE booting.
+6. Confirm that the time is set correctly. If the time is not accurate, correct it now.
+
+   Incorrect time will cause PXE booting issues.
 
 7. Select **Save & Exit** to save the settings.
 
@@ -22,18 +24,19 @@ Before the UAN product can be installed on Gigabyte UANs, specific network inter
 
     The UAN will reboot.
 
-9. **Optional:**Run the following IPMI commands if the BIOS settings do not persist.
+9. **Optional:** Run the following IPMI commands if the BIOS settings do not persist.
 
     In these example commands, the BMC of the UAN is x3000c0s27b0. Replace USERNAME and PASSWORD with username and password of the BMC of the UAN. These commands do the following:
 
-    1. Power off the node
-    2. Perform a reset.
-    3. Set the PXE boot in the options.
-    4. Power on the node
+    - Power off the node
+    - Perform a reset.
+    - Set the PXE boot in the options.
+    - Power on the node
 
     ```bash
     ncn-m001# ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power off
     ncn-m001# ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 mc reset cold
-    ncn-m001# ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 chassis bootdev pxe options=efiboot,persistent
+    ncn-m001# ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 chassis bootdev pxe \
+    options=efiboot,persistent
     ncn-m001# ipmitool -I lanplus -U *** -P *** -H x3000c0s27b0 power on
     ```

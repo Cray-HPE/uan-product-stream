@@ -1,19 +1,11 @@
 
 ## Configure Pluggable Authentication Modules \(PAM\) on UANs
 
-Use CFS and Git to configure PAM on UANs.
+Perform this procedure to configure PAM on UANs. This enables dynamic authentication support for system services.
 
-- The Cray command line interface \(CLI\) tool is initialized and configured on the system. See "Configure the Cray Command Line Interface \(CLI\)" in the *HPE Cray EX System Administration Guide S-8001* for more information.
+Intialize and configure the Cray command line interface \(CLI\) tool on the system. See "Configure the Cray Command Line Interface \(CLI\)" in the CSM documentation for more information.
 
-- **OBJECTIVE**
-
-    Set up a PAM configuration on User Access Nodes \(UANs\).
-
-- **ADMIN IMPACT**
-
-    Configuring PAM on UANs will enable dynamic authentication support for system services.
-
-1. Verify the Version Control Service \(VCS\) is running.
+1. Verify that the Gitea Version Control Service \(VCS\) is running.
 
     ```bash
     ncn-m001# kubectl get pods --all-namespaces | grep vcs
@@ -25,18 +17,17 @@ Use CFS and Git to configure PAM on UANs.
 
     ```bash
     ncn-m001# kubectl get secret -n services vcs-user-credentials \
-    --template={{.data.vcs_password}} | base64 --decode
+     --template={{.data.vcs_password}} | base64 --decode
     ```
 
-    These credentials can be modified in the vcs\_user role prior to installation or can be modified after logging in.
+    These credentials can be modified in the `vcs_user` role prior to installation or can be modified after logging in.
 
 3. Use an external web browser to verify the Ansible plays are available on the system.
 
     The URL will take on the following format:
 
-    ```bash
-    https://api.SYSTEM-NAME_DOMAIN-NAME/vcs
-    ```
+    https://api.SYSTEM-NAME.DOMAIN-NAME/vcs
+
 
 4. Clone the system Version Control Service \(VCS\) repository to a directory on the system.
 
@@ -44,7 +35,7 @@ Use CFS and Git to configure PAM on UANs.
     ncn-w001# git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
     ```
 
-5. Change to the uan-config-management directory.
+5. Change to the `uan-config-management` directory.
 
     ```bash
     ncn-w001# cd uan-config-management
@@ -52,14 +43,14 @@ Use CFS and Git to configure PAM on UANs.
 
 6. Make a new directory for the PAM configuration.
 
-    - Create a group\_vars/all directory if making changes to all UANs.
+    a. Create a `group_vars/all` directory if making changes to all UANs.
 
         ```bash
         ncn-w001# mkdir -p group_vars/all
         ncn-w001# cd group_vars/all
         ```
 
-    - Create a host\_vars/XNAME directory if the change is node specific.
+    b. Create a `host_vars/XNAME` directory if the change is node specific.
 
         ```bash
         ncn-w001# mkdir -p host_vars/XNAME
@@ -68,7 +59,7 @@ Use CFS and Git to configure PAM on UANs.
 
 7. Configure PAM.
 
-    The path is defaulted to /etc/pam.d/, so only the module file name is required.
+    The default path is `/etc/pam.d/`, so only the module file name is required.
 
     ```bash
     # vi pam.yml
@@ -83,7 +74,7 @@ Use CFS and Git to configure PAM on UANs.
           - "add this line to another_pam_module_file_name"
     ```
 
-    The following is an example of adding the line "account required pam\_access.so" to the /etc/pam.d/common-account PAM file. The \\t is used to place a tab between "account required" and "pam\_access.so" to match the formatting of the common-account file contents. The quotes are required in the strings used in the "lines" filed.
+    The following is an example of adding the line `"account required pam\_access.so"` to the `/etc/pam.d/common-account` PAM file. The \\t is used to place a tab between `account required` and `pam\_access.so` to match the formatting of the common-account file contents. The quotes are required in the strings used in the `lines` filed.
 
     ```bash
     ---
@@ -119,12 +110,12 @@ Use CFS and Git to configure PAM on UANs.
     ncn-w001# git push
     ```
 
-    If prompted, use the provided Gitea login credentials.
+    If prompted, use the Gitea login credentials.
 
 11. Reboot the UAN\(s\) with the Boot Orchestration Service \(BOS\).
 
     ```bash
     ncn-w001# cray bos session create \
-    --template-uuid UAN_SESSION_TEMPLATE --operation reboot
+     --template-uuid UAN_SESSION_TEMPLATE --operation reboot
     ```
 

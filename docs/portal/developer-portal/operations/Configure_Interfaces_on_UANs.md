@@ -1,21 +1,19 @@
 
 ## Configure Interfaces on UANs
 
-Set arbitrary network interfaces on UANs by editing a configuration file.
+Perform this procedure to set network interfaces on UANs by editing a configuration file.
 
-- **OBJECTIVE**
+The Customer Access Network \(CAN\) is no longer setup by default as the networking connection to the site user access network. The default is now for sites to directly connect their user network to the User Access Node \(UAN\) or Application nodes, and to define that network configuration in the Configuration Framework Service \(CFS\) `host_vars/XNAME/customer_net.yml` file.
 
-    The Customer Access Network \(CAN\) is no longer setup by default as the networking connection to the site user access network. The default is now for sites to directly connect their user network to the User Access Node \(UAN\) or Application nodes, and to define that network configuration in the Configuration Framework Service \(CFS\) host\_vars/<xname\>/customer\_net.yml file.
+Admins must create the `host_vars/XNAME/customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
 
-    Admins must create the host\_vars/<xname\>/customer\_net.yml file and use the variables described in this procedure to define the interfaces and routes.
-
-    If the HPE Cray EX CAN is required, customers must set uan\_can\_setup: yes in host\_vars/<xname\>/customer\_net.yml for each node they wish to use CAN, or in group\_vars/all/customer\_net.yml if they want the HPE Cray EX CAN on all UANs and Application nodes.
+If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAME/customer_net.yml` for each node that will use the CAN, or in `group_vars/all/customer_net.yml` to enable the HPE Cray EX CAN on all UANs and Application nodes.
 
 1. Obtain the password for the `crayvcs` user.
 
     ```bash
-    ncn-m001# kubectl get secret -n services vcs-user-credentials \\
-    --template=\{\{.data.vcs\_password\}\} \| base64 --decode
+    ncn-m001# kubectl get secret -n services vcs-user-credentials \
+     --template={{.data.vcs_password}} | base64 --decode
     ```
 
 2. Log in to ncn-w001.
@@ -26,13 +24,13 @@ Set arbitrary network interfaces on UANs by editing a configuration file.
     ncn-w001# git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
     ```
 
-4. Change to the uan-config-management directory.
+4. Change to the `uan-config-management` directory.
 
     ```bash
-    ncn-w001# cd uanconfig-management
+    ncn-w001# cd uan-config-management
     ```
 
-5. Edit the host\_vars/<xname\>/customer\_net.yml file and configure the values as needed.
+5. Edit the `host_vars/XNAME/customer_net.yml` file and configure the values as needed.
 
     To set up CAN:
 
@@ -167,7 +165,8 @@ Set arbitrary network interfaces on UANs by editing a configuration file.
 
     ```bash
     ncn-w001# cray bos v1 session create \
-    --template-uuid UAN_SESSION_TEMPLATE --operation reboot
+     --template-uuid UAN_SESSION_TEMPLATE --operation reboot
     ```
 
-Verify that the desired networking configuration is correct on each UAN after completed the steps in this procedure.
+10. Verify that the desired networking configuration is correct on each UAN.
+

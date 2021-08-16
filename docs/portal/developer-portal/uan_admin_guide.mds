@@ -30,7 +30,7 @@ _include operations/Mount_a_New_File_System_on_an_UAN.md
 
 # Advanced Administrative Tasks
 
-_include advanced/index.md
+_include advanced/Customizing_UAN_Images_Manually.md
 
 ---
 
