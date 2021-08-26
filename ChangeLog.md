@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CASMTRIAGE-1875: Set swappiness value to a string
 - CASMTRIAGE-1872: Add steps to set the BIOS EFITIME and troubleshoot x509 cert issues.
 - CASMTRIAGE-1854: Add suggestion on the ordering of CFS layers
+
 ## [2.1.1] - 2021-07-30
 - CASMUSER-2737: uan_ldap runs only at node configuration and pick up other changes including Slingshot repo 1.3
 
