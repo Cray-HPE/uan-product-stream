@@ -309,6 +309,43 @@ external_dns_options:
   - 'single-request'
 ```
 
+##### `uan_access_control`
+
+`uan_access_control` is a boolean variable to control whether non-root access control is enabled
+Default is `no`
+
+```yaml
+uan_access_control: no
+```
+
+##### `api_gateways`
+
+`api_gateways` is a list of API gateway DNS names to block non-user access
+
+```yaml
+api_gateways:
+  - "api-gw-service"
+  - "api-gw-service.local"
+  - "api-gw-service-nmn.local"
+  - "kubeapi-vip"
+```
+
+##### `api_gw_ports`
+
+`api_gw_ports` is a list of gateway ports to protect.
+
+```yaml
+api_gw_ports: "80,443,8081,8888"
+```
+
+##### `sls_url`
+
+`sls_url` is the SLS URL.
+
+```yaml
+sls_url: "http://cray-sls"
+```
+
 #### Dependencies
 
 
