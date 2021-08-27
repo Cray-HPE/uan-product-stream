@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.3] - 2021-08-27
 - STP-2762: Fix formatting and links in docs
+
 ## [2.1.2] - 2021-08-11
 - CASMTRIAGE-1878: Use the updated default CAN alias in SLS as configured by csi
 - CASMTRIAGE-1870: Fix kdump with packages required by COS
