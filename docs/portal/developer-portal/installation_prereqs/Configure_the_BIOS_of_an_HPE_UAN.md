@@ -1,10 +1,10 @@
 ## Configure the BIOS of an HPE UAN
 
-Configure the network interface and boot settings required by HPE UANs.
-
-[Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iLO.md)
+Perform this procedure to configure the network interface and boot settings required by HPE UANs.
 
 Before the UAN product can be installed on HPE UANs, specific network interface and boot settings must be configured in the BIOS.
+
+Perform [Configure the BMC for UANs with iLO](#configure_the_bmc_for_uans_with_ilo) before performing this procedure.
 
 1. Force a UAN to reboot into the BIOS.
 
@@ -31,65 +31,65 @@ Before the UAN product can be installed on HPE UANs, specific network interface 
     The settings must match the following example.
 
     ```bash
-    --------------------
-            System Configuration
+        --------------------
+        System Configuration
     
-            BIOS Platform Configuration (RBSU) > Network Options > Network Boot Options > PCIe Slot Network Boot
+        BIOS Platform Configuration (RBSU) > Network Options > Network Boot Options > PCIe Slot Network Boot
     
-            Slot 1 Port 1 : Marvell FastLinQ 41000 Series -   [Disabled]        
-            2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
+        Slot 1 Port 1 : Marvell FastLinQ 41000 Series -   [Disabled]        
+        2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
             
-            Slot 1 Port 2 : Marvell FastLinQ 41000 Series -   [Disabled]        
-            2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
+        Slot 1 Port 2 : Marvell FastLinQ 41000 Series -   [Disabled]        
+        2P 25GbE SFP28 QL41232HLCU-HC MD2 Adapter - NIC
             
-            Slot 2 Port 1 : Network Controller                [Disabled]       
-            OCP Slot 10 Port 1 : Marvell FastLinQ 41000       [Network Boot]    
-            Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
-            Adapter - NIC
+        Slot 2 Port 1 : Network Controller                [Disabled]       
+        OCP Slot 10 Port 1 : Marvell FastLinQ 41000       [Network Boot]    
+        Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
+        Adapter - NIC
             
-            OCP Slot 10 Port 2 : Marvell FastLinQ 41000       [Disabled]        
-            Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
-            Adapter - NIC
-            --------------------
+        OCP Slot 10 Port 2 : Marvell FastLinQ 41000       [Disabled]        
+        Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3
+        Adapter - NIC
+        --------------------
     ```
 
 5. Set the **Link Speed** to SmartAN for all ports.
 
     ```bash
-     --------------------
-            System Utilities
+        --------------------
+        System Utilities
     
-            System Configuration > Main Configuration Page > Port Level Configuration
+        System Configuration > Main Configuration Page > Port Level Configuration
     
-            Link Speed                                        [SmartAN]  
-            FEC Mode                                          [None]
-            Boot Mode                                         [PXE]
-            DCBX Protocol                                     [Dynamic]
-            RoCE Priority                                     [0]
-            PXE VLAN Mode                                     [Disabled]
-            Link Up Delay                                     [30]
-            Wake On LAN Mode                                  [Enabled]
-            RDMA Protocol Support                             [iWARP + RoCE]
-            BAR-2 Size                                        [8M]
-            VF BAR-2 Size                                     [256K]
-            ---------------------
+        Link Speed                                        [SmartAN]  
+        FEC Mode                                          [None]
+        Boot Mode                                         [PXE]
+        DCBX Protocol                                     [Dynamic]
+        RoCE Priority                                     [0]
+        PXE VLAN Mode                                     [Disabled]
+        Link Up Delay                                     [30]
+        Wake On LAN Mode                                  [Enabled]
+        RDMA Protocol Support                             [iWARP + RoCE]
+        BAR-2 Size                                        [8M]
+        VF BAR-2 Size                                     [256K]
+        ---------------------
     ```
 
 6. Set the boot options to match the following example.
 
     ```bash
      ----------------------
-            System Utilities
+    System Utilities
     
-            System Configuration > BIOS/Platform Configuration (RBSU) > Boot Options
+    System Configuration > BIOS/Platform Configuration (RBSU) > Boot Options
     
-            Boot Mode                                         [UEFI Mode]                    
-            UEFI Optimized Boot                               [Enabled]                      
-            Boot Order Policy                                 [Retry Boot Order Indefinitely]
+    Boot Mode                                         [UEFI Mode]                    
+    UEFI Optimized Boot                               [Enabled]                      
+    Boot Order Policy                                 [Retry Boot Order Indefinitely]
     
-            UEFI Boot Settings
-            Legacy BIOS Boot Order
-            -----------------------
+    UEFI Boot Settings
+    Legacy BIOS Boot Order
+    -----------------------
     ```
 
 7. Set the UEFI Boot Order settings to match the following example.
@@ -103,26 +103,28 @@ Before the UAN product can be installed on HPE UANs, specific network interface 
 
     ```bash
     -----------------------
-            System Utilities
+    System Utilities
     
-            System Configuration > BIOS/Platform Configuration (RBSU) > Boot Options > UEFI Boot Settings > UEFI Boot Order
+    System Configuration > BIOS/Platform Configuration (RBSU) > Boot Options > UEFI Boot Settings > UEFI Boot Order
     
-            Press the '+' key to move an entry higher in the boot list and the '-' key to move an entry lower
-            in the boot list. Use the arrow keys to navigate through the Boot Order list.
+    Press the '+' key to move an entry higher in the boot list and the '-' key to move an entry lower
+    in the boot list. Use the arrow keys to navigate through the Boot Order list.
     
-            Generic USB Boot
-            SATA Drive  Box 1 Bay 1 : VK000480GWTHA
-            SATA Drive  Box 1 Bay 2 : VK000480GWTHA
-            SATA Drive  Box 1 Bay 3 : VK001920GWTTC
-            SATA Drive  Box 1 Bay 4 : VK001920GWTTC
-            OCP Slot 10 Port 1 : Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter -
-            NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv4)
-            OCP Slot 10 Port 1 : Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter -
-            NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv6)
-            ------------------------- 
+    Generic USB Boot
+    SATA Drive  Box 1 Bay 1 : VK000480GWTHA
+    SATA Drive  Box 1 Bay 2 : VK000480GWTHA
+    SATA Drive  Box 1 Bay 3 : VK001920GWTTC
+    SATA Drive  Box 1 Bay 4 : VK001920GWTTC
+    OCP Slot 10 Port 1 : Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter -
+    NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv4)
+    OCP Slot 10 Port 1 : Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter -
+    NIC - Marvell FastLinQ 41000 Series - 2P 25GbE SFP28 QL41232HQCU-HC OCP3 Adapter - PXE (PXE IPv6)
+    ------------------------- 
     ```
 
-8. Ensure that the time is set correctly. If the time is not set correctly, PXE booting issues may occur.
+8. Ensure that the time is set correctly. 
+
+   If the time is not set correctly, PXE booting issues may occur.
 
     ```bash
     -----------------------

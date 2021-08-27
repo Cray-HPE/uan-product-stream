@@ -1,19 +1,13 @@
 
 ## Troubleshoot UAN Disk Configuration Issues
 
-UAN disk configuration will fail if the disk on the node is already partitioned. Manually erase any existing partitions to fix the issue.
+Perform this procedure to enable `uan_disk_config` to run successfully by erasing existing disk partitions. UAN disk configuration will fail if the disk on the node is already partitioned. Manually erase any existing partitions to fix the issue.
 
-Refer to [About UAN Configuration](About_UAN_Configuration.md) for an explanation of UAN disk configuration.
+This procedure currently only addresses `uan_disk_config` errors due to existing disk partitions.
 
-- **OBJECTIVE**
+Refer to [About UAN Configuration](#about_uan_configuration) for an explanation of UAN disk configuration.
 
-    Enable uan\_disk\_config to run successfully by erasing existing disk partitions.
-
-- **LIMITATIONS**
-
-    This procedure currently only addresses uan\_disk\_config errors due to existing disk partitions.
-
-The most common cause of failure in the uan\_disk\_config role is the disk having been previously configured without a /scratch and /swap partition. Existing partitions prevent the parted command from dividing the disk into those two equal partitions. The solution is to log into the node and run parted manually to remove the existing partitions on that disk.
+The most common cause of failure in the `uan_disk_config` role is the disk having been previously configured without a `/scratch` and `/swap` partition. Existing partitions prevent the `parted` command from dividing the disk into those two equal partitions. The solution is to log into the node and run `parted` manually to remove the existing partitions on that disk.
 
 1. Examine the CFS log and identify the failed disk device.
 
@@ -21,7 +15,7 @@ The most common cause of failure in the uan\_disk\_config role is the disk havin
 
 3. Use parted to manually remove any existing partitions.
 
-    The following example uses /dev/sdb as the disk device. Also, as partitions are removed, the remaining partitions are renumbered. Therefore, rm 1 is issued twice to remove both partitions.
+    The following example uses `/dev/sdb` as the disk device. Also, as partitions are removed, the remaining partitions are renumbered. Therefore, `rm 1` is issued twice to remove both partitions.
 
     ```bash
     uan# parted
@@ -53,4 +47,4 @@ The most common cause of failure in the uan\_disk\_config role is the disk havin
     uan01:~ #
     ```
 
-4. Either reboot the affected UAN or launch a CFS session against it to rerun the uan\_disk\_config role.
+4. Either reboot the affected UAN or launch a CFS session against it to rerun the `uan_disk_config` role.

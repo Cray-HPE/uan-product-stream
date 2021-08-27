@@ -20,7 +20,7 @@ half. ext4 filesystems are created on each partition.
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ##### `uan_require_disk`
 
@@ -118,12 +118,12 @@ swap_swappiness: "10"
 ```
 
 #### Dependencies
-------------
+
 
 `library/device_filter.py` is required to find eligible disk devices.
 
 #### Example Playbook
-----------------
+
 
 ```yaml
 - hosts: Application_UAN
@@ -144,7 +144,7 @@ None.
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ##### `uan_can_setup`
 
@@ -334,7 +334,7 @@ NSCD, pam-config, sssd.
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 `uan_ldap_setup` is a boolean variable to selectively skip the setup of LDAP on nodes it
 would otherwise be configured due to `uan_ldap_config` being defined.  The default setting
@@ -411,7 +411,7 @@ None.
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ```yaml
 uan_motd_content: []
@@ -452,7 +452,7 @@ Zypper must be installed.
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ```yaml
 uan_additional_sles15_packages: []
@@ -485,7 +485,7 @@ The root password hash has to be installed in HashiCorp Vault at `secret/uan roo
 
 #### Role Variables
 
-Available variables are listed below, along with default values (see defaults/main.yml):
+Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ##### `uan_vault_url`
 

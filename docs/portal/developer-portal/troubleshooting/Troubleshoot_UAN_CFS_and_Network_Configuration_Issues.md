@@ -3,11 +3,7 @@
 
 Examine the UAN CFS pod logs to help troubleshoot CFS and networking issues on UANs.
 
-Read [About UAN Configuration](About_UAN_Configuration.md)
-
-- **OBJECTIVE**
-
-    Obtain the information required to quickly troubleshoot UAN CFS and networking errors.
+Read [About UAN Configuration](#about_uan_configuration) before starting this procedure.
 
 1. Obtain the name of the CFS session that failed by running the following command on a management or worker NCN:
 
@@ -23,6 +19,6 @@ Read [About UAN Configuration](About_UAN_Configuration.md)
     ncn# kubectl -n services logs -f -c ansible-0 CFS_SESSION
     ```
 
-3. **Optional:**Troubleshoot uan\_interfaces issues by logging into the affected node \(usually with the conman console\) and using standard network debugging techniques.
+3. **Optional:** Troubleshoot `uan_interfaces` issues by logging into the affected node \(usually with the conman console\) and using standard network debugging techniques.
 
     NMN and CAN network setup errors can also result from incorrect switch configuration and network cabling.

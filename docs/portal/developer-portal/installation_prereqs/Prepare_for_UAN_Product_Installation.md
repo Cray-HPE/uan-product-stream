@@ -1,20 +1,12 @@
 ## Prepare for UAN Product Installation
 
-Before installing the UAN product on an HPE Cray EX superomputer, configure the UAN nodes. Then verify that the necessary software is installed.
+Perform this procedure to ready the HPE Cray EX supercomputer for UAN product installation.
 
-[Install and Configure the Cray Operating System \(COS\)](Install_and_Configure_the_Cray_Operating_System_COS.md)
-
-- **OBJECTIVE**
-
-    Make the HPE Cray EX supercomputer ready for UAN product installation.
-
-This section describes the prerequisites for installing the User Access Nodes \(UAN\) product on Cray EX systems.
+Install and configure the COS product before performing this procedure.
 
 **MANAGEMENT NETWORK SWITCH CONFIGURATION**
 
 1. Ensure that the management network switches are properly configured.
-
-    Refer to [Install the Management Network](Install_the_Management_Network.md).
 
 2. Ensure that the management network switches have the proper firmware.
 
@@ -28,20 +20,20 @@ This section describes the prerequisites for installing the User Access Nodes \(
 
 4. Configure the BMC of the UAN.
 
-    - Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iLO.md) if the UAN is a HPE server with an iLO.
+    - Perform [Configure the BMC for UANs with iLO](#configure_the_bmc_for_uans_with_ilo) if the UAN is a HPE server with an iLO.
 
 **BIOS CONFIGURATION**
 
 5. Configure the BIOS of the UAN.
 
-    - Perform [Configure the BIOS of an HPE UAN](Configure_the_BIOS_of_an_HPE_UAN.md) if the UAN is a HPE server with an iLO.
-    - Perform [Configure the BIOS of a Gigabyte UAN](Configure_the_BIOS_of_a_Gigabyte_UAN.md) if the UAN is a Gigabyte server.
+    - Perform [Configure the BIOS of an HPE UAN](#configure_the_bios_of_an_hpe_uan) if the UAN is a HPE server with an iLO.
+    - Perform [Configure the BIOS of a Gigabyte UAN](#configure_the_bios_of_a_gigabyte_uan) if the UAN is a Gigabyte server.
 
 **VERIFY UAN BMC FIRMWARE VERSION**
 
-6. Ensure the firmware for each UAN BMC meets the specifications.
+6. Verify that the firmware for each UAN BMC meets the specifications.
 
-    Use the System Admin Toolkit firmware command to check the current firmware version on a UAN node. Refer to [Node Firmware](Node_Firmware.md).
+    Use the System Admin Toolkit firmware command to check the current firmware version on a UAN node. Refer to [Node Firmware](#node_firmware).
 
     ```bash
     ncn-m001# sat firmware -x BMC_XNAME
@@ -51,9 +43,9 @@ This section describes the prerequisites for installing the User Access Nodes \(
 
 **VERIFY REQUIRED SOFTWARE FOR UAN INSTALLATION**
 
-8. Perform [Apply the UAN Patch](Apply_the_UAN_Patch.md) to apply any needed patch content for the UAN product.
+8. Perform [Apply the UAN Patch](#apply_the_uan_patch) to apply any needed patch content for the UAN product.
 
-    It is critical to perform this process to ensure that the correct UAN release artifacts are deployed.
+    This process must be performed to ensure that the correct UAN release artifacts are deployed.
 
 9. Unpackage the file.
 
@@ -79,7 +71,7 @@ This section describes the prerequisites for installing the User Access Nodes \(
     Count: 15, Failed: 0, Skipped: 0
     ```
 
-12. Run the ./tests/goss/scripts/uan\_preflight\_same\_in\_sls\_and\_hsm.py script if the previous step reports an error for the uans\_same\_in\_sls\_and\_hsm Goss test. Address any errors that are reported.
+12. Run the `./tests/goss/scripts/uan\_preflight\_same\_in\_sls\_and\_hsm.py` script if the previous step reports an error for the `uans_same_in_sls_and_hsm` Goss test. Address any errors that are reported.
 
     This script must be run rerun manually because this test produces erroneous failures otherwise.
 
@@ -102,7 +94,8 @@ This section describes the prerequisites for installing the User Access Nodes \(
         ncn-m001# which helm
         /usr/bin/helm
         ncn-m001# helm version
-        version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", GitTreeState:"clean", GoVersion:"go1.13.12"}
+        version.BuildInfo{Version:"v3.2.4", GitCommit:"0ad800ef43d3b826f31a5ad8dfbb4fe05d143688", 
+        GitTreeState:"clean", GoVersion:"go1.13.12"}
         ```
 
     3. Verify that the Cray System Management \(CSM\) software has been successfully installed and is running on the system.
@@ -114,10 +107,12 @@ This section describes the prerequisites for installing the User Access Nodes \(
         - cray-cfs-api
         - cray-cfs-operator
         - cray-ims
+        
         The following command checks that all these releases are present and have a status of deployed:
 
         ```bash
-        ncn-m001# helm ls -n services -f '^gitea$|cray-cfs-operator|cray-cfs-api|cray-ims|cray-product-catalog'\
+        ncn-m001# helm ls -n services -f \
+        '^gitea$|cray-cfs-operator|cray-cfs-api|cray-ims|cray-product-catalog'\
          -o json | jq -r '.[] | .status + " " + .name'
         deployed cray-cfs-api
         deployed cray-cfs-operator
@@ -126,14 +121,34 @@ This section describes the prerequisites for installing the User Access Nodes \(
         deployed gitea
         ```
 
-    4. Verify `cray-conman` is connected to compute nodes and UANs.
+    4. Ensure that the `cray-console-node` pods are connected to compute nodes and UANs so that they are monitored and their consoles are logged.
 
-        Sometimes the compute nodes an UAN are not up yet when `cray-conman` is initialized and will not be monitored yet. Verify that all nodes are being monitored for console logging or re-initialize `cray-conman` if needed.
+        a. Obtain a list of the xnames for all compute nodes and UANs.
 
-        Use kubectl to exec into the running `cray-conman` pod, then check the existing connections.
+        b. Obtain the `cray-console-operator` pod ID.
 
         ```bash
-        cray-conman-b69748645-qtfxj:/ # conman -q
+        ncn# CONPOD=$(kubectl get pods -n services \-o wide|grep cray-console-operator|awk '{print $1}')
+        ncn# echo $CONPOD
+        ```
+
+        c. Obtain the full pod name of the `cray-console-pod` that is connected to one of the UANs or compute nodes. Replace _`XNAME`_ with one of the xnames identified in substep a.
+
+        ```bash
+        ncn# NODEPOD=$(kubectl -n services exec $CONPOD -c cray-console-operator -- sh -c \
+        "/app/get-node XNAME" | jq .podname | sed 's/"//g')
+        ncn# echo $NODEPOD
+        ```
+        d. Log into the pod identified in the previous substep.
+
+        ```bash
+        ncn# kubectl exec -n services -it $NODEPOD -c cray-console-node -- bash
+        cray-console-node# 
+        ```
+        e. Search for the UAN and compute node xnames in the list of nodes monitored by that pod.
+
+        ```bash
+        cray-console-node# conman -q
         x9000c0s1b0n0
         x9000c0s20b0n0
         x9000c0s22b0n0
@@ -142,29 +157,7 @@ This section describes the prerequisites for installing the User Access Nodes \(
         x9000c0s27b2n0
         x9000c0s27b3n0
         ```
-
-        If the compute nodes and UANs are not included in the list of nodes being monitored, the `conman` process can be re-initialized by killing the conmand process.
-
-        ```bash
-        cray-conman-b69748645-qtfxj:/ # ps -ax | grep conmand
-             13 ?        Sl     0:45 conmand -F -v -c /etc/conman.conf
-          56704 pts/3    S+     0:00 grep conmand
-        cray-conman-b69748645-qtfxj:/ # kill 13
-        ```
-
-        This will regenerate the conman configuration file and restart the conmand process, and now include all nodes that are included in the state manager.
-
-        ```bash
-        cray-conman-b69748645-qtfxj:/ # conman -q
-        x9000c1s7b0n1
-        x9000c0s1b0n0
-        x9000c0s20b0n0
-        x9000c0s22b0n0
-        x9000c0s24b0n0
-        x9000c0s27b1n0
-        x9000c0s27b2n0
-        x9000c0s27b3n0
-        ```
+        f. Repeat substeps c through e for a UAN or compute node xname absent in the output of the previous command.  Repeat this process until all UAN and compute node xnames are confirmed to be monitored by a `cray-console-node` pod.
 
     5. Verify that the HPE Cray OS \(COS\) has been installed on the system.
 
@@ -183,7 +176,8 @@ This section describes the prerequisites for installing the User Access Nodes \(
         ncn-m001# kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers
         ncn-w001
         ncn-w002
-        ncn-m001# for node in `kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" --no-headers`; do
+        ncn-m001# for node in `kubectl get nodes -l cps-pm-node=True -o custom-columns=":metadata.name" \
+        --no-headers`; do
         ssh $node "lsmod | grep '^dvs '"
         done
         ncn-w001
@@ -192,4 +186,4 @@ This section describes the prerequisites for installing the User Access Nodes \(
 
         More nodes or a different set of nodes may be displayed.
 
-Next, install the UAN product by peforming the procedure [Install the UAN Product Stream](Install_the_UAN_Product_Stream.md).
+Next, install the UAN product by peforming the procedure [Install the UAN Product Stream](#install_the_uan_product_stream).
