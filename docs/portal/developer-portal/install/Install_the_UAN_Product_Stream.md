@@ -1,13 +1,11 @@
 ## Install the UAN Product Stream
 
-Install the User Access Nodes \(UAN\) product and then verify the installation.
+This procedure installs the User Access Nodes \(UAN\) product on a system so that UAN boot images can be created.
 
-- The Cray command line interface \(CLI\) tool is initialized and configured on the system. See "Configure the Cray Command Line Interface \(CLI\)" in the CSM documentation for more information.
-- [Prepare for UAN Product Installation](Prepare_for_UAN_Product_Installation.md)
+Before performing this procedure:
 
-- **OBJECTIVE**
-
-    Install the User Access Nodes \(UAN\) product on a system so that UAN boot images can be created.
+- Initialize and configure the Cray command line interface \(CLI\) tool. See "Configure the Cray Command Line Interface \(CLI\)" in the CSM documentation for more information.
+- Perform [Prepare for UAN Product Installation](#prepare_for_uan_product_installation)
 
 Replace PRODUCT\_VERSION in the example commands with the UAN product stream string \(2.0.0 for example\). Replace CRAY\_EX\_DOMAIN in the example commands with the FQDN of the HPE Cray EX.
 
@@ -36,9 +34,9 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
 
 **VERIFY THE INSTALLATION**
 
-3. Verify that the UAN configuration, images, and recipes have been imported and added to the cray-product-catalog ConfigMap in the Kubernetes `services` namespace.
+3. Verify that the UAN configuration, images, and recipes were imported and added to the `cray-product-catalog` ConfigMap in the Kubernetes `services` namespace.
 
-    1. Run the following command and verify that the output contains an entry for the PRODUCT\_VERSION that was installed in the previous steps:
+    a. Run the following command and verify that the output contains an entry for the PRODUCT\_VERSION that was installed in the previous steps:
 
         The following command may return more than one version of the UAN product if previous versions have been installed.
 
@@ -59,30 +57,31 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
                  id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a
         ```
 
-    2. Verify that the configuration, images, and recipes sections for the installed product version contain information similar to the example output in the previous command.
+    b. Verify that the configuration, images, and recipes sections for the installed product version contain information similar to the example output in the previous command.
 
-    3. Check the Kubernetes jobs responsible for importing the configuration, image, and recipe content if the command does not show content for the UAN product version that was installed.
+    c. Check the Kubernetes jobs responsible for importing the configuration, image, and recipe content if the command does not show content for the UAN product version that was installed.
 
-        A STATUS of Completed indicates that the Kubernetes jobs completed successfully.
+        A STATUS of "Completed" indicates that the Kubernetes jobs completed successfully.
 
         ```bash
-        ncn-m001# kubectl get pods -n services -l job-name=uan-config-import-@product_version@
+        ncn-m001# kubectl get pods -n services -l job-name=uan-config-import-PRODUCT_VERSION
         NAME                             READY   STATUS      RESTARTS   AGE
         uan-config-import-@product_version@-gsvrc   0/3     Completed   0          5m
-        ncn-m001# kubectl get pods -n services -l job-name=uan-image-recipe-import-@product_version@
+        ncn-m001# kubectl get pods -n services -l job-name=uan-image-recipe-import-PRODUCT_VERSION
         NAME                                   READY   STATUS      RESTARTS   AGE
         uan-image-recipe-import-@product_version@-2fvr7   0/3     Completed   0          6m
         ```
 
 4. Verify that the UAN RPM repositories have been created in Nexus using either of the following methods:
 
-    - Navigate to https://nexus.CRAY\_EX\_DOMAIN/\#browse/browse in a web browser to view the list of repositories. Ensure that the following repositories are present:
-        - uan-2.0.0-sle-15sp1
-        - uan-2.0-sle-15sp1
+    - Navigate to https://nexus.CRAY\_EX\_DOMAIN/\#browse/browse in a web browser to view the list of repositories and verify that the following repositories are present:
+        - `uan-2.0.0-sle-15sp1`
+        - `uan-2.0-sle-15sp1`
     - Query Nexus through its REST API to display the repositories prefixed with the name uan:
 
         ```bash
-        ncn-m001# curl -s -k https://packages.local/service/rest/v1/repositories | jq -r '.[] | select(.name | startswith("uan")) | .name'
+        ncn-m001# curl -s -k https://packages.local/service/rest/v1/repositories | jq -r '.[] | \
+        select(.name | startswith("uan")) | .name'
         uan-2.0-sle-15sp1
         uan-2.0.0-sle-15sp1
         ```
@@ -93,4 +92,4 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     # exit
     ```
 
-Perform [Apply UAN Upgrade Patch](Apply_UAN_Upgrade_Patch.md)
+6. Perform [Apply UAN Upgrade Patch](#apply_uan_upgrade_patch)

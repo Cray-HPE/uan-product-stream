@@ -12,8 +12,6 @@ _include installation_prereqs/Configure_the_BIOS_of_an_HPE_UAN.md
 
 _include installation_prereqs/Configure_the_BIOS_of_a_Gigabyte_UAN.md
 
-_include installation_prereqs/Apply_the_UAN_Patch.md
-
 ---
 
 # Install the UAN Product

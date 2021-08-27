@@ -1,13 +1,8 @@
 ## Boot UANs
 
-Boot UANs using BOS.
+Perform this procedure to boot UANs using BOS so that they are ready for user logins.
 
-[Create UAN Boot Images](Create_UAN_Boot_Images.md)
-
-- **OBJECTIVE**
-
-    Boot UANs with an image so that they are ready for user logins.
-
+Perform [Create UAN Boot Images](#create_uan_boot_images) before performing this procedure.
 
 1. Create a BOS session to boot the UAN nodes.
 
