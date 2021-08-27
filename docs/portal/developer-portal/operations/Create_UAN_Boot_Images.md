@@ -174,7 +174,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     ncn-m001# cd ..
     ```
 
-    The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process is initiates the Configuration Framework Service \(CFS\) to customize the image.
+    The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process initiates the Configuration Framework Service \(CFS\) to customize the image.
 
 
     **CONFIGURE UAN IMAGES**

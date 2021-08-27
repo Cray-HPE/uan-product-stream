@@ -16,10 +16,10 @@
     }
     ```
 
-2. Create a variable for the IMS recipe `id` in the returned data.
+2. Create a variable for the IMS image `id` in the returned data.
 
    ```bash
-   ncn-m001:~/ $ export IMS_IMAGE_ID=4a5d1178-80ad-4151-af1b-bbe1480958d1
+   ncn-m001:~/ $ export IMS_IMAGE_ID=6d46d601-c41f-444d-8b49-c9a2a55d3c21
    ```
 
 3. Using the IMS_IMAGE_ID, follow the instructions in the _Customize an Image Root Using IMS_ in the CSM documentation to build the UAN Image.

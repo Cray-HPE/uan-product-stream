@@ -1,6 +1,6 @@
 ## Prepare for UAN Product Installation
 
-Perform this procedure to ready the HPE Cray EX supercomputer ready for UAN product installation.
+Perform this procedure to ready the HPE Cray EX supercomputer for UAN product installation.
 
 Install and configure the COS product before performing this procedure.
 
@@ -121,14 +121,34 @@ Install and configure the COS product before performing this procedure.
         deployed gitea
         ```
 
-    4. Verify `cray-conman` is connected to compute nodes and UANs.
+    4. Ensure that the `cray-console-node` pods are connected to compute nodes and UANs so that they are monitored and their consoles are logged.
 
-        Sometimes the compute nodes an UAN are not up yet when `cray-conman` is initialized and will not be monitored yet. Verify that all nodes are being monitored for console logging or re-initialize `cray-conman` if needed.
+        a. Obtain a list of the xnames for all compute nodes and UANs.
 
-        a. Use kubectl to exec into the running `cray-conman` pod, then check the existing connections.
+        b. Obtain the `cray-console-operator` pod ID.
 
         ```bash
-        cray-conman-b69748645-qtfxj:/ # conman -q
+        ncn# CONPOD=$(kubectl get pods -n services \-o wide|grep cray-console-operator|awk '{print $1}')
+        ncn# echo $CONPOD
+        ```
+
+        c. Obtain the full pod name of the `cray-console-pod` that is connected to one of the UANs or compute nodes. Replace _`XNAME`_ with one of the xnames identified in substep a.
+
+        ```bash
+        ncn# NODEPOD=$(kubectl -n services exec $CONPOD -c cray-console-operator -- sh -c \
+        "/app/get-node XNAME" | jq .podname | sed 's/"//g')
+        ncn# echo $NODEPOD
+        ```
+        d. Log into the pod identified in the previous substep.
+
+        ```bash
+        ncn# kubectl exec -n services -it $NODEPOD -c cray-console-node -- bash
+        cray-console-node# 
+        ```
+        e. Search for the UAN and compute node xnames in the list of nodes monitored by that pod.
+
+        ```bash
+        cray-console-node# conman -q
         x9000c0s1b0n0
         x9000c0s20b0n0
         x9000c0s22b0n0
@@ -137,29 +157,7 @@ Install and configure the COS product before performing this procedure.
         x9000c0s27b2n0
         x9000c0s27b3n0
         ```
-
-        b. If the compute nodes and UANs are not included in the list of nodes being monitored, the `conman` process can be re-initialized by killing the conmand process.
-
-        ```bash
-        cray-conman-b69748645-qtfxj:/ # ps -ax | grep conmand
-             13 ?        Sl     0:45 conmand -F -v -c /etc/conman.conf
-          56704 pts/3    S+     0:00 grep conmand
-        cray-conman-b69748645-qtfxj:/ # kill 13
-        ```
-
-        c. This will regenerate the conman configuration file and restart the conmand process, and now include all nodes that are included in the state manager.
-
-        ```bash
-        cray-conman-b69748645-qtfxj:/ # conman -q
-        x9000c1s7b0n1
-        x9000c0s1b0n0
-        x9000c0s20b0n0
-        x9000c0s22b0n0
-        x9000c0s24b0n0
-        x9000c0s27b1n0
-        x9000c0s27b2n0
-        x9000c0s27b3n0
-        ```
+        f. Repeat substeps c through e for a UAN or compute node xname absent in the output of the previous command.  Repeat this process until all UAN and compute node xnames are confirmed to be monitored by a `cray-console-node` pod.
 
     5. Verify that the HPE Cray OS \(COS\) has been installed on the system.
 

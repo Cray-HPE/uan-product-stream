@@ -10,6 +10,8 @@ Perform the following before starting this procedure:
 
 The Cray EX User Access Node \(UAN\) recipe currently requires the Slingshot packages, which are not installed with the UAN product itself. Therefore, the UAN recipe can only be built after either the Slingshot product is installed, or after the Slingshot packages are removed from the recipe.
 
+If Slingshot is installed, refer to the section "Install Slingshot Network Drivers on HPE Cray EX" in the Slingshot product documentation to specify the correct version of Slingshot in the UAN recipe.
+
 UAN images built without the Slingshot packages are not able to mount Lustre filesystems. Therefore, the UANs that run those images are limited in usefulness.
 
 1. Determine if the Slingshot product stream is installed on the HPE Cray EX system.
@@ -90,7 +92,7 @@ UAN images built without the Slingshot packages are not able to mount Lustre fil
     b. Save the id of the IMS image in an environment variable.
 
         ```bash
-        ncn-m001# export IMS_IMAGE_ID=4a5d1178-80ad-4151-af1b-bbe1480958d1
+        ncn-m001# export IMS_IMAGE_ID=6d46d601-c41f-444d-8b49-c9a2a55d3c21
         ```
 
     c. Use the saved IMS image id in the procedure "Customize an Image Root Using IMS" in the CSM documentation to build the UAN image.
