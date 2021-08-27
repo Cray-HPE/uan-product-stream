@@ -1,6 +1,6 @@
 ## Apply UAN Upgrade Patch
 
-Perform this procedure to update the UAN product version from 2.0.0 to 2.0.1.
+Perform this procedure to update the UAN product version from 2.0.0 to any newer version.
 
 Version 2.0.0 of the UAN product must be installed before performing this procedure.
 

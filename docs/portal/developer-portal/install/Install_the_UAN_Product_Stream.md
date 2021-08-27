@@ -72,18 +72,18 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
         uan-image-recipe-import-@product_version@-2fvr7   0/3     Completed   0          6m
         ```
 
-4. Verify that the UAN RPM repositories have been created in Nexus using either of the following methods:
+4. Verify that the UAN RPM repositories have been created in Nexus using either of the following methods.:
 
-    - Navigate to https://nexus.CRAY\_EX\_DOMAIN/\#browse/browse in a web browser to view the list of repositories and verify that the following repositories are present:
-        - `uan-2.0.0-sle-15sp1`
-        - `uan-2.0-sle-15sp1`
+   In both of the following examples, `PRODUCT_VERSION` is the UAN release number and `SLE_VERSION` is the SLE release version, such as `15sp1` or `15sp2`.
+
+    - Navigate to `https://nexus.CRAY_EX_DOMAIN/#browse/browse` in a web browser to view the list of repositories and verify that the `uan-PRODUCT_VERSION-sle-SLE_VERSION` repository is present.
+        
     - Query Nexus through its REST API to display the repositories prefixed with the name uan:
 
         ```bash
         ncn-m001# curl -s -k https://packages.local/service/rest/v1/repositories | jq -r '.[] | \
         select(.name | startswith("uan")) | .name'
-        uan-2.0-sle-15sp1
-        uan-2.0.0-sle-15sp1
+        uan-PRODUCT_VERSION-sle-SLE_VERSION
         ```
 
 5. Finish the typescript file started at the beginning of this procedure.
