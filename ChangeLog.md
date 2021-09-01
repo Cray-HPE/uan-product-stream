@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- CASM-2589: UAN: Limit access to management gateway by non-root users
 - CASMTRIAGE-1878: Use the updated default CAN alias in SLS as configured by csi
 - CASMTRIAGE-1870: Fix kdump with packages required by COS
 - CASMTRIAGE-1875: Set swappiness value to a string
