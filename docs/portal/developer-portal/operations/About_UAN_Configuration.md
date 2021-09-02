@@ -35,6 +35,8 @@ The uan\_interfaces role configures the interfaces on the UAN nodes in three pha
     3. Implement the CAN interface as a bonded pair.
         1. On HPE servers, use the second port of the 25Gb OCP card and a second 25Gb card.
         2. On Gigabyte servers, use both ports of the 40Gb card.
+           
+           See [Configure Interfaces on UANs](#configure_interfaces_on_uans) for detailed instructions
 3. Setup customer-defined networks
 
 ### UAN LDAP network requirements

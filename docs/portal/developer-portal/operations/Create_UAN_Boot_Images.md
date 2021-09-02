@@ -129,7 +129,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.
 
-    These and other Ansible files do not necessarily need to be modified for UAN image creation.
+    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](#about_uan_configuration) for instructions for site-specific UAN configuration, including CAN configuration.
 
     ```bash
     ncn-m001# vim group_vars/Application_UAN/vars.yml
