@@ -76,7 +76,7 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
 
    In both of the following examples, `PRODUCT_VERSION` is the UAN release number and `SLE_VERSION` is the SLE release version, such as `15sp1` or `15sp2`.
 
-    - Navigate to `https://nexus.CRAY_EX_DOMAIN/#browse/browse` in a web browser to view the list of repositories and verify that the `uan-PRODUCT_VERSION-sle-SLE_VERSION` repository is present.
+    - Navigate to `https://nexus.CRAY_EX_DOMAIN/#browse/browse` in a web browser to view the list of repositories and verify that the `uan-PRODUCT_VERSION-sle-SLE_VERSION` repository is present. Note that PRODUCT\_VERSION may have a different patch version than what is present in Nexus.
         
     - Query Nexus through its REST API to display the repositories prefixed with the name uan:
 
