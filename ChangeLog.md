@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- CASMUSER-2804: Update content base image to pick up new dependent roles
 - CASMUSER-2780: Provide ability to get sensitive data from vault for uan_ldap role
 - CASM-2589: UAN: Limit access to management gateway by non-root users
 - CASMTRIAGE-1878: Use the updated default CAN alias in SLS as configured by csi
