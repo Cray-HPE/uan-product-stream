@@ -89,4 +89,4 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     # exit
     ```
 
-6. Perform [Apply UAN Upgrade Patch](#apply_uan_upgrade_patch)
+6. **Optional:** Perform [Merge UAN Configuration Data](#merge_uan_configuration_data) if a previous version of the UAN product was already installed.
