@@ -1,8 +1,8 @@
-## Apply UAN Upgrade Patch
+## Merge UAN Configuration Data
 
-Perform this procedure to update the UAN product version from 2.0.0 to any newer version.
+Perform this procedure to update the UAN product configuration.
 
-Version 2.0.0 of the UAN product must be installed before performing this procedure.
+Version 2.0.0 or later of the UAN product must be installed before performing this procedure.
 
 In this procedure:
 
@@ -50,21 +50,25 @@ In this procedure:
     ncn-m001# UAN_DISTDIR/install.sh
     ```
 
-7. Generate the password hash for the `root` user. Replace `PASSWORD` with the desired `root` password.
+7. **Optional:** Generate a `root` password hash and store it in the HashiCorp Vault. Skip this step if a `root` password hash is already stored in the vault and that password will not be changed.
+
+    a. Generate the password hash for the `root` user. Replace `PASSWORD` with the desired `root` password.
 
     ```bash
     ncn-m001# openssl passwd -6 -salt $(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c4) \
     PASSWORD
     ```
 
-8. Obtain the HashiCorp Vault root token.
+    b. Obtain the HashiCorp Vault root token.
 
     ```bash
     ncn-m001# kubectl get secrets -n vault cray-vault-unseal-keys -o jsonpath='{.data.vault-root}' | \
     base64 -d; echo
     ```
 
-9. Write the password hash from step 7 to the HashiCorp Vault. The `vault login` command will request a token. That token value is the output of step 8 above. The `vault read secret/uan` is to verify the hash was stored correctly. This password hash will be written to the UAN for the `root` user by CFS.
+    c. Write the password hash (from substep *a*) to the HashiCorp Vault. Enter the token value from the previous substep when prompted by `vault login`.
+    
+    The `vault read secret/uan` is to verify the hash was stored correctly. This password hash will be written to the UAN for the `root` user by CFS.
 
     It is important to enclose the hash in single quotes to preserve any special characters.
 
@@ -76,18 +80,18 @@ In this procedure:
     vault read secret/uan
     ```
 
-10. Obtain the URL of UAN configuration management repository in VCS \(the Gitea service\).
+8. Obtain the URL of UAN configuration management repository in VCS \(the Gitea service\).
 
     This URL is reported as the value of the `configuration.clone_url` key in the `cray-product-catalog` Kubernetes ConfigMap.
 
-11. Obtain the `crayvcs` password.
+9. Obtain the `crayvcs` password.
 
     ```bash
     ncn-m001# kubectl get secret -n services vcs-user-credentials \
      --template={{.data.vcs_password}} | base64 --decode
     ```
 
-12. Clone the UAN configuration management repository. Replace the hostname reported in the URL obtained in the previous step with `api-gw-service-nmm.local` when cloning the repository.
+10. Clone the UAN configuration management repository. Replace the hostname reported in the URL obtained in the previous step with `api-gw-service-nmm.local` when cloning the repository.
 
     ```bash
     ncn-m001# git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
@@ -98,7 +102,7 @@ In this procedure:
     Already up to date.
     ```
 
-13. Checkout the branch currently used to hold UAN configuration.
+11. Checkout the branch currently used to hold UAN configuration.
 
     The following example assumes that branch is `integration`.
 
@@ -108,25 +112,25 @@ In this procedure:
     Your branch is up to date with 'origin/integration'.
     ```
 
-14. Merge the new install branch to the current branch. Write a commit message when prompted.
+12. Merge the new install branch to the current branch. Write a commit message when prompted.
 
     ```bash
     ncn-m001# git merge cray/uan/PRODUCT_VERSION
     ```
 
-15. Push the changes to VCS. Enter the `crayvcs` password when prompted.
+13. Push the changes to VCS. Enter the `crayvcs` password when prompted.
 
     ```bash
     ncn-m001# git push
     ```
 
-16. Retrieve the commit ID from the merge and store it for later use.
+14. Retrieve the commit ID from the merge and store it for later use.
 
     ```bash
     ncn-m001# git rev-parse --verify HEAD
     ```
 
-17. Update any CFS configurations used by the UANs with the commit ID from the previous step.
+15. Update any CFS configurations used by the UANs with the commit ID from the previous step.
 
     a. Download the JSON of the current UAN CFS configuration to a file.
 
@@ -160,7 +164,7 @@ In this procedure:
         } 
         ```
 
-    c. Replace the `commit` value in the JSON file with the commit ID obtained in Step 12.
+    c. Replace the `commit` value in the JSON file with the commit ID obtained in Step 14.
 
         The name value after the commit line may also be updated to match the new UAN product version, if desired. This is not necessary as CFS does not use this value for the configuration name.
 
@@ -193,9 +197,9 @@ In this procedure:
         --enabled true --format json UAN_XNAME
         ```
 
-18. Finish the typescript file started at the beginning of this procedure.
+16. Finish the typescript file started at the beginning of this procedure.
 
     ```bash
     ncn-m001# exit
     ```
-19. Perform [Create UAN Boot Images](#create_uan_boot_images) to upgrade the boot images used by the UANs
+17. Perform [Create UAN Boot Images](#create_uan_boot_images) to upgrade the boot images used by the UANs

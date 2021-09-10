@@ -59,18 +59,15 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
 
     b. Verify that the configuration, images, and recipes sections for the installed product version contain information similar to the example output in the previous command.
 
-    c. Check the Kubernetes jobs responsible for importing the configuration, image, and recipe content if the command does not show content for the UAN product version that was installed.
+    c. Verify that the Kubernetes jobs that import the configuration, image, and recipe content completed successfully. Skip this step if the previous substep indicates that the new UAN product version content installed successfully.
+       
+       A STATUS of `Completed` indicates that the Kubernetes jobs completed successfully.
 
-        A STATUS of "Completed" indicates that the Kubernetes jobs completed successfully.
-
-        ```bash
-        ncn-m001# kubectl get pods -n services -l job-name=uan-config-import-PRODUCT_VERSION
-        NAME                             READY   STATUS      RESTARTS   AGE
-        uan-config-import-@product_version@-gsvrc   0/3     Completed   0          5m
-        ncn-m001# kubectl get pods -n services -l job-name=uan-image-recipe-import-PRODUCT_VERSION
-        NAME                                   READY   STATUS      RESTARTS   AGE
-        uan-image-recipe-import-@product_version@-2fvr7   0/3     Completed   0          6m
-        ```
+       ```bash
+       ncn-m001# kubectl get pods -n services | grep uan
+       uan-config-import-PRODUCT_VERSION-wfh4f                                  0/3     Completed   0          3m15s
+       uan-image-recipe-import-PRODUCT_VERSION-92cxz                            0/3     Completed   0          3m15s
+       ```
 
 4. Verify that the UAN RPM repositories have been created in Nexus using either of the following methods.:
 
@@ -92,4 +89,4 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     # exit
     ```
 
-6. Perform [Apply UAN Upgrade Patch](#apply_uan_upgrade_patch)
+6. **Optional:** Perform [Merge UAN Configuration Data](#merge_uan_configuration_data) if a previous version of the UAN product was already installed.
