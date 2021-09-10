@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.4] - 2021-09-08
+- CASMUSER-2804: Update content base image to pick up newer dependent roles
+
 ## [2.1.3] - 2021-08-27
 - STP-2762: Fix formatting and links in docs
 
