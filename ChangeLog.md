@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.1.4] - 2021-09-10
-- CASMUSER-2129: Clarify message on checking Nexus versions
+- CASMTRIAGE-2227: Doc updates
+- CASMTRIAGE-2129: Clarify message on checking Nexus versions
 - CASMUSER-2804: Update content base image to pick up newer dependent roles
 
 ## [2.1.3] - 2021-08-27
