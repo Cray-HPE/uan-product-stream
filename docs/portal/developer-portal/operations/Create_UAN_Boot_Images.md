@@ -3,7 +3,7 @@
 
 This procedure updates the configuration management git repository to match the installed version of the UAN product. Then, that updated configuration is used to create UAN boot images and a BOS session template.
 
-Peform [Install the UAN Product Stream](#install_the_uan_product_stream) first before starting this procedure.
+Peform "Install the UAN Product Stream" from the HPE Cray UAN Administration Guide first before starting this procedure.
 
 This procedure only details how to apply UAN-specific configuration to the UAN image and nodes. Consult the documentation for the individual HPE products \(for example, workload managers and the HPE Cray Programming Environment\) that must be configured on the UANs.
 
@@ -129,7 +129,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.
 
-    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](#about_uan_configuration) for instructions for site-specific UAN configuration, including CAN configuration.
+    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](operations/About_UAN_Configuration.md#about-uan-configuration) for instructions for site-specific UAN configuration, including CAN configuration.
 
     ```bash
     ncn-m001# vim group_vars/Application_UAN/vars.yml
@@ -341,4 +341,4 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     /sessionTemplate/uan-sessiontemplate-PRODUCT_VERSION
     ```
 
-21. Perform [Boot UANs](#boot_uans) to boot the UANs with the new image and BOS session template.
+21. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.

@@ -97,4 +97,4 @@ UAN images built without the Slingshot packages are not able to mount Lustre fil
 
     c. Use the saved IMS image id in the procedure "Customize an Image Root Using IMS" in the CSM documentation to build the UAN image.
 
-5. Perform [Boot UANs](#boot_uans) to boot the UANs with this new image.
+5. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with this new image.

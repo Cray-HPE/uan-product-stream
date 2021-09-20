@@ -3,7 +3,7 @@
 
 Perform this procedure to create a mount point for a new file system on a UAN.
 
-1. Perform Steps 1-3 of [Create UAN Boot Images](#create_uan_boot_images).
+1. Perform Steps 1-9 of [Create UAN Boot Images](operations/Create_UAN_Boot_Images.md#create-uan-boot-images).
 
 2. Create a directory for `Application` role nodes.
 
@@ -36,4 +36,4 @@ Perform this procedure to create a mount point for a new file system on a UAN.
     ncn-w001# git commit -am 'Added file system info'
     ```
 
-6. Resume [Create UAN Boot Images](#create_uan_boot_images). at Step 5. 
+6. Resume [Create UAN Boot Images](operations/Create_UAN_Boot_Images.md#create-uan-boot-images) at Step 10. 
