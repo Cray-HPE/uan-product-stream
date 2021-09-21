@@ -3,7 +3,7 @@
 
 This procedure updates the configuration management git repository to match the installed version of the UAN product. Then, that updated configuration is used to create UAN boot images and a BOS session template.
 
-Peform "Install the UAN Product Stream" from the HPE Cray UAN Administration Guide first before starting this procedure.
+Peform "Install the UAN Product Stream" from the HPE Cray UAN Installation Guide first before starting this procedure.
 
 This procedure only details how to apply UAN-specific configuration to the UAN image and nodes. Consult the documentation for the individual HPE products \(for example, workload managers and the HPE Cray Programming Environment\) that must be configured on the UANs.
 
