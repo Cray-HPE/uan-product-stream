@@ -5,7 +5,7 @@ Perform this procedure to enable `uan_disk_config` to run successfully by erasin
 
 This procedure currently only addresses `uan_disk_config` errors due to existing disk partitions.
 
-Refer to [About UAN Configuration](#about_uan_configuration) for an explanation of UAN disk configuration.
+Refer to [About UAN Configuration](../operations/About_UAN_Configuration.md#about-uan-configuration) for an explanation of UAN disk configuration.
 
 The most common cause of failure in the `uan_disk_config` role is the disk having been previously configured without a `/scratch` and `/swap` partition. Existing partitions prevent the `parted` command from dividing the disk into those two equal partitions. The solution is to log into the node and run `parted` manually to remove the existing partitions on that disk.
 

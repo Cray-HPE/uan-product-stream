@@ -5,7 +5,7 @@ This procedure installs the User Access Nodes \(UAN\) product on a system so tha
 Before performing this procedure:
 
 - Initialize and configure the Cray command line interface \(CLI\) tool. See "Configure the Cray Command Line Interface \(CLI\)" in the CSM documentation for more information.
-- Perform [Prepare for UAN Product Installation](#prepare_for_uan_product_installation)
+- Perform [Prepare for UAN Product Installation](installation_prereqs/Prepare_For_UAN_Product_Installation.md#prepare-for-uan-product-installation)
 
 Replace PRODUCT\_VERSION in the example commands with the UAN product stream string \(2.0.0 for example\). Replace CRAY\_EX\_DOMAIN in the example commands with the FQDN of the HPE Cray EX.
 
@@ -89,4 +89,4 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     # exit
     ```
 
-6. **Optional:** Perform [Merge UAN Configuration Data](#merge_uan_configuration_data) if a previous version of the UAN product was already installed.
+6. **Optional:** Perform [Merge UAN Configuration Data](../upgrade/Merge_UAN_Configuration_Data.md#merge-uan-configuration-data) if a previous version of the UAN product was already installed.
