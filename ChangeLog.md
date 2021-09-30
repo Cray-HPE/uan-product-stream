@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.5] - 2021-09-30
+- CASMUSER-2814: Doc updates
+
 ## [2.1.4] - 2021-09-10
 - CASMTRIAGE-2227: Doc updates
 - CASMTRIAGE-2129: Clarify message on checking Nexus versions
