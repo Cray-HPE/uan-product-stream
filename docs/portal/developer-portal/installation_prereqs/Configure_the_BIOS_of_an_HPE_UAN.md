@@ -4,7 +4,7 @@ Perform this procedure to configure the network interface and boot settings requ
 
 Before the UAN product can be installed on HPE UANs, specific network interface and boot settings must be configured in the BIOS.
 
-Perform [Configure the BMC for UANs with iLO](#configure_the_bmc_for_uans_with_ilo) before performing this procedure.
+Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iLO.md#configure-the-bmc-for-uans-with-ilo) before performing this procedure.
 
 1. Force a UAN to reboot into the BIOS.
 

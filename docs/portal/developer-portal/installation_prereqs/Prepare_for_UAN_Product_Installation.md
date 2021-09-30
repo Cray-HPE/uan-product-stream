@@ -20,20 +20,20 @@ Install and configure the COS product before performing this procedure.
 
 4. Configure the BMC of the UAN.
 
-    - Perform [Configure the BMC for UANs with iLO](#configure_the_bmc_for_uans_with_ilo) if the UAN is a HPE server with an iLO.
+    - Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iLO.md#configure-the-bmc-for-uans-with-ilo) if the UAN is a HPE server with an iLO.
 
 **BIOS CONFIGURATION**
 
 5. Configure the BIOS of the UAN.
 
-    - Perform [Configure the BIOS of an HPE UAN](#configure_the_bios_of_an_hpe_uan) if the UAN is a HPE server with an iLO.
-    - Perform [Configure the BIOS of a Gigabyte UAN](#configure_the_bios_of_a_gigabyte_uan) if the UAN is a Gigabyte server.
+    - Perform [Configure the BIOS of an HPE UAN](Configure_the_BIOS_of_an_HPE_UAN.md#configure-the-bios-of-an-hpe-uan) if the UAN is a HPE server with an iLO.
+    - Perform [Configure the BIOS of a Gigabyte UAN](Configure_the_BIOS_of_a_Gigabyte_UAN.md#configure-the-bios-of-a-gigabyte-uan) if the UAN is a Gigabyte server.
 
 **VERIFY UAN BMC FIRMWARE VERSION**
 
 6. Verify that the firmware for each UAN BMC meets the specifications.
 
-    Use the System Admin Toolkit firmware command to check the current firmware version on a UAN node. Refer to [Node Firmware](#node_firmware).
+    Use the System Admin Toolkit firmware command to check the current firmware version on a UAN node.
 
     ```bash
     ncn-m001# sat firmware -x BMC_XNAME
@@ -43,23 +43,18 @@ Install and configure the COS product before performing this procedure.
 
 **VERIFY REQUIRED SOFTWARE FOR UAN INSTALLATION**
 
-8. Perform [Apply the UAN Patch](#apply_the_uan_patch) to apply any needed patch content for the UAN product.
-
-    This process must be performed to ensure that the correct UAN release artifacts are deployed.
-
-9. Unpackage the file.
+8. Unpackage the file.
 
     ```bash
     ncn-m001# tar zxf uan-PRODUCT_VERSION.tar.gz
     ```
-
-10. Navigate into the uan-PRODUCT_VERSION/ directory.
+9. Navigate into the uan-PRODUCT_VERSION/ directory.
 
     ```bash
     ncn-m001# cd uan-PRODUCT_VERSION/
     ```
 
-11. Run the pre-install goss tests to determine if the system is ready for the UAN product installation.
+10. Run the pre-install goss tests to determine if the system is ready for the UAN product installation.
 
     This requires that goss is installed on the node running the tests. Skip this step to if the automated tests can not be run.
 
@@ -71,11 +66,11 @@ Install and configure the COS product before performing this procedure.
     Count: 15, Failed: 0, Skipped: 0
     ```
 
-12. Run the `./tests/goss/scripts/uan\_preflight\_same\_in\_sls\_and\_hsm.py` script if the previous step reports an error for the `uans_same_in_sls_and_hsm` Goss test. Address any errors that are reported.
+11. Run the `./tests/goss/scripts/uan\_preflight\_same\_in\_sls\_and\_hsm.py` script if the previous step reports an error for the `uans_same_in_sls_and_hsm` Goss test. Address any errors that are reported.
 
     This script must be run rerun manually because this test produces erroneous failures otherwise.
 
-13. Manually verify the UAN software prerequisites.
+12. Manually verify the UAN software prerequisites.
 
     1. Verify that the cray CLI tool, manifestgen, and loftsman are installed.
 
@@ -186,4 +181,4 @@ Install and configure the COS product before performing this procedure.
 
         More nodes or a different set of nodes may be displayed.
 
-Next, install the UAN product by peforming the procedure [Install the UAN Product Stream](#install_the_uan_product_stream).
+Next, install the UAN product by peforming the procedure [Install the UAN Product Stream](../install/Install_the_UAN_Product_Stream.md#install-the-uan-product-stream).
