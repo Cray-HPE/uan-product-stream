@@ -28,6 +28,8 @@ create_changelog() {
 
 if [[ ! -z "${1}" ]]; then
    cat << EOF
+\pagebreak
+
 ---
 # Copyright and Version
 &copy; 2021 Hewlett Packard Enterprise Development LP
