@@ -202,4 +202,5 @@ In this procedure:
     ```bash
     ncn-m001# exit
     ```
-17. Perform [Create UAN Boot Images](#create_uan_boot_images) to upgrade the boot images used by the UANs
+
+17. Perform "Create UAN Boot Images" in the HPE Cray UAN Administration Guide to upgrade the boot images used by the UANs.

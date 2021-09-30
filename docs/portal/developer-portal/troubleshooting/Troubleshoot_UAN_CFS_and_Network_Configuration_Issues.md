@@ -3,7 +3,7 @@
 
 Examine the UAN CFS pod logs to help troubleshoot CFS and networking issues on UANs.
 
-Read [About UAN Configuration](#about_uan_configuration) before starting this procedure.
+Read [About UAN Configuration](../operations/About_UAN_Configuration.md#about-uan-configuration) before starting this procedure.
 
 1. Obtain the name of the CFS session that failed by running the following command on a management or worker NCN:
 

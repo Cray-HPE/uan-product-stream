@@ -2,7 +2,7 @@
 
 Perform this procedure to enable the IPMI/DCMI settings on an HPE UAN that are necessary to continue UAN product installation on an HPE Cray EX supercomputer.
 
-Perform the first three steps of [Prepare for UAN Product Installation](#prepare_for_uan_product_installation) before performing this procedure.
+Perform the first three steps of [Prepare for UAN Product Installation](Prepare_for_UAN_Product_Installation.md#prepare-for-uan-product-installation) before performing this procedure.
 
 1. Create the SSH tunnel necessary to access the BMC web GUI interface.
 
@@ -32,4 +32,4 @@ Perform the first three steps of [Prepare for UAN Product Installation](#prepare
 
 8. Ensure that the remote management settings match the following screenshot.
 
-    ![](installation_prereqs/images/HPE_UAN_BMC_IPMI_DCMI_configuration.png)
+![IPMI/DCMI configuration screen](installation_prereqs/images/HPE_UAN_BMC_IPMI_DCMI_configuration.png)

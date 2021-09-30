@@ -45,8 +45,8 @@ YAML_SRC = $(patsubst %.page.yaml,%.yaml,$(wildcard $(YAML)) )
 
 # Need dependency when .mds contains other mds's and add to clean
 
-#Operations_Guide_Customer.md: taxonomy.md install_sw.md admin_sw.md
-#Operations_Guide_Manufacturing.md: taxonomy.md install_sw.md install_hw.md admin_sw.md
+Operations_Guide_Customer.md: taxonomy.md install_sw.md admin_sw.md
+Operations_Guide_Manufacturing.md: taxonomy.md install_sw.md install_hw.md admin_sw.md
 
 MDOBJECTS = $(patsubst %.mds,%.md,$(MDS_SRC))
 
@@ -79,13 +79,13 @@ MKVERSION = ../../setup_versioning.sh
 # PANDOC experiments for reference
 #
 
-PANDOC-N = pandoc -c $(CSSDIR)/H.css -s --toc -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" --pdf-engine=xelatex --number-sections 
+PANDOC-N = pandoc -c $(CSSDIR)/H.css -s --toc -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/,BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex 
 
-PANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" --pdf-engine=xelatex  --number-sections 
+PANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc --data-dir=./pdf-templates -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/, BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex 
 
-HTMLPANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -V urlcolor:blue -s --toc --to html5 --number-sections
+HTMLPANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc -V urlcolor:blue -V linkcolor:blue --to html5 --number-sections
 
-HTMLPANDOC-N = pandoc -c css/H.css -V urlcolor:blue -s --toc --to html5 --number-sections
+HTMLPANDOC-N = pandoc -c css/H.css -s --toc  -V urlcolor:blue -V linkcolor:blue --to html5 --number-sections
 
 REDOC = docker run -v "`pwd`/..:/data" broothie/redoc-cli:0.9.8 bundle
 MDL =	docker run --rm -v `pwd`:/workspace  -v `pwd`/lint/.mdlrc:/mdl/.mdlrc wpengine/mdl /workspace
@@ -102,7 +102,7 @@ MDL-N =	mdl *.md
 
 all:    dir md pdf html api
 
-md:	    $(MDOBJECTS)
+md:	    dir $(MDOBJECTS)
 
 pdf:    dir md $(PDFOBJECTS) $(PDFOBJECTS2)
 
@@ -126,16 +126,18 @@ api:    dir md $(YAMLOBJECTS)
 ## '$@' is a variable holding the name of the target,
 ## and '$<' is a variable holding the (first) dependency of a rule.
 
-dir: $(TMPDIR)/VeRsIoN.md
+dir: $(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex
 	mkdir -p $(PDFBUILDDIR)
 	mkdir -p $(HTMLBUILDDIR)
 	cp -r $(IMAGESDIR) $(HTMLBUILDDIR)
 	cp -r $(CSSDIR) $(HTMLBUILDDIR)
 
 
-$(TMPDIR)/VeRsIoN.md:
+## Setup Version/Copyright for Doc section, and for Doc page footers
+$(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex:
 	mkdir -p $(TMPDIR)
-	$(MKVERSION) -d > $(TMPDIR)/VeRsIoN.md
+	ls ../../
+	sh -x $(MKVERSION) -d > $(TMPDIR)/VeRsIoN.md
 
 # Some build environments may not have docker installed
 # In this case, specify make NODOCKER='y', and
@@ -143,16 +145,16 @@ $(TMPDIR)/VeRsIoN.md:
 
 ifdef NODOCKER
 $(HTMLBUILDDIR)/%.html: $(SOURCEDIR)/%.md
-	$(HTMLPANDOC-N) -o $@ $< $(TMPDIR)/VeRsIoN.md
+	$(HTMLPANDOC-N) -o $@ $(TMPDIR)/VeRsIoN.md $< 
 
 $(PDFBUILDDIR)/%.pdf: $(SOURCEDIR)/%.md
-	$(PANDOC-N) -o $@ $< $(TMPDIR)/VeRsIoN.md
+	$(PANDOC-N) -o $@ $(TMPDIR)/VeRsIoN.md $< 
 else
 $(HTMLBUILDDIR)/%.html: $(SOURCEDIR)/%.md
-	$(HTMLPANDOC) -o $@ $< $(TMPDIR)/VeRsIoN.md
+	$(HTMLPANDOC) -o $@ $(TMPDIR)/VeRsIoN.md $< 
 
 $(PDFBUILDDIR)/%.pdf: $(SOURCEDIR)/%.md
-	$(PANDOC) -o $@ $< $(TMPDIR)/VeRsIoN.md
+	$(PANDOC) -o $@ $(TMPDIR)/VeRsIoN.md $< 
 endif
 
 
@@ -166,6 +168,7 @@ clean:
 	rm -fr $(BUILDDIR)
 	rm -fr $(TMPDIR)
 	rm -f $(MDOBJECTS)
+	rm -f pdf-templates/fancy.tex
 
 
 spellcheck: clean md
@@ -173,7 +176,6 @@ spellcheck: clean md
 	$(foreach mdobj,$(CHKOBJECTS), echo "===== $(mdobj)" >> $(TMPDIR)/spellerrors.txt;pandoc --lua-filter ../spelling/spellcheck.lua $(mdobj) >> $(TMPDIR)/spellerrors.txt;)
 	@if [ `grep -v ===== ./tmp/spellerrors.txt | wc -l` -ne 0 ]; then \
 		cat ./tmp/spellerrors.txt ; \
-		exit ;\
 	fi;\
 
 ifdef NODOCKER

@@ -31,7 +31,7 @@ Dracut failures are often caused by the wrong interface being named `nmn0`, or t
 
 When dracut starts, it renames the network device named by the `ifmap=netX:nmn0` kernel parameter to `nmn0`. This interface is the only one dracut will enable DHCP on. The `ip=nmn0:dhcp` kernel parameter limits dracut to DHCP only `nmn0`. The ifmap value must be set correctly in the `kernel_parameters` field of the BOS session template.
 
-See [Create UAN Boot Images](#create_uan_boot_images) for details on how to configure the BOS session template. For UAN nodes that have more than one PCI card installed, `ifmap=net2:nmn0` is the correct setting. If only one PCI card is installed, `ifmap=net0:nmn0` is normally the correct setting.
+See [Create UAN Boot Images](../operations/Create_UAN_Boot_Images.md#create-uan-boot-images) for details on how to configure the BOS session template. For UAN nodes that have more than one PCI card installed, `ifmap=net2:nmn0` is the correct setting. If only one PCI card is installed, `ifmap=net0:nmn0` is normally the correct setting.
 
 UANs require CPS and DVS to boot from images. These services are configured in dracut to retrieve the rootfs and mount it. If the image fails to download, check that DVS and CPS are both healthy, and DVS is running on all worker nodes. Run the following commands to check DVS and CPS:
 

@@ -1,5 +1,5 @@
 ---
-title: User Access Node (UAN) Software Installation Guide
+title: HPE Cray User Access Node (UAN) Software Installation Guide
 ---
 
 # Hardware and Software Prerequisites
@@ -22,5 +22,5 @@ _include install/Install_the_UAN_Product_Stream.md
 
 # Upgrade the UAN Product
 
-_include upgrade/Apply_UAN_Upgrade_Patch.md
+_include upgrade/Merge_UAN_Configuration_Data.md
 

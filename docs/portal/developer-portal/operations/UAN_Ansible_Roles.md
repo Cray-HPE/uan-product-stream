@@ -2,7 +2,6 @@
 
 ### uan_disk_config
 
-
 The `uan_disk_config` role configures swap and scratch disk partitions on UAN
 nodes.
 
@@ -541,13 +540,3 @@ None.
 ```
 
 This role is included in the UAN `site.yml` play.
-
-License
----------
-
-Copyright 2021 Hewlett Packard Enterprise Development LP
-
-Author Information
-------------------
-
-Hewlett Packard Enterprise Development LP
