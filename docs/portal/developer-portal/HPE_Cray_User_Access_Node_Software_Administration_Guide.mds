@@ -22,8 +22,6 @@ _include operations/Configure_Interfaces_on_UANs.md
 
 _include operations/Configure_Pluggable_Authentication_Modules_(PAM)_on_UANs.md
 
-_include operations/Enable_ncsd_on_UANs.md
-
 _include operations/Mount_a_New_File_System_on_an_UAN.md
 
 ---
@@ -35,8 +33,6 @@ _include advanced/Customizing_UAN_Images_Manually.md
 ---
 
 # Troubleshooting
-
-_include troubleshooting/Troubleshoot_Incorrect_Time_Set_on_UANs.md
 
 _include troubleshooting/Troubleshoot_UAN_Boot_Issues.md
 
