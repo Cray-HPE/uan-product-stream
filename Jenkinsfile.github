@@ -17,23 +17,22 @@ pipeline {
         PRODUCT = "uan"
         RELEASE_VERSION = sh(returnStdout: true, script: "./version.sh").trim()
         GIT_TAG = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
-        BRANCH_BUILD = branchBuild()
-        SNYK_TOKEN = credentials('snyk-token')
+        IS_STABLE = getBuildIsStable()
     }
 
     stages {
-        stage("Check version") {
-            if("${env.RELEASE_VERSION}" == "null" || "${env.RELEASE_VERSION}" == "") {
-                error "Environment variable RELEASE_VERSION not set."
-            } else {
-                echo "Version: ${env.RELEASE_VERSION}"
+        stage("Build") {
+            steps {
+                sh "make"
             }
         }
 
-        stage("Build") {
-        }
-
         stage("Publish") {
+            steps {
+                script {
+                    publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
+                }
+            }
         }
     }
 
