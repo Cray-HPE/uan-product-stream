@@ -66,11 +66,7 @@ Install and configure the COS product before performing this procedure.
     Count: 15, Failed: 0, Skipped: 0
     ```
 
-11. Run the `./tests/goss/scripts/uan\_preflight\_same\_in\_sls\_and\_hsm.py` script if the previous step reports an error for the `uans_same_in_sls_and_hsm` Goss test. Address any errors that are reported.
-
-    This script must be run rerun manually because this test produces erroneous failures otherwise.
-
-12. Manually verify the UAN software prerequisites.
+11. Manually verify the UAN software prerequisites.
 
     1. Verify that the cray CLI tool, manifestgen, and loftsman are installed.
 
