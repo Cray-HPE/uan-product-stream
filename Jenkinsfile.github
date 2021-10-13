@@ -38,8 +38,10 @@ pipeline {
 
     post {
         always {
-            // Own files so jenkins can clean them up later
-            postChownFiles()
+            script {
+                // Own files so jenkins can clean them up later
+                postChownFiles()
+            }
         }
     }
 }
