@@ -104,11 +104,11 @@ command:
   uans_same_in_sls_and_hsm:
     title: Ensure SLS and HSM agree on UAN node membership
     meta:
-      desc: Have the User Access Node (UAN) nodes listed in System Layout Service (SLS) been detected by the Hardware State Manager (HSM); If this test fails, run {{.Env.GOSS_BASE}}/scripts/uan_preflight_same_in_sls_and_hsm.py
+      desc: Have the User Access Node (UAN) nodes listed in System Layout Service (SLS) been detected by the Hardware State Manager (HSM).
       sev: 0
-    exec: "/usr/bin/env python3 {{.Env.GOSS_BASE}}/scripts/uan_preflight_check.py"
+    exec: "/usr/bin/env python3 {{.Env.GOSS_BASE}}/scripts/uan_preflight_same_in_sls_and_hsm.py"
     stdout:
-    - "!ERROR"
+    - "PASS"
     exit-status: 0
     timeout: 10000
     skip: false
