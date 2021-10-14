@@ -11,4 +11,5 @@ skopeo-sync "${ROOTDIR}/docker"
 nexus-upload helm "${ROOTDIR}/helm" "${CHARTS_REPO:-"charts"}"
 
 # Upload repository contents
-nexus-upload raw "${ROOTDIR}/rpms/cray-sles15-sp2-ncn" "uan-2.1.0-sle-15sp2"
+nexus-upload raw "${ROOTDIR}/rpms/sle-15sp2" "uan-2.3.0-sle-15sp2"
+nexus-upload raw "${ROOTDIR}/rpms/sle-15sp3" "uan-2.3.0-sle-15sp3"

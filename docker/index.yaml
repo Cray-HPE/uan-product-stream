@@ -1,9 +1,11 @@
-arti.dev.cray.com:
+artifactory.algol60.net/uan-docker/stable:
   tls-verify: true
   images:
-    uan-docker-stable-local/cray-uan-config:
-    - 0.2.36
-    uan-docker-stable-local/cray-uan-image-recipe:
-    - 0.2.36
-    csm-docker-stable-local/cray-product-catalog-update:
-    - 0.2.0
+    cray-uan-config:
+    - 0.3.0
+
+artifactory.algol60.net/csm-docker/stable:
+  tls-verify: true
+  images:
+    cray-product-catalog-update:
+    - 1.2.62

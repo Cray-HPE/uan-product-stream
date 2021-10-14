@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- CASM-2594: Update reference to CSM repo to use algol60
+- CASMUSER-2807: Add support for creating a UAN capable image with CFS only
+- CASMUSER-2789: Remove the UAN kiwi recipe and image
+- CASMUSER-2790: Use the COS provided boot parameters rpm
+- CASMUSER-2832: Remove unneeded packages
+- CASMUSER-2778: Update references from SP2 to SP3
+- CASMUSER-2843: Fix formatting error in uan_ldap role
 - CASMUSER-2780: Provide ability to get sensitive data from vault for uan_ldap role
 - CASM-2589: UAN: Limit access to management gateway by non-root users
 

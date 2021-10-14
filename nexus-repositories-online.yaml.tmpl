@@ -1,19 +1,37 @@
 # Copyright 2020-2021 Hewlett Packard Enterprise Development LP
 ---
-name: @name@-2.1.0-sle-15sp2
+name: @name@-2.3.0-sle-15sp2
 format: raw
 storage:
   blobStoreName: @name@
 proxy:
-  remoteUrl: @bloblet_url@/rpms/cray-sles15-sp2-ncn
+  remoteUrl: @bloblet_url@/sles-15sp2
 
 ---
-name: @name@-2.1-sle-15sp2
+name: @name@-2.3-sle-15sp2
 format: raw
 storage:
   blobStoreName: @name@
 type: group
 group:
   memberNames:
-  - @name@-2.1.0-sle-15sp2
+  - @name@-2.3.0-sle-15sp2
+
+---
+name: @name@-2.3.0-sle-15sp3
+format: raw
+storage:
+  blobStoreName: @name@
+proxy:
+  remoteUrl: @bloblet_url@/sles-15sp3
+
+---
+name: @name@-2.3-sle-15sp3
+format: raw
+storage:
+  blobStoreName: @name@
+type: group
+group:
+  memberNames:
+  - @name@-2.3.0-sle-15sp3
 

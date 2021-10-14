@@ -78,14 +78,13 @@ function sync_repo_content {
     skopeo-sync "${ROOTDIR}/docker/index.yaml" "${BUILDDIR}/docker"
 
     # Modify how docker images will be imported so helm charts will work without changes
-    mkdir "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    mv ${BUILDDIR}/docker/arti.dev.cray.com/csm-docker-stable-local/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    mv ${BUILDDIR}/docker/arti.dev.cray.com/uan-docker-stable-local/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    rmdir "${BUILDDIR}/docker/arti.dev.cray.com/csm-docker-stable-local"
-    rmdir "${BUILDDIR}/docker/arti.dev.cray.com/uan-docker-stable-local"
+    mkdir -p "${BUILDDIR}/docker/arti.dev.cray.com/cray"
+    mv ${BUILDDIR}/docker/artifactory.algol60.net/*-docker/*stable/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
+    rm -r "${BUILDDIR}/docker/artifactory.algol60.net"
 
     # sync uan repos from bloblet
-    reposync "${BLOBLET_URL}/rpms/cray-sles15-sp2-ncn/" "${BUILDDIR}/rpms/cray-sles15-sp2-ncn/"
+    reposync "${BLOBLET_URL}/sle-15sp2" "${BUILDDIR}/rpms/sle-15sp2"
+    reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
 }
 
 function sync_install_content {
