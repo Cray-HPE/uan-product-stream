@@ -18,6 +18,8 @@ _include operations/Build_a_New_UAN_Image_Using_the_Default_Recipe.md
 
 # Administrative Tasks
 
+_include operations/Boot_UANs.md
+
 _include operations/Configure_Interfaces_on_UANs.md
 
 _include operations/Configure_Pluggable_Authentication_Modules_(PAM)_on_UANs.md
