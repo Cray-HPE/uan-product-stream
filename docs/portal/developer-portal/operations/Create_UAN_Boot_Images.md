@@ -283,9 +283,9 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     a. Populate the template with the following information:
 
-        - The xnames of Application nodes from Step 16
-        - The customized image ID from Step 15 for
-        - The CFS configuration session name from Step 14
+        - The xnames of Application nodes from Step 17
+        - The customized image ID from Step 16 for
+        - The CFS configuration session name from Step 15
 
     b. Verify that the session template matches the format and structure in the following example:
 
@@ -303,7 +303,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
                "node_list": [
                  ** [ ... List of Application Nodes from cray hsm state command ...]**
                ],
-               "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
+               "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 16**
                "rootfs_provider": "cpss3",
                "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
                "type": "s3"
