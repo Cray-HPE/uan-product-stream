@@ -266,19 +266,10 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     x3000c0s22b0n0
     ```
 
-17. Determine the correct value for the ifmap option in the `kernel_parameters` string for the type of UAN.
-
-    - Use `ifmap=net0:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 server that have a single OCP PCIe card installed.
-        - Gigabyte servers that do not have additional PCIe network cards installed other than the built-in LOM ports.
-    - Use `ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 servers which have a second OCP PCIe card installed, regardless if it is being used or not.
-        - Gigabyte servers that have a PCIe network card installed in addition to the built-in LOM ports, regardless if it is being used or not.
-18. Construct a JSON BOS boot session template for the UAN.
+17. Construct a JSON BOS boot session template for the UAN.
 
     a. Populate the template with the following information:
 
-        - The value of the ifmap option for the `kernel_parameters` string that was determined in the previous step.
         - The xnames of Application nodes from Step 16
         - The customized image ID from Step 15 for
         - The CFS configuration session name from Step 14
@@ -291,11 +282,10 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
              "uan": {
                "boot_ordinal": 2,
                "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=360M 
-               hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp
+               hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=dhcp
                 numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14
                  pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell
-                  turbo_boost_limit=999 ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1
-                   spire_join_token=${SPIRE_JOIN_TOKEN}",
+                  turbo_boost_limit=999 spire_join_token=${SPIRE_JOIN_TOKEN}", 
                "network": "nmn",
                "node_list": [
                  ** [ ... List of Application Nodes from cray hsm state command ...]**
@@ -316,7 +306,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     c. Save the template with a descriptive name, such as `uan-sessiontemplate-PRODUCT_VERSION.json`.
 
-19. Register the session template with BOS.
+18. Register the session template with BOS.
 
     The following command uses the JSON session template file to save a session template in BOS. This step allows administrators to boot UANs by referring to the session template name.
 
@@ -327,4 +317,4 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     /sessionTemplate/uan-sessiontemplate-PRODUCT_VERSION
     ```
 
-21. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.
+19. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.
