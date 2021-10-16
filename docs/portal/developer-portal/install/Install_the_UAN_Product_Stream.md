@@ -90,3 +90,5 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     ```
 
 6. **Optional:** Perform [Merge UAN Configuration Data](../upgrade/Merge_UAN_Configuration_Data.md#merge-uan-configuration-data) if a previous version of the UAN product was already installed.
+
+7. If other HPE Cray EX software products are being installed in conjunction with UAN, refer to the HPE Cray EX System Software Getting Started Guide to determine what step to perform next.

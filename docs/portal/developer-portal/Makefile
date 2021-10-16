@@ -79,9 +79,9 @@ MKVERSION = ../../setup_versioning.sh
 # PANDOC experiments for reference
 #
 
-PANDOC-N = pandoc -c $(CSSDIR)/H.css -s --toc -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/,BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex 
+PANDOC-N = pandoc -c $(CSSDIR)/H.css -s --toc -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/,BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex.template 
 
-PANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc --data-dir=./pdf-templates -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/, BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex 
+PANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc --data-dir=./pdf-templates -V urlcolor:blue -V linkcolor:blue -V monofontoptions:"Scale=0.4" -V geometry:"top=2cm, bottom=1.5cm, left=1.5cm, right=1.5cm" -V 'mainfontoptions:Path=./fonts/, BoldFont=MetricHPE-Desktop-Bold.otf, ItalicFont=MetricHPE-Desktop-MediumItalic.otf, BoldItalicFont=MetricHPE-Desktop-BoldItalic.otf' -V 'mainfont:MetricHPE-Desktop-Regular.otf' --pdf-engine=xelatex --number-sections -H ./pdf-templates/fancy.tex.template 
 
 HTMLPANDOC = docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 -c css/H.css -s --toc -V urlcolor:blue -V linkcolor:blue --to html5 --number-sections
 
@@ -126,7 +126,7 @@ api:    dir md $(YAMLOBJECTS)
 ## '$@' is a variable holding the name of the target,
 ## and '$<' is a variable holding the (first) dependency of a rule.
 
-dir: $(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex
+dir: $(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex.template
 	mkdir -p $(PDFBUILDDIR)
 	mkdir -p $(HTMLBUILDDIR)
 	cp -r $(IMAGESDIR) $(HTMLBUILDDIR)
@@ -134,7 +134,7 @@ dir: $(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex
 
 
 ## Setup Version/Copyright for Doc section, and for Doc page footers
-$(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex:
+$(TMPDIR)/VeRsIoN.md pdf-templates/fancy.tex.template:
 	mkdir -p $(TMPDIR)
 	ls ../../
 	sh -x $(MKVERSION) -d > $(TMPDIR)/VeRsIoN.md

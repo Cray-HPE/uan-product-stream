@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.6] - 2021-10-14
+- CASMUSER-2868: Add troubleshooting steps for CAN and SLS configuration
+- CASMUSER-2848: Add an example vars.yml showing how to enable the CAN
+- CASMUSER-2845: Fix goss test and script that checks UAN discovery
+- CASMUSER-2849: Remove ifmap from the BOS session template
+
 ## [2.1.5] - 2021-09-30
 - CASMUSER-2814: Doc updates
 

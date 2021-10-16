@@ -126,7 +126,20 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
      create mode 100644 group_vars/Application_UAN/vars.yml
     ```
 
-9. Verify that the System Layout Service \(SLS\) and the `uan_interfaces` configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
+9.  Verify that a default route will be configured.
+
+    By default, no default route is set. The expectation is that customers either enable the CAN, or configure `uan_interfaces` correctly for their network.
+
+    If `uan_interfaces` is not configured for a customer's network to enable a default route, the CAN may enabled with the following setting:
+    ```bash
+    ncn-m001# # cat group_vars/Application_UAN/vars.yaml
+    ---
+    uan_can_setup: yes
+    ```
+
+    **Warning:** If the CAN is not enabled, or the customer has not configured `uan_interfaces`, the UAN will fail CFS Node Personalization for tasks like LDAP, PE, and WLM.
+
+10. Verify that the System Layout Service \(SLS\) and the `uan_interfaces` configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
 
     a. Edit the roles/uan\_interfaces/tasks/main.yml file and change the line that reads  
     `url: http://cray-sls/v1/search/networks?name=MNMN` to read  
@@ -151,7 +164,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
         ncn-m# git commit -m "Add Mountain cabinet support"
         ```
 
-10. Push the changes to the repository using the proper credentials, including the password obtained previously.
+11. Push the changes to the repository using the proper credentials, including the password obtained previously.
 
     ```bash
     ncn-m001# git push --set-upstream origin integration
@@ -164,7 +177,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
       Branch 'integration' set up to track remote branch 'integration' from 'origin'.
     ```
 
-11. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
+12. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
 
     ```bash
     ncn-m001# git rev-parse --verify HEAD
@@ -179,7 +192,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
     **CONFIGURE UAN IMAGES**
 
-12. Create a JSON input file for generating a CFS configuration for the UAN.
+13. Create a JSON input file for generating a CFS configuration for the UAN.
 
     Gather the git repository clone URL, commit, and top-level play for each configuration layer \(that is, Cray product\). Add them to the CFS configuration for the UAN, if wanted.
 
@@ -203,7 +216,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     }
     ```
 
-13. Add the configuration to CFS using the JSON input file.
+14. Add the configuration to CFS using the JSON input file.
 
     In the following example, the JSON file created in the previous step is named `uan-config-PRODUCT_VERSION.json` only the details for the UAN layer are shown.
 
@@ -233,7 +246,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
       4. Analytics
       5. customer
 
-14. Create a CFS session to perform preboot image customization of the UAN image.
+15. Create a CFS session to perform preboot image customization of the UAN image.
 
     ```bash
     ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
@@ -243,7 +256,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
                       --format json
     ```
 
-15. Wait until the CFS configuration session for the image customization to complete. Then record the ID of the IMS image created by CFS.
+16. Wait until the CFS configuration session for the image customization to complete. Then record the ID of the IMS image created by CFS.
 
     The following command will produce output while the process is running. If the CFS session completes successfully, an IMS image ID will appear in the output.
 
@@ -253,7 +266,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
 
 **PREPARE UAN BOOT SESSION TEMPLATES**
 
-16. Retrieve the xnames of the UAN nodes from the Hardware State Manager \(HSM\).
+17. Retrieve the xnames of the UAN nodes from the Hardware State Manager \(HSM\).
 
     These xnames are needed for Step 18.
 
@@ -266,22 +279,13 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     x3000c0s22b0n0
     ```
 
-17. Determine the correct value for the ifmap option in the `kernel_parameters` string for the type of UAN.
-
-    - Use `ifmap=net0:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 server that have a single OCP PCIe card installed.
-        - Gigabyte servers that do not have additional PCIe network cards installed other than the built-in LOM ports.
-    - Use `ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 servers which have a second OCP PCIe card installed, regardless if it is being used or not.
-        - Gigabyte servers that have a PCIe network card installed in addition to the built-in LOM ports, regardless if it is being used or not.
 18. Construct a JSON BOS boot session template for the UAN.
 
     a. Populate the template with the following information:
 
-        - The value of the ifmap option for the `kernel_parameters` string that was determined in the previous step.
-        - The xnames of Application nodes from Step 16
-        - The customized image ID from Step 15 for
-        - The CFS configuration session name from Step 14
+        - The xnames of Application nodes from Step 17
+        - The customized image ID from Step 16 for
+        - The CFS configuration session name from Step 15
 
     b. Verify that the session template matches the format and structure in the following example:
 
@@ -291,16 +295,15 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
              "uan": {
                "boot_ordinal": 2,
                "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=360M 
-               hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp
+               hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=dhcp
                 numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14
                  pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell
-                  turbo_boost_limit=999 ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1
-                   spire_join_token=${SPIRE_JOIN_TOKEN}",
+                  turbo_boost_limit=999 spire_join_token=${SPIRE_JOIN_TOKEN}", 
                "network": "nmn",
                "node_list": [
                  ** [ ... List of Application Nodes from cray hsm state command ...]**
                ],
-               "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
+               "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 16**
                "rootfs_provider": "cpss3",
                "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
                "type": "s3"
@@ -327,4 +330,4 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     /sessionTemplate/uan-sessiontemplate-PRODUCT_VERSION
     ```
 
-21. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.
+20. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.
