@@ -294,7 +294,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
            "boot_sets": {
              "uan": {
                "boot_ordinal": 2,
-               "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=360M 
+               "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=512M 
                hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=dhcp
                 numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14
                  pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell

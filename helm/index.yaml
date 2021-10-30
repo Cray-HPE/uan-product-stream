@@ -1,4 +1,4 @@
-http://helmrepo.dev.cray.com:8080/:
+https://arti.dev.cray.com/artifactory/shasta-helm-stable-virtual/:
   charts:
     cray-uan-install:
-    - 1.1.40
+    - 1.1.42
