@@ -31,6 +31,10 @@ def main():
             print("ERROR: System Layout Service (SLS) contains UAN nodes the Hardware State Manager (HSM) does not.")
             print("Nodes: ", in_sls_not_hsm)
         sys.exit(1)
+    else:
+        print("PASS: System Layout Service (SLS) and Hardware State Manager (HSM) contain the same UAN nodes.")
+        print("Nodes: ", sls_known_uans)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
