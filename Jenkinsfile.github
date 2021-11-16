@@ -1,70 +1,45 @@
 // Jenkinsfile to push uan-product-stream repo to github
 // Copyright 2021 Hewlett Packard Enterprise Development LP
- 
-@Library('dst-shared@master') _
+@Library('csm-shared-library') _
 
 pipeline {
     agent {
-        kubernetes {
-            label "uan-product-stream-github-push"
-            containerTemplate {
-                name "uan-product-stream-github-push-cont"
-                image "arti.dev.cray.com/dstbuildenv-docker-master-local/cray-alpine3_build_environment:latest"
-                ttyEnabled true
-                command "cat"
-            }
-        }
+        label "metal-gcp-builder"
     }
 
-    // Configuration options applicable to the entire job
     options {
-        // This build should not take long, fail the build if it appears stuck
-        timeout(time: 10, unit: 'MINUTES')
-
-        // Don't fill up the build server with unnecessary cruft
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-
-        // Add timestamps and color to console output, cuz pretty
+        buildDiscarder(logRotator(numToKeepStr: "10"))
         timestamps()
     }
 
     environment {
-        // Set environment variables here
+        RELEASE_NAME = "uan"
+        PRODUCT = "uan"
+        RELEASE_VERSION = sh(returnStdout: true, script: "./version.sh").trim()
         GIT_TAG = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+        IS_STABLE = getBuildIsStable()
     }
 
     stages {
-        stage('Push to github') {
-            when { allOf {
-                expression { BRANCH_NAME ==~ /(bugfix\/.*|feature\/.*|hotfix\/.*|main|master|release\/.*)/ }
-            }}
+        stage("Build") {
             steps {
-                container('uan-product-stream-github-push-cont') {
-                    sh """
-                        apk add --no-cache bash curl jq git openssl
-                    """
-                    script {
-                        pushToGithub(
-                            githubRepo: "Cray-HPE/uan-product-stream",
-                            pemSecretId: "githubapp-stash-sync",
-                            githubAppId: "91129",
-                            githubAppInstallationId: "13313749"
-                        )
-                    }
+                sh "make"
+            }
+        }
+
+        stage("Publish") {
+            steps {
+                script {
+                    publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
                 }
             }
         }
     }
 
-    post('Post-build steps') {
-        failure {
-            emailext (
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-            )
+    post {
+        always {
+            // Own files so jenkins can clean them up later
+            postChownFiles()
         }
-
     }
 }
