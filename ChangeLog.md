@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.8] - 2021-11-16
+- CASMUSER-2912: Pin versions correctly for CFS plays from other products
+- Use UAN and CSM artifacts from algol60
+
 ## [2.1.7] - 2021-10-28
 - CASMUSER-2624: Add kdump support for HPE DL UAN nodes
 
