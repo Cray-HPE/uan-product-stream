@@ -23,8 +23,7 @@ attempting to build a release distribution.
    the docker, helm, and manifests directories, respectively.
 
 1. Update the Nexus repos and the blob locations where they will gather
-   RPMs from in `nexus-repositories.yaml.tmpl` (air-gapped installations) and
-   `nexus-repositories-online.yaml.tmpl` (online installations).
+   RPMs from in `nexus-repositories.yaml.tmpl`
 
 1. Update `include/INSTALL.tmpl` for installation instructions and
    `include/README` for general user-facing information.
@@ -43,13 +42,6 @@ provided by the Shasta Release Management release tools.
 Run `./release.sh` to create a release distribution. The distribution will
 appear as a `dist/${NAME}-${VERSION}.tar.gz` file. This is the
 default release distribution and is meant for airgapped system installations.
-
-#### Online Releases
-
-Run `./release.sh --online` to create a release distribution for online
-installation. This distribution will not upload artifacts and will
-setup proxy repositories in Nexus on the system. The distribution will
-appear as a `dist/${NAME}-${VERSION}-online.tar.gz` file.
 
 ### Generate a Release Distribution (Official)
 

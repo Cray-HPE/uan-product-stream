@@ -18,15 +18,7 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
     ncn-m001# export PS1='\u@\H \D{%Y-%m-%d} \t \w # '
     ```
 
-2. Run the installation script using either one of the following commands:
-
-    - If the HPE Cray EX is configured for online installations, run this command:
-
-        ```bash
-        ncn-m001# ./install.sh --online
-        ```
-
-    - If the HPE Cray EX is configured for offline \(that is, air-gapped\) installations, run this command:
+2. Run the installation script:
 
         ```bash
         ncn-m001# ./install.sh
