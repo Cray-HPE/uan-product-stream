@@ -1,4 +1,4 @@
-https://arti.dev.cray.com/artifactory/shasta-helm-stable-virtual/:
+https://artifactory.algol60.net/artifactory/uan-helm-charts/:
   charts:
     cray-uan-install:
-    - 1.1.42
+    - 1.1.43
