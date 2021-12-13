@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- CASMUSER-2920: Provide uan_disable_gpg_check support
 - CASMTRIAGE-2721: Update copyrights and license headers
 - CASMUSER-2907: Remove online install support and doc references
 - CASM-2594: Update reference to CSM repo to use algol60
