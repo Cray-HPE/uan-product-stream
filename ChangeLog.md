@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.3.0] - 2021-12-15
 - Simplify builds of CFS and pin to COS 2.2 CFS plays
 - CASMUSER-2920: Provide uan_disable_gpg_check support
 - CASMUSER-2917: Fix rpm uploads to nexus and set major/minor/patch at build time
@@ -19,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CASMUSER-2843: Fix formatting error in uan_ldap role
 - CASMUSER-2780: Provide ability to get sensitive data from vault for uan_ldap role
 - CASM-2589: UAN: Limit access to management gateway by non-root users
+
+## [2.1.9] - 2021-11-28
+- CASMUSER-2917: Fix the SHS repo url in the kiwi recipe
+- CASMUSER-2917: Fix rpm uploads to nexus and set major/minor/patch at build time
+- CASMUSER-2907: Remove references to online installs
 
 ## [2.1.8] - 2021-11-16
 - CASMUSER-2912: Pin versions correctly for CFS plays from other products
