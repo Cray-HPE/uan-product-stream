@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Simplify builds of CFS and pin to COS 2.2 CFS plays
+- CASMUSER-2920: Provide uan_disable_gpg_check support
 - CASMUSER-2917: Fix rpm uploads to nexus and set major/minor/patch at build time
 - CASMTRIAGE-2721: Update copyrights and license headers
 - CASMUSER-2907: Remove online install support and doc references
