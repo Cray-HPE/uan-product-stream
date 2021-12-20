@@ -137,7 +137,7 @@ In this procedure:
        This file will be named uan-config-2.0.1.json since it will be modified and then used for the updated UAN version.
        ```bash
            ncn-m001#  cray cfs configurations describe uan-config-2.0.0 \
-            --format=json &>uan-config-2.0.1.json
+            --format=json >uan-config-2.0.1.json
        ```
 
     b. Remove the unneeded lines from the JSON file.
