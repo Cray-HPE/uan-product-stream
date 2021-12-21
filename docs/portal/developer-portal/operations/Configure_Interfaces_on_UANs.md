@@ -3,11 +3,13 @@
 
 Perform this procedure to set network interfaces on UANs by editing a configuration file.
 
+In the command examples in this procedure, `PRODUCT_VERSION` refers to the current installed version of the UAN product. Replace `PRODUCT_VERSION` with the UAN version number string when executing the commands.  
+
 The Customer Access Network \(CAN\) is no longer setup by default as the networking connection to the site user access network. The default is now for sites to directly connect their user network to the User Access Node \(UAN\) or Application nodes, and to define that network configuration in the Configuration Framework Service \(CFS\) `host_vars/XNAME/customer_net.yml` file.
 
 Admins must create the `host_vars/XNAME/customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
 
-If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAME/customer_net.yml` for each node that will use the CAN, or in `group_vars/all/customer_net.yml` to enable the HPE Cray EX CAN on all UANs and Application nodes.
+If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAME/customer_net.yml` for each node that will use the CAN, or in `group_vars/all/customer_net.yml` to enable the HPE Cray EX CAN on all UANs and Application nodes. The YAML files in `group_vars/all` define settings for every node in the system, whereas the YAML files in `host_vars/XNAME` define settings only for an individual node. Administrators can use either directory or both. When both YAML directories are used, the settings in `host_vars/XNAME` override the settings in `group_vars/all` files. 
 
 1. Obtain the password for the `crayvcs` user.
 
@@ -30,7 +32,7 @@ If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAM
     ncn-w001# cd uan-config-management
     ```
 
-5. Edit the `host_vars/XNAME/customer_net.yml` file and configure the values as needed.
+5. Edit the `customer_net.yml` file in either the `host_vars/XNAME` or `group_vars/all` directory and configure the values as needed.
 
     To set up CAN:
 
@@ -159,9 +161,83 @@ If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAM
     ncn-w001# git push
     ```
 
+9. Obtain the commit ID for the commit pushed in the previous step.
+
+    ```bash
+    ncn-m001# git rev-parse --verify HEAD
+    ```
+
+10. Update any CFS configurations used by the UANs with the commit ID from the previous step.
+
+    a. Download the JSON of the current UAN CFS configuration to a file.
+
+       This file will be named `uan-config-PRODUCT_VERSION.json`. Replace `PRODUCT_VERSION` with the current installed UAN version.
+       ```bash
+           ncn-m001#  cray cfs configurations describe uan-config-PRODUCT_VERSION \
+            --format=json >uan-config-PRODUCT_VERSION.json
+       ```
+
+    b. Remove the unneeded lines from the JSON file.
+
+        The lines to remove are:
+
+           - the `lastUpdated` line
+           - the last `name` line 
+        
+        These must be removed before uploading the modified JSON file back into CFS to update the UAN configuration.
+
+        ```bash
+        ncn-m001# cat uan-config-PRODUCT_VERSION.json
+        {
+          "lastUpdated": "2021-03-27T02:32:10Z",      
+          "layers": [
+            {
+              "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
+              "commit": "aa5ce7d5975950ec02493d59efb89f6fc69d67f1",
+              "name": "uan-integration-PRODUCT_VERSION",
+              "playbook": "site.yml"
+            },
+          "name": "uan-config-2.0.1-full"            
+        } 
+        ```
+
+    c. Replace the `commit` value in the JSON file with the commit ID obtained in the previous Step.
+
+        The name value after the commit line may also be updated to match the new UAN product version, if desired. This is not necessary as CFS does not use this value for the configuration name.
+
+        ```bash
+        {
+         "layers": [
+         {
+         "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-configmanagement.git",
+         "commit": "aa5ce7d5975950ec02493d59efb89f6fc69d67f1",
+         "name": "uan-integration-PRODUCT_VERSION",
+         "playbook": "site.yml"
+         }
+         ]
+        }
+        ```
+
+    d. Create a new UAN CFS configuration with the updated JSON file.
+
+       The following example uses `uan-config-PRODUCT_VERSION` for the name of the new CFS configuration, to match the JSON file name.
+
+        ```bash
+        ncn-m001# cray cfs configurations update uan-config-PRODUCT_VERSION \
+         --file uan-config-PRODUCT_VERSION.json
+        ```
+
+    e. Tell CFS to apply the new configuration to UANs by repeating the following command for each UAN. Replace `UAN_XNAME` in the command below with the name of a different UAN each time the command is run.
+
+        ```bash
+        ncn-m001# cray cfs components update --desired-config uan-config-PRODUCT_VERSION \
+        --enabled true --format json UAN_XNAME
+        ```
+
+
 9. Reboot the UAN with the Boot Orchestration Service \(BOS\).
 
-    The new interfaces will be available when the UAN is rebooted. Replace the UAN\_SESSION\_TEMPLATE value with the BOS session template name for the UANs.
+    The new interfaces will be available when the UAN is rebooted. Replace the `UAN_SESSION_TEMPLATE` value with the BOS session template name for the UANs.
 
     ```bash
     ncn-w001# cray bos v1 session create \
