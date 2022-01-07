@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+
+  serve_static:
+    container_name: nginx
+    image: nginx
+    volumes:
+      - ${PWD}/public:/usr/share/nginx/html/uan:ro
+    ports:
+      - "80:80"
+    networks:
+      uan_documentation:
+        ipv4_address: 10.253.253.2
+  linkcheck_en_23:
+    build: ${PWD}/bin/compose/build/linkchecker
+    container_name: uan_docs_linkcheck_23
+    depends_on:
+      - serve_static
+    image: filiph/linkcheck
+    command:
+      - http://10.253.253.2/uan/~keopp/docs-uan
+    networks:
+      uan_documentation:
+        ipv4_address: 10.253.253.3
+networks:
+  uan_documentation:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.253.253.0/24

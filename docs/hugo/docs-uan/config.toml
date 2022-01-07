@@ -1,0 +1,22 @@
+title = "User Access Node (UAN)"
+theme = "hugo-theme-learn"
+baseURL = "/docs-uan/"
+languageCode = "en-US"
+defaultContentLanguage = "en-23"
+defaultContentLanguageInSubdir = true
+showVisitedLinks = true
+
+[outputs]
+home = ["HTML", "RSS", "JSON" ]
+
+[params]
+themeVariant = "blue"
+disableNextPrev = true
+disableLandingPageButton = true
+
+[languages]
+  [languages.en-23]
+    contentDir = "content/main"
+    languageName = "2.3"
+    weight = 10
+    landingPageURL = "/docs-uan/en-23"

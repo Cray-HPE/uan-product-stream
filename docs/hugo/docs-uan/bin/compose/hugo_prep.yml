@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  hugo_prep_main:
+    container_name: hugo_prep_main
+    image: ubuntu
+    environment:
+      UAN_BRANCH: main
+    volumes:
+      - ${PWD}:/src
+    entrypoint:
+      - /src/bin/convert-docs-to-hugo.sh
+      - --source
+      - /src/docs-uan/
+      - --destination
+      - /src/content/
