@@ -7,8 +7,7 @@ Perform [Create UAN Boot Images](operations/Create_UAN_Boot_Images.md#create-uan
 1. Create a BOS session to boot the UAN nodes.
 
     ```bash
-    ncn-m001# cray bos session create --template-uuid uan-sessiontemplate-PRODUCT_VERSION \
-    --operation reboot --format json | tee session.json
+    ncn-m001# cray bos session create --template-uuid uan-sessiontemplate-PRODUCT_VERSION --operation reboot --format json | tee session.json
     {
      "links": [
        {
@@ -28,16 +27,15 @@ Perform [Create UAN Boot Images](operations/Create_UAN_Boot_Images.md#create-uan
     }
     
     ```
-
+    
 3. Retrieve the BOS session ID from the output of the previous command.
 
     ```bash
-    ncn-m001# export BOS_SESSION=$(jq -r '.links[] | select(.rel=="session") |
-     .href' session.json | cut -d '/' -f4)
+    ncn-m001# export BOS_SESSION=$(jq -r '.links[] | select(.rel=="session") | .href' session.json | cut -d '/' -f4)
     ncn-m001# echo $BOS_SESSION
     89680d0a-3a6b-4569-a1a1-e275b71fce7d
     ```
-
+    
 4. Retrieve the Boot Orchestration Agent \(BOA\) Kubernetes job name for the BOS session.
 
     ```bash
@@ -47,10 +45,9 @@ Perform [Create UAN Boot Images](operations/Create_UAN_Boot_Images.md#create-uan
 5. Retrieve the Kuberenetes pod name for the BOA assigned to run this session.
 
     ```bash
-    ncn-m001# BOA_POD=$(kubectl get pods -n services -l job-name=$BOA_JOB_NAME \
-    --no-headers -o custom-columns=":metadata.name")
+    ncn-m001# BOA_POD=$(kubectl get pods -n services -l job-name=$BOA_JOB_NAME --no-headers -o custom-columns=":metadata.name")
     ```
-
+    
 6. View the logs for the BOA to track session progress.
 
     ```bash
