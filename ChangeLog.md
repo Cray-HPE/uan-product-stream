@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.3.0] - 2021-12-15
+- CASMUSER-2926: Add loki fixes for COS 2.2 and CSM artifacts
 - Simplify builds of CFS and pin to COS 2.2 CFS plays
 - CASMUSER-2920: Provide uan_disable_gpg_check support
 - CASMUSER-2917: Fix rpm uploads to nexus and set major/minor/patch at build time
