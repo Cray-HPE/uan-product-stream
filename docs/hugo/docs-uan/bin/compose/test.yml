@@ -12,14 +12,14 @@ services:
     networks:
       uan_documentation:
         ipv4_address: 10.253.253.2
-  linkcheck_en_23:
+  linkcheck_en_main:
     build: ${PWD}/bin/compose/build/linkchecker
-    container_name: uan_docs_linkcheck_23
+    container_name: uan_docs_linkcheck_main
     depends_on:
       - serve_static
     image: filiph/linkcheck
     command:
-      - http://10.253.253.2/uan/~keopp/docs-uan
+      - http://10.253.253.2/uan/docs-uan/en-main
     networks:
       uan_documentation:
         ipv4_address: 10.253.253.3
