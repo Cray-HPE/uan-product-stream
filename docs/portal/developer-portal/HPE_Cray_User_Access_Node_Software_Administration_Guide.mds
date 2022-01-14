@@ -12,7 +12,7 @@ _include operations/About_UAN_Configuration.md
 
 _include operations/Create_UAN_Boot_Images.md
 
-_include operations/Build_a_New_UAN_Image_Using_the_Default_Recipe.md
+_include operations/Build_a_New_UAN_Image_Using_the_COS_Recipe.md
 
 ---
 

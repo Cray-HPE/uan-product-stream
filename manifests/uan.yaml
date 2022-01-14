@@ -27,7 +27,7 @@ metadata:
 spec:
   charts:
   - name: cray-uan-install
-    version: 1.2.2
+    version: 1.2.4
     namespace: services
     values:
       cray-import-config:
@@ -36,6 +36,6 @@ spec:
             tag: 1.2.62
         config_image:
           name: cray-uan-config
-          tag: 0.3.2
+          tag: 0.3.5
         import_job:
           CF_IMPORT_PRODUCT_VERSION: "@product_version@"
