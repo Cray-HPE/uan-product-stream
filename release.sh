@@ -104,8 +104,11 @@ function sync_install_content {
             s/@version@/${VERSION}/g
             s/@name@/${NAME}/g" include/INSTALL.tmpl > "${BUILDDIR}/INSTALL"
 
+    sed -e "s/@major@/${MAJOR}/g
+            s/@minor@/${MINOR}/g
+            s/@patch@/${PATCH}/g" include/nexus-upload.sh > "${BUILDDIR}/lib/nexus-upload.sh"
+
     rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
-    rsync -aq "${ROOTDIR}/include/nexus-upload.sh" "${BUILDDIR}/lib/nexus-upload.sh"
 
     rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
 }

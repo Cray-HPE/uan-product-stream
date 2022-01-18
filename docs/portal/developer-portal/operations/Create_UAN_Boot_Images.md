@@ -1,17 +1,16 @@
 
 ## Create UAN Boot Images
 
-This procedure updates the configuration management git repository to match the installed version of the UAN product. Then, that updated configuration is used to create UAN boot images and a BOS session template.
+This procedure updates the configuration management git repository to match the installed version of the UAN product. That updated configuration is then used to create UAN boot images and a BOS session template.
 
-Perform "Install the UAN Product Stream" from the HPE Cray UAN Installation Guide first before starting this procedure.
-
-This procedure only details how to apply UAN-specific configuration to the UAN image and nodes. Consult the documentation for the individual HPE products \(for example, workload managers and the HPE Cray Programming Environment\) that must be configured on the UANs.
+UAN specific configuration, and other required configurations related to UANs are covered in this topic. Consult the documentation for the individual HPE products \(for example, workload managers and the HPE Cray Programming Environment\) that must be configured on the UANs.
 
 This is the overall workflow for preparing UAN images for booting UANs:
 
 1. Clone the UAN configuration git repository and create a branch based on the branch imported by the UAN installation.
 2. Update the configuration content and push the changes to the newly created branch.
 3. Create a Configuration Framework Service \(CFS\) configuration for the UANs, specifying the git configuration and the UAN image to apply the configuration to. More HPE products can also be added to the CFS configuration so that the UANs can install multiple HPE products into the UAN image at the same time.
+3. Add the Slingshot Host Software (SHS) CFS layer. SHS is a required layer in the CFS config for COS and UAN images.
 4. Configure the UAN image using CFS and generate a newly configured version of the UAN image.
 5. Create a Boot Orchestration Service \(BOS\) boot session template for the UANs. This template maps the configured image, the CFS configuration to be applied post-boot, and the nodes which will receive the image and configuration.
 
@@ -25,10 +24,8 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
    - the `clone_url`
    - the `commit`
    - the `import_branch` value
-   - both the name and `id` values under `images`
-   - both the name and `id` values under `recipes`
-
-    Upon successful installation of the UAN product, the UAN configuration, image recipes, and prebuilt boot images are cataloged in this ConfigMap. This information is required for this procedure.
+   
+   Upon successful installation of the UAN product, the UAN configuration is cataloged in this ConfigMap. This information is required for this procedure.
 
     `PRODUCT_VERSION` will be replaced by a numbered version string, such as `2.1.7` or `2.3.0`.
 
@@ -40,15 +37,9 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
         commit: 6658ea9e75f5f0f73f78941202664e9631a63726                   
         import_branch: cray/uan/PRODUCT_VERSION                           
         import_date: 2021-02-02 19:14:18.399670
-        ssh_url: git@vcs.CRAY_EX_HOSTNAME:cray/uan-config-management.git
-      images:
-        cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:                       
-          id: c880251d-b275-463f-8279-e6033f61578b                         
-      recipes:
-        cray-shasta-uan-cos-sles15sp1.x86_64-0.1.17:                       
-          id: cbd5cdf6-eac3-47e6-ace4-aa1aecb1359a                         
-    ``` 
-
+        ssh_url: git@vcs.CRAY_EX_HOSTNAME:cray/uan-config-management.git                      
+    ```
+   
 2. Generate the password hash for the `root` user. Replace PASSWORD with the `root` password you wish to use.
 
     ```bash
@@ -58,16 +49,15 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 3. Obtain the HashiCorp Vault `root` token.
 
     ```bash
-    ncn-m001# kubectl get secrets -n vault cray-vault-unseal-keys -o jsonpath='{.data.vault-root}' \
-     | base64 -d; echo
+    ncn-m001# kubectl get secrets -n vault cray-vault-unseal-keys -o jsonpath='{.data.vault-root}' | base64 -d; echo
     ```
-
+    
 4. Write the password hash obtained in Step 2 to the HashiCorp Vault.
 
     The vault login command will request a token. That token value is the output of the previous step. The vault `read secret/uan` command verifies that the hash was stored correctly. This password hash will be written to the UAN for the `root` user by CFS.
 
     ```bash
-    ncn-m001# kubectl exec -itn vault cray-vault-0 -- sh
+    ncn-m001# kubectl exec -it -n vault cray-vault-0 -- sh
     export VAULT_ADDR=http://cray-vault:8200
     vault login
     vault write secret/uan root_password='HASH'
@@ -81,7 +71,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     This example shows storing a value for `ldap_default_authtok`.  If more than one variable needs to be stored, they must be written in space separated `key=value` pairs on the same `vault write secret/uan_ldap` command line.
 
     ```bash
-    ncn-m001# kubectl exec -itn vault cray-vault-0 -- sh
+    ncn-m001# kubectl exec -it -n vault cray-vault-0 -- sh
     export VAULT_ADDR=http://cray-vault:8200
     vault login
     vault write secret/uan_ldap ldap_default_authtok='TOKEN'
@@ -91,10 +81,9 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 6. Obtain the password for the `crayvcs` user from the Kubernetes secret for use in the next command.
 
     ```bash
-    ncn-m001# kubectl get secret -n services vcs-user-credentials \
-     --template={{.data.vcs_password}} | base64 --decode
+    ncn-m001# kubectl get secret -n services vcs-user-credentials --template={{.data.vcs_password}} | base64 --decode
     ```
-
+    
 7. Clone the UAN configuration management repository. Replace CRAY\_EX\_HOSTNAME in the clone url with **api-gw-service-nmn.local** when cloning the repository.
 
     The repository is in the VCS/Gitea service and the location is reported in the cray-product-catalog Kubernetes ConfigMap in the `configuration.clone_url` key. The CRAY\_EX\_HOSTNAME from the `clone_url` is replaced with `api-gw-service-nmn.local` in the command that clones the repository.
@@ -149,7 +138,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     `url: http://cray-sls/v1/search/networks?name=NMN_MTN`.
 
         The following excerpt of the relevant section of the file shows the result of the change.
-
+        
         ```bash
         - name: Get Mountain NMN Services Network info from SLS
           local_action:
@@ -172,42 +161,47 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     ```bash
     ncn-m001# git push --set-upstream origin integration
     Username for 'https://api-gw-service-nmn.local': crayvcs
-     Password for 'https://crayvcs@api-gw-service-nmn.local':
-     . . .
-     remote: Processed 1 references in total
-     To https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
-      * [new branch]      integration -> integration
-      Branch 'integration' set up to track remote branch 'integration' from 'origin'.
+    Password for 'https://crayvcs@api-gw-service-nmn.local':
+    . . .
+    remote: Processed 1 references in total
+    To https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
+     * [new branch]      integration -> integration
+     Branch 'integration' set up to track remote branch 'integration' from 'origin'.
     ```
 
 12. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
 
     ```bash
     ncn-m001# git rev-parse --verify HEAD
-    
     ecece54b1eb65d484444c4a5ca0b244b329f4667
-    
     ncn-m001# cd ..
     ```
-
+    
     The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process initiates the Configuration Framework Service \(CFS\) to customize the image.
 
-
-    **CONFIGURE UAN IMAGES**
+**CONFIGURE UAN IMAGES**
 
 13. Create a JSON input file for generating a CFS configuration for the UAN.
 
-    Gather the git repository clone URL, commit, and top-level play for each configuration layer \(that is, Cray product\). Add them to the CFS configuration for the UAN, if wanted.
+    Gather the git repository clone URL, commit, and top-level play for each configuration layer \(that is, Cray product\). Add them to the CFS configuration for the UAN, if needed.
 
     For the commit value for the UAN layer, use the Git commit value obtained in the previous step.
 
-    See the product-specific documentation for further information on configuring other HPE products, as this procedure documents only the configuration of the UAN. More layers can be added to be configured in a single CFS session.
+    See the product-specific documentation for further information on configuring other HPE products, as this procedure documents only the required configuration of the UAN. More layers can be added to be configured in a single CFS session.
 
     The following configuration example can be used for preboot image customization as well as post-boot node configuration.
+
+    Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
 
     ```json
     {
       "layers": [
+        {
+          "name": "shs-integration-SHS_PRODUCT_VERSION",
+          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/slingshot-host-software-config-management.git",
+          "playbook": "shs_cassini_install.yml"
+          "commit": "45f891adb9a2e7ca304565b21b29f29226fa3e0f",
+        },
         {
           "name": "uan-integration-PRODUCT_VERSION",
           "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
@@ -224,12 +218,16 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     In the following example, the JSON file created in the previous step is named `uan-config-PRODUCT_VERSION.json` only the details for the UAN layer are shown.
 
     ```bash
-    ncn-m001# cray cfs configurations update uan-config-PRODUCT_VERSION \
-                      --file ./uan-config-PRODUCT_VERSION.json \
-                      --format json
+    ncn-m001# cray cfs configurations update uan-config-PRODUCT_VERSION --file ./uan-config-PRODUCT_VERSION.json --format json
     {
       "lastUpdated": "2021-07-28T03:26:00:37Z",
       "layers": [
+        {
+          "name": "shs-integration-SHS_PRODUCT_VERSION",
+          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/slingshot-host-software-config-management.git",
+          "playbook": "shs_cassini_install.yml"
+          "commit": "45f891adb9a2e7ca304565b21b29f29226fa3e0f",
+        },
         {
           "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
           "commit": "ecece54b1eb65d484444c4a5ca0b244b329f4667",
@@ -240,14 +238,15 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
       "name": "uan-config-PRODUCT_VERSION"
     }
     ```
+    
+    The UAN layer must be first as it configures the network interfaces that may be required by subsequent layers. When other products are added to the CFS configuration used to boot UANs, the suggested order of the layers would be:
 
-   The UAN layer must be first as it configures the network interfaces that may be required by subsequent layers. When other products are added to the CFS configuration used to boot UANs, the suggested order of the layers would be:
-
-      1. UAN
-      2. CPE (Cray Programming Environment)
-      3. Workload Manager (Either Slurm or PBS Pro)
-      4. Analytics
-      5. customer
+      1. Slingshot Host Software (must be specified before UAN)
+      2. UAN
+      3. CPE (Cray Programming Environment)
+      4. Workload Manager (Either Slurm or PBS Pro)
+      5. Analytics
+      6. customer
 
 15. Create a CFS session to perform preboot image customization of the UAN image.
 
@@ -274,29 +273,19 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     These xnames are needed for Step 18.
 
     ```bash
-    ncn-m001# cray hsm state components list --role Application --subrole UAN --format json | \
-    jq -r .Components[].ID
+    ncn-m001# cray hsm state components list --role Application --subrole UAN --format json | jq -r .Components[].ID
     x3000c0s19b0n0
     x3000c0s24b0n0
     x3000c0s20b0n0
     x3000c0s22b0n0
     ```
-
-18. Determine the correct value for the ifmap option in the `kernel_parameters` string for the type of UAN.
-
-    - Use `ifmap=net0:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 server that have a single OCP PCIe card installed.
-        - Gigabyte servers that do not have additional PCIe network cards installed other than the built-in LOM ports.
-    - Use `ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1` if the UANs are:
-        - Either HPE DL325 or DL385 servers which have a second OCP PCIe card installed, regardless if it is being used or not.
-        - Gigabyte servers that have a PCIe network card installed in addition to the built-in LOM ports, regardless if it is being used or not.
+    
 19. Construct a JSON BOS boot session template for the UAN.
 
     a. Populate the template with the following information:
 
-        - The value of the ifmap option for the `kernel_parameters` string that was determined in the previous step.
-        - The xnames of Application nodes from Step 16
-        - The customized image ID from Step 15 for
+        - The xnames of Application nodes from Step 17
+        - The customized image ID from Step 16 for
         - The CFS configuration session name from Step 14
 
     b. Verify that the session template matches the format and structure in the following example.
@@ -308,12 +297,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
            "boot_sets": {
              "uan": {
                "boot_ordinal": 2,
-               "kernel_parameters": "console=ttyS0,115200 bad_page=panic crashkernel=360M 
-               hugepagelist=2m-2g intel_iommu=off intel_pstate=disable iommu=pt ip=nmn0:dhcp
-                numa_interleave_omit=headless numa_zonelist_order=node oops=panic pageblock_order=14
-                 pcie_ports=native printk.synchronous=y quiet rd.neednet=1 rd.retry=10 rd.shell
-                  turbo_boost_limit=999 ifmap=net2:nmn0,lan0:hsn0,lan1:hsn1
-                   spire_join_token=${SPIRE_JOIN_TOKEN}",
+               "kernel_parameters": "spire_join_token=${SPIRE_JOIN_TOKEN}",
                "network": "nmn",
                "node_list": [
                  **... comma-separated list of Application Nodes from cray hsm state command. Surround each node in the list with quotes...**
@@ -331,9 +315,9 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
            "name": "uan-sessiontemplate-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
          }
         ```
-
+    
     c. Save the template with a descriptive name, such as `uan-sessiontemplate-PRODUCT_VERSION.json`.
-
+    
 20. Register the session template with BOS.
 
     The following command uses the JSON session template file to save a session template in BOS. This step allows administrators to boot UANs by referring to the session template name.
