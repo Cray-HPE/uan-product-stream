@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Specify Application as a target group in CFS documentation
 
 ## [2.3.0] - 2021-12-15
 - CASMUSER-2926: Add loki fixes for COS 2.2 and CSM artifacts

@@ -252,6 +252,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
     ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
                       --configuration-name uan-config-PRODUCT_VERSION \
                       --target-definition image \
+                      --target-group Application IMAGE_ID\
                       --target-group Application_UAN IMAGE_ID\
                       --format json
     ```
