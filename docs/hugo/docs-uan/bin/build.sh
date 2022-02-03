@@ -57,7 +57,7 @@ function test_links() {
 
   # Crawl the links for each version
   docker-compose -f $THIS_DIR/compose/test.yml up --no-color --remove-orphans \
-  linkcheck_en_23 | tee -a uan_docs_build.log
+  linkcheck_en_main | tee -a uan_docs_build.log
 
   # Tear it all down
   docker-compose -f $THIS_DIR/compose/test.yml down
