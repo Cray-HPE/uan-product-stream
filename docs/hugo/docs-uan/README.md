@@ -10,61 +10,61 @@ from the `docs/hugo/docs-uan` directory.
 
 The `bin/build.sh` script performs the following steps:
 
-1. Clone the UAN markdown docs from the `uan-product-stream` GitHub repo to 
-`docs/hugo/docs-uan/docs-uan/<branch>` for each branch listed in the `BRANCHES`
+1. Clones the UAN markdown docs from the `uan-product-stream` GitHub repo to
+`docs/hugo/docs-uan/docs-uan/<release>` for each release listed in the `RELEASES`
 array variable defined in `bin/build.sh`.
 
-    1. By default, the `main` branch of the `uan-product-stream` is cloned.
-    The branches to be cloned are defined by the `BRANCHES` array variable in
+    1. The following example shows the v2.3.0 and v2.1.9 releases of the `uan-product-stream`.
+    The releases to be cloned are defined by the `RELEASES` array variable in
     `bin/build.sh`.
 
         ```bash
-        BRANCHES=(main)
+        RELEASES=(v2.3.0 v2.1.9)
         ```
 
-        1. When additional branches are defined in `BRANCHES`, additional
+        1. When additional releases are defined in `RELEASES`, additional
         definitions must be made in the following files.
 
             1. `docs/hugo/docs-uan/config.toml`
 
                 New Hugo `languages` must be defined in
-                `docs/hugo/docs-uan/config.toml` for each new branch.
+                `docs/hugo/docs-uan/config.toml` for each new release.
 
-                The following example is the entry for the `main` branch. The
-                language name is `en-main`. The `contentDir` value is the
+                The following example is the entry for the `v2.3.0` branch. The
+                language name is `en-230`. The `contentDir` value is the
                 location where Hugo creates the HTML content relative to
-                `docs/hugo/docs-uan`. This path will always be `content/<branch>`,
-                where `<branch>` is the name of the branch.
-                For each additional branch/language, increase the `weight` value
-                by 10.  The `landingPageURL` defines where the branch/language
+                `docs/hugo/docs-uan`. This path will always be `content/<release>`,
+                where `<release>` is the name of the release.
+                For each additional release/language, increase the `weight` value
+                by 10.  The `landingPageURL` defines where the release/language
                 HTML pages will start on the webserver.
 
                 ```bash
                 [languages]
-                  [languages.en-main]
-                    contentDir = "content/main"
-                    languageName = "main"
+                  [languages.en-230]
+                    contentDir = "content/v2.3.0"
+                    languageName = "2.3"
                     weight = 10
-                    landingPageURL = "/docs-uan/en-main"
+                    landingPageURL = "/docs-uan/en-230"
                 ```
 
             1. `docs/hugo/docs-uan/bin/compose/hugo_prep.yml`
 
                 New Hugo prep services must be defined in
                 `docs/hugo/docs-uan/bin/compose/hugo_prep.yml` for each new
-                branch.
+                release.
 
-                The following example is the entry for the `main` branch.
-                When adding new branches, change `hugo_prep_en_main` to
-                `hugo_prep_en_<branch>`, where `<branch>` is the branch name
-                and update the `UAN_BRANCH` value to the branch name.
+                The following example is the entry for the `v2.3.0` release.
+                When adding new releases, change `hugo_prep_en_230` to
+                `hugo_prep_en_<release>`, where `<release>` is the release name
+                and update the `UAN_RELEASE` value to the release name.
 
                 ```bash
-                hugo_prep_en_main:
-                  container_name: hugo_prep_en_main
+                hugo_prep_en_230:
+                  container_name: hugo_prep_en_230
                   image: ubuntu
                   environment:
-                    UAN_BRANCH: main 
+                    UAN_RELEASE: v2.3.0 
                   volumes:
                     - ${PWD}:/src
                   entrypoint:
@@ -78,24 +78,24 @@ array variable defined in `bin/build.sh`.
             1. `docs/hugo/docs-uan/bin/compose/test.yml`
 
                 New Hugo linkcheck services must be defined in
-                `docs/hugo/docs-uan/bin/compose/test.yml` for each new branch.
+                `docs/hugo/docs-uan/bin/compose/test.yml` for each new release tag.
 
-                The following example is the entry for the `main` branch.
-                When adding new branches, change `linkcheck_en_main` to
-                `linkcheck_en_<branch>`, where `<branch>` is the branch name
-                update the `container_name` value with the branch name.
-                Update `en-main` in the command to `en-<branch>` and
+                The following example is the entry for the `v2.3.0` release.
+                When adding new branches, change `linkcheck_en_230` to
+                `linkcheck_en_<release>`, where `<release>` is the release name
+                update the `container_name` value with the release name.
+                Update `en-<release>` in the command to the new `en-<release>` and
                 increment the `ipv4_address`.
 
                 ```bash
-                linkcheck_en_main:
+                linkcheck_en_230:
                   build: ${PWD}/bin/compose/build/linkchecker
-                  container_name: uan_docs_linkcheck_main
+                  container_name: uan_docs_linkcheck_230
                   depends_on:
                     - serve_static
                   image: filiph/linkcheck
                   command:
-                    - http://10.253.253.2/uan/docs-uan/en-main
+                    - http://10.253.253.2/uan/docs-uan/en-230
                   networks:
                     uan_documentation:
                       ipv4_address: 10.253.253.3
@@ -104,15 +104,15 @@ array variable defined in `bin/build.sh`.
             1. `docs/hugo/docs-uan/bin/build.sh`
 
                 Update `bin/build.sh` with the new linkcheck service.
-                Add the new linkcheck service name (`linkcheck_en_<branch>)
-                after the `linkcheck_en_main` in the following section of the
+                Add the new linkcheck service name (`linkcheck_en_<release>)
+                after the `linkcheck_en_<release>` in the following section of the
                 file.
 
                 ```bash
                 # Crawl the links for each version
                 docker-compose -f $THIS_DIR/compose/test.yml up --no-color
                 --remove-orphans \
-                linkcheck_en_main linkcheck_en_<branch> | tee -a uan_docs_build.log
+                linkcheck_en_<release> linkcheck_en_<new-release> | tee -a uan_docs_build.log
                 ```
 
 1. Prepare the contents of the UAN documentation markdown

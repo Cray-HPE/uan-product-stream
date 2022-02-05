@@ -12,17 +12,28 @@ services:
     networks:
       uan_documentation:
         ipv4_address: 10.253.253.2
-  linkcheck_en_main:
+  linkcheck_en_230:
     build: ${PWD}/bin/compose/build/linkchecker
-    container_name: uan_docs_linkcheck_main
+    container_name: uan_docs_linkcheck_230
     depends_on:
       - serve_static
     image: filiph/linkcheck
     command:
-      - http://10.253.253.2/uan/docs-uan/en-main
+      - http://10.253.253.2/uan/docs-uan/en-230
     networks:
       uan_documentation:
         ipv4_address: 10.253.253.3
+  linkcheck_en_219:
+    build: ${PWD}/bin/compose/build/linkchecker
+    container_name: uan_docs_linkcheck_219
+    depends_on:
+      - serve_static
+    image: filiph/linkcheck
+    command:
+      - http://10.253.253.2/uan/docs-uan/en-219
+    networks:
+      uan_documentation:
+        ipv4_address: 10.253.253.4
 networks:
   uan_documentation:
     driver: bridge

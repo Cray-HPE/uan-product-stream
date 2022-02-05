@@ -3,6 +3,12 @@ set -e
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source $THIS_DIR/lib/*
 
+PRUNE_LIST=(
+    lint
+    pdf-templates
+    templates
+)
+
 function help() {
     cat <<-MSG
 Description:
@@ -11,7 +17,7 @@ destination directory for use by the Hugo static website engine. It expects two 
 where --source is the path to the uan-product-stream docs repo and --destination is the path to
 the hugo content folder.  The content folder will be deleted and recreated.
 
-This script also looks for an environment variable named UAN_BRANCH in order to place content in
+This script also looks for an environment variable named UAN_RELEASE in order to place content in
 the appropriate subdirectory which maps to a Hugo "language".
 
 Example:
@@ -26,8 +32,8 @@ function validate_args() {
 
     # Validate source directory
     [[ ! -d $2 ]] && help
-    if [[ ! -d $2/$UAN_BRANCH ]]; then
-        echo "Expected --source to point to the uan-product-stream docs repo.  Didn't find $UAN_BRANCH directory."
+    if [[ ! -d $2/$UAN_RELEASE ]]; then
+        echo "Expected --source to point to the uan-product-stream docs repo.  Didn't find $UAN_RELEASE directory."
         help
     fi
 
@@ -40,8 +46,8 @@ function validate_args() {
         help
     fi
 
-    if [[ -z $UAN_BRANCH ]]; then
-        echo "Expected a UAN_BRANCH environment variable."
+    if [[ -z $UAN_RELEASE ]]; then
+        echo "Expected a UAN_RELEASE environment variable."
         help
     fi
 }
@@ -124,16 +130,21 @@ function delete_dir_contents() {
 }
 
 function prune_dir() {
-    [[ -d $1 ]] && rm -rf $1
+    [[ -d $1 ]] && rm -rf $1 || echo "$1 doesn't exist"
 }
 
 validate_args $1 $2 $3 $4
 SOURCE_DIR=$(cd $2 && pwd)
-SOURCE_DIR=${SOURCE_DIR}/${UAN_BRANCH}/docs/portal/developer-portal
+SOURCE_DIR=${SOURCE_DIR}/${UAN_RELEASE}/docs/portal/developer-portal
 
 DESTINATION_DIR=$(cd $4 && pwd)
-DESTINATION_DIR="${DESTINATION_DIR}/${UAN_BRANCH}"
+DESTINATION_DIR="${DESTINATION_DIR}/${UAN_RELEASE}"
 delete_dir_contents $DESTINATION_DIR
+# Prune irrelevent directories
+for DIR in ${PRUNE_LIST[@]}; do
+    echo "Pruning $SOURCE_DIR/$DIR"
+    prune_dir $SOURCE_DIR/$DIR
+done
 
 crawl_directory $SOURCE_DIR
 populate_missing_index_files
