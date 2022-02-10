@@ -16,7 +16,7 @@ This is the overall workflow for preparing UAN images for booting UANs:
 
 Once the UAN BOS session template is created, the UANs will be ready to be booted by a BOS session.
 
-Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this procedure with the current UAN product version installed \(See Step 1\) and the hostname of the HPE Cray EX system, respectively.
+Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this procedure with the current UAN product version installed \(See Step 1\) and the hostname of the HPE Cray EX system, respectively.
 
 **UAN IMAGE PRE-BOOT CONFIGURATION**
 
@@ -26,6 +26,8 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
    - the `import_branch` value
    
    Upon successful installation of the UAN product, the UAN configuration is cataloged in this ConfigMap. This information is required for this procedure.
+
+    `PRODUCT_VERSION` will be replaced by a numbered version string, such as `2.1.7` or `2.3.0`.
 
     ```bash
     ncn-m001# kubectl get cm -n services cray-product-catalog -o json | jq -r .data.uan
@@ -286,9 +288,11 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
         - The xnames of Application nodes from Step 17
         - The customized image ID from Step 16 for
         - The CFS configuration session name from Step 14
-    
-    b. Verify that the session template matches the format and structure in the following example:
-    
+
+    b. Verify that the session template matches the format and structure in the following example.
+       
+       The `kernel_parameters` field and value must all be on a single line.
+
         ```json
         {
            "boot_sets": {
@@ -297,7 +301,7 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
                "kernel_parameters": "spire_join_token=${SPIRE_JOIN_TOKEN}",
                "network": "nmn",
                "node_list": [
-                 ** [ ... List of Application Nodes from cray hsm state command ...]**
+                 **... comma-separated list of Application Nodes from cray hsm state command. Surround each node in the list with quotes...**
                ],
                "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
                "rootfs_provider": "cpss3",
@@ -306,10 +310,10 @@ Replace PRODUCT\_VERSION and CRAY\_EX\_HOSTNAME in the example commands in this 
              }
            },
            "cfs": {
-               "configuration": "uan-config-PRODUCT_VERSION"
+               "configuration": "uan-config-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
            },
            "enable_cfs": true,
-           "name": "uan-sessiontemplate-PRODUCT_VERSION"
+           "name": "uan-sessiontemplate-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
          }
         ```
     
