@@ -8,12 +8,12 @@ Perform the first three steps of [Prepare for UAN Product Installation](Prepare_
 
     a. Find the IP or hostname for a UAN.
 
-    b. Create an SSH tunnel to the UAN BMC.
+    b. Create an SSH tunnel to the UAN BMC. Run the following command on an external system.
 
-        In the following example, `uan01-mgmt` is the UAN and `shasta-ncn-m001` is the NCN the admin is logged into.
+        In the following example, `UAN_MGMT` is the UAN iLO interface host name or IP address. `NCN` is the host name or IP address of a non-compute node on the system. This example assumes that `NCN` allows port forwarding. `USER` will usually be `root`.
 
         ```bash
-        # ssh -L 8443:uan01-mgmt:443 shasta-ncn-m001
+        $ ssh -L 8443:UAN_MGMT:443 USER@NCN
         ```
 
     c. Wait for SSH to establish the connection.
