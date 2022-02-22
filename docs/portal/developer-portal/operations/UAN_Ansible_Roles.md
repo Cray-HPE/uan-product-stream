@@ -145,18 +145,73 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-##### `uan_can_setup`
+##### `uan_can_setup` (Deprecated)
 
-`uan_can_setup` configures the Customer Access Network (CAN) on UAN nodes. If
-this value is falsey no CAN is configured on the nodes.
+This variable is deprecated and `uan_user_access_cfg` should be used.
+
+`uan_can_setup` is a boolean variable controlling the configuration of user
+access to UAN nodes over the Customer Access Network (CAN).  The CAN is a VLAN
+on the Node Management Network (NMN).
+
+When `uan_can_setup` has a true value, the default route is set to be on the CAN
+unless `uan_customer_default_route` has a true value.  If `uan_can_setup` has a
+false value, user access over the CAN is not configured on the UAN nodes and no
+default route configured.  The admin must then specify the default route in
+`customer_uan_routes`.
+
+The default value of `uan_can_setup` is `no`.
 
 ```yaml
 uan_can_setup: no
 ```
 
+##### `uan_user_access_cfg`
+
+`uan_user_access_cfg` defines the way users access the UAN nodes.  UANs may be
+configured to use a VLAN over the Node Management Network (CAN), a subnet on the
+High Speed Network (CHN), or a direct connection to a site network (DIRECT).
+
+Valid values for `uan_user_access_cfg` are `"CAN"`, `"CHN"`, or `"DIRECT"`.  The
+default value is `"DIRECT"`.  With `uan_user_access_cfg: "DIRECT"`, the admin
+must define the interface and and routing to use.  See `customer_uan_interfaces`
+and `customer_uan_routes`.  With `uan_user_access_cfg: "CAN"` or
+`uan_user_access_cfg: "CHN"`, the default route will be set to the CAN or CHN,
+respectively, unless `uan_customer_default_route` has a true value.  Then the
+admin must define a default route in `customer_uan_routes`.
+
+```yaml
+uan_user_access_cfg: "CHN"
+```
+
+##### `uan_customer_default_route`
+
+`uan_customer_default_route` is a boolean variable that allows the default route
+to be set by the `customer_uan_routes` data when `uan_user_access_cfg` is set to
+CAN or CHN.
+
+By default, no default route is setup unless `uan_user_access_cfg` is set to
+either `"CAN"` or `"CHN"` which sets the default route to the CAN or CHN,
+respectively.
+
+```yaml
+uan_customer_default_route: no
+```
+
+##### `valid_uan_user_access_cfgs`
+
+`valid_uan_user_access_cfgs` is a list of valid values for `uan_user_access_cfg`.
+This value should not be changed.
+
+```yaml
+valid_uan_user_access_cfgs:
+  - "DIRECT"
+  - "CAN"
+  - "CHN"
+```
 ##### `sls_nmn_name`
 
 `sls_nmn_name` is the Node Management Network name used by SLS.
+This value should not be changed.
 
 ```yaml
 sls_nmn_name: "NMN"
@@ -165,6 +220,7 @@ sls_nmn_name: "NMN"
 ##### `sls_nmn_svcs_name`
 
 `sls_nmn_svcs_name` is the Node Management Services Network name used by SLS.
+This value should not be changed.
 
 ```yaml
 sls_nmn_svcs_name: "NMNLB"
@@ -172,18 +228,20 @@ sls_nmn_svcs_name: "NMNLB"
 
 ##### `sls_mnmn_svcs_name`
 
-`sls_mnmn_svcs_name` is the Mountain Node Management Services Network name used by SLS.
+`sls_mnmn_svcs_name` is the Mountain Node Management Services Network name used
+by SLS.  This value should not be changed.
 
 ```yaml
 sls_mnmn_svcs_name: "NMN_MTN"
 ```
 
-##### `sls_can_name`
+##### `uan_required_dns_options`
 
-`sls_can_name` is the Customer Access Network name used by SLS.
+`uan_required_dns_options` is a list of DNS options.  By default, `single-request` is set and must not be removed.
 
 ```yaml
-sls_can_name: "CAN"
+uan_required_dns_options:
+  - 'single-request'
 ```
 
 ##### `customer_uan_interfaces`
@@ -262,7 +320,7 @@ customer_uan_global_routes: []
 
 # Example
 customer_uan_global_routes:
-  - routes: 
+  - routes:
     - "10.92.100.0 10.252.0.1 255.255.255.0 -"
     - "10.100.0.0 10.252.0.1 255.255.128.0 -"
 ```
@@ -273,7 +331,7 @@ customer_uan_global_routes:
 to the `/etc/resolv.conf` DNS search list.
 
 ```yaml
-external_dns_searchlist: [ '' ] 
+external_dns_searchlist: [ '' ]
 
 # Example
 external_dns_searchlist:
@@ -287,7 +345,7 @@ external_dns_searchlist:
 to the `/etc/resolv.conf` DNS server list.
 
 ```yaml
-external_dns_servers: [ '' ] 
+external_dns_servers: [ '' ]
 
 # Example
 external_dns_servers:
@@ -310,8 +368,8 @@ external_dns_options:
 
 ##### `uan_access_control`
 
-`uan_access_control` is a boolean variable to control whether non-root access control is enabled
-Default is `no`
+`uan_access_control` is a boolean variable to control whether non-root access
+control is enabled.  Default is `no`.
 
 ```yaml
 uan_access_control: no
@@ -346,7 +404,6 @@ sls_url: "http://cray-sls"
 ```
 
 #### Dependencies
-
 
 None.
 

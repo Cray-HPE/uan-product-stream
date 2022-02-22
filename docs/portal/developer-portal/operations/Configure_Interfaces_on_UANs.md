@@ -5,11 +5,13 @@ Perform this procedure to set network interfaces on UANs by editing a configurat
 
 In the command examples in this procedure, `PRODUCT_VERSION` refers to the current installed version of the UAN product. Replace `PRODUCT_VERSION` with the UAN version number string when executing the commands.  
 
-The Customer Access Network \(CAN\) is no longer setup by default as the networking connection to the site user access network. The default is now for sites to directly connect their user network to the User Access Node \(UAN\) or Application nodes, and to define that network configuration in the Configuration Framework Service \(CFS\) `host_vars/XNAME/customer_net.yml` file.
+User access is configurable to use either a direct connection to the UANs from the sites user network, or to use one of two optional user access networks implemented within the HPE Cray EX system.  The two optional networks are the Customer Access Network \(CAN\) or Customer High Speed Network \(CHN\).  CAN is a VLAN on the Node Management Network \(NMN\), whereas CHN is over the High Speed Network \(HSN\).  The default setting is to use a direct connection to the sites user network and the admin must define the interface and default route to use. When CAN or CHN are selected, the interfaces and default route setup will be configured automatically.
 
-Admins must create the `host_vars/XNAME/customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
+Network configuration settings are defined in a `customer_net.yml` file which is used by the Configuration Framework Service \CFS\).  The path to the `customer_net.yml` file in the `uan-config-management` VCS repo will be `group_vars/NODE_GROUP/customer_net.yml` for settings common to all nodes in a given `NODE_GROUP`. `NODE_GROUP` should be replaced by the role and subrole defined in HSM for the nodes - such as `Application_UAN` if the nodes role is `Application` and subrole is `UAN`. Network configuration settings may be defined per node in `host_vars/XNAME/customer.yml`, where `XNAME` is the xname of the node.  These settings would override any settings in the `group_vars/NODE_GROUP/customer.yml` for the node with the given xname.
 
-If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAME/customer_net.yml` for each node that will use the CAN, or in `group_vars/all/customer_net.yml` to enable the HPE Cray EX CAN on all UANs and Application nodes. The YAML files in `group_vars/all` define settings for every node in the system, whereas the YAML files in `host_vars/XNAME` define settings only for an individual node. Administrators can use either directory or both. When both YAML directories are used, the settings in `host_vars/XNAME` override the settings in `group_vars/all` files. 
+Admins must create the `customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
+
+If the HPE Cray EX CAN or CHN is required, set `uan_user_access_cfg` to `CAN` or `CHN` in `customer_net.yml`, depending on whether the CAN or CHN user access network is desired.
 
 1. Obtain the password for the `crayvcs` user.
 
@@ -34,14 +36,22 @@ If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAM
 
 5. Edit the `customer_net.yml` file in either the `host_vars/XNAME` or `group_vars/all` directory and configure the values as needed.
 
-    To set up CAN:
+    To set up CAN or CHN:
 
     ```bash
-    ## uan_can_setup
-    # Set uan_can_setup to 'yes' if the site will
-    # use the Shasta CAN network for user access to
-    # UAN/Application nodes.
-    uan_can_setup: no
+    ## uan_user_access_cfg
+    # Set uan_user_access_cfg to 'CAN' if the site will
+    # use the Shasta CAN network or to 'CHN' if the site
+    # will use the Shasta CHN network for user access.
+    uan_user_access_cfg: CHN
+    ```
+
+    To allow a custom default route when CAN or CHN is selected:
+
+    ```bash
+    ## uan_customer_default_route
+    # Allow a custom default route when CAN or CHN is selected.
+    uan_customer_default_route: no
     ```
 
     To define interfaces:
