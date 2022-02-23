@@ -40,19 +40,19 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
         ssh_url: git@vcs.CRAY_EX_HOSTNAME:cray/uan-config-management.git                      
     ```
    
-2. Generate the password hash for the `root` user. Replace PASSWORD with the `root` password you wish to use.
+2. **Optional** Generate the password hash for the `root` user. Replace PASSWORD with the `root` password you wish to use.  If an upgrade or image rebuild is being performed, the root password may have already been added to vault.
 
     ```bash
     ncn-m001# openssl passwd -6 -salt $(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c4) PASSWORD
     ```
 
-3. Obtain the HashiCorp Vault `root` token.
+3. **Optional** Obtain the HashiCorp Vault `root` token.
 
     ```bash
     ncn-m001# kubectl get secrets -n vault cray-vault-unseal-keys -o jsonpath='{.data.vault-root}' | base64 -d; echo
     ```
     
-4. Write the password hash obtained in Step 2 to the HashiCorp Vault.
+4. **Optional** Write the password hash obtained in Step 2 to the HashiCorp Vault.
 
     The vault login command will request a token. That token value is the output of the previous step. The vault `read secret/uan` command verifies that the hash was stored correctly. This password hash will be written to the UAN for the `root` user by CFS.
 
@@ -64,7 +64,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     vault read secret/uan
     ```
 
-5. Write any uan_ldap sensitive data, such as the `ldap_default_authtok` value (if used), to the HashiCorp Vault.
+5. **Optional** Write any uan_ldap sensitive data, such as the `ldap_default_authtok` value, to the HashiCorp Vault.
 
     The vault login command will request a token. That token value is the output of the Step 3. The vault `read secret/uan_ldap` command verifies that the `uan_ldap` data was stored correctly. Any values stored here will be written to the UAN `/etc/sssd/sssd.conf` file in the `[domain]` section by CFS.
     
@@ -130,31 +130,6 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
      1 file changed, 1 insertion(+)
      create mode 100644 group_vars/Application_UAN/vars.yml
     ```
-
-10. Verify that the System Layout Service \(SLS\) and the `uan_interfaces` configuration role refer to the Mountain Node Management Network by the same name. Skip this step if there are no Mountain cabinets in the HPE Cray EX system.
-
-    a. Edit the roles/uan\_interfaces/tasks/main.yml file and change the line that reads  
-    `url: http://cray-sls/v1/search/networks?name=MNMN` to read  
-    `url: http://cray-sls/v1/search/networks?name=NMN_MTN`.
-
-        The following excerpt of the relevant section of the file shows the result of the change.
-        
-        ```bash
-        - name: Get Mountain NMN Services Network info from SLS
-          local_action:
-            module: uri
-              url: http://cray-sls/v1/search/networks?name=NMN_MTN 
-            method: GET
-          register: sls_mnmn_svcs
-          ignore_errors: yes 
-        ```
-
-    b. Stage and commit the network name change
-
-        ```bash
-        ncn-m# git add roles/uan_interfaces/tasks/main.yml
-        ncn-m# git commit -m "Add Mountain cabinet support"
-        ```
 
 11. Push the changes to the repository using the proper credentials, including the password obtained previously.
 
@@ -254,8 +229,8 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
                       --configuration-name uan-config-PRODUCT_VERSION \
                       --target-definition image \
-                      --target-group Application IMAGE_ID\
-                      --target-group Application_UAN IMAGE_ID\
+                      --target-group Application IMAGE_ID \
+                      --target-group Application_UAN IMAGE_ID \
                       --format json
     ```
 
@@ -290,32 +265,32 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
         - The CFS configuration session name from Step 14
 
     b. Verify that the session template matches the format and structure in the following example.
-       
+    
        The `kernel_parameters` field and value must all be on a single line.
 
-        ```json
-        {
-           "boot_sets": {
-             "uan": {
-               "boot_ordinal": 2,
-               "kernel_parameters": "spire_join_token=${SPIRE_JOIN_TOKEN}",
-               "network": "nmn",
-               "node_list": [
-                 **... comma-separated list of Application Nodes from cray hsm state command. Surround each node in the list with quotes...**
-               ],
-               "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
-               "rootfs_provider": "cpss3",
-               "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
-               "type": "s3"
-             }
-           },
-           "cfs": {
-               "configuration": "uan-config-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
-           },
-           "enable_cfs": true,
-           "name": "uan-sessiontemplate-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
+    ```json
+    {
+       "boot_sets": {
+         "uan": {
+           "boot_ordinal": 2,
+           "kernel_parameters": "spire_join_token=${SPIRE_JOIN_TOKEN}",
+           "network": "nmn",
+           "node_list": [
+             **... comma-separated list of Application Nodes from cray hsm state command. Surround each node in the list with quotes...**
+           ],
+           "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
+           "rootfs_provider": "cpss3",
+           "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
+           "type": "s3"
          }
-        ```
+       },
+       "cfs": {
+           "configuration": "uan-config-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
+       },
+       "enable_cfs": true,
+       "name": "uan-sessiontemplate-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
+     }
+    ```
     
     c. Save the template with a descriptive name, such as `uan-sessiontemplate-PRODUCT_VERSION.json`.
     

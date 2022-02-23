@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.3.1] - 2022-02-15
+- Fix uan_packages to correctly check signatures
+- Updates CFS roles to ROCM 4.5.2
+- Updates CFS roles to AMD 21.40.2
+- Updates CFS roles to Nvidia SDK 21.9
+- Extra testing added to CFS plays
 - Specify Application as a target group in CFS documentation
 
 ## [2.3.0] - 2021-12-15

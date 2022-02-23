@@ -20,9 +20,9 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
 
 2. Run the installation script:
 
-        ```bash
-        ncn-m001# ./install.sh
-        ```
+    ```bash
+    ncn-m001# ./install.sh
+    ```
 
 **VERIFY THE INSTALLATION**
 
@@ -30,18 +30,16 @@ Replace PRODUCT\_VERSION in the example commands with the UAN product stream str
 
     a. Run the following command and verify that the output contains an entry for the PRODUCT\_VERSION that was installed in the previous steps:
 
-        The following command may return more than one version of the UAN product if previous versions have been installed.
-        
-        ```bash
-        ncn-m001# kubectl get cm cray-product-catalog -n services -o json | jq -r .data.uan
-        PRODUCT_VERSION:
-             configuration:
-               clone_url: https://vcs.CRAY_EX_DOMAIN/vcs/cray/uan-config-management.git
-               commit: 6658ea9e75f5f0f73f78941202664e9631a63726
-               import_branch: cray/uan/PRODUCT_VERSION
-               import_date: 2021-07-28 03:26:00.399670
-               ssh_url: git@vcs.CRAY_EX_DOMAIN:cray/uan-config-management.git
-        ```
+    ```bash
+    ncn-m001# kubectl get cm cray-product-catalog -n services -o json | jq -r .data.uan
+    PRODUCT_VERSION:
+         configuration:
+           clone_url: https://vcs.CRAY_EX_DOMAIN/vcs/cray/uan-config-management.git
+           commit: 6658ea9e75f5f0f73f78941202664e9631a63726
+           import_branch: cray/uan/PRODUCT_VERSION
+           import_date: 2021-07-28 03:26:00.399670
+           ssh_url: git@vcs.CRAY_EX_DOMAIN:cray/uan-config-management.git
+    ```
     
     b. Verify that the Kubernetes jobs that import the configuration content completed successfully. Skip this step if the previous substep indicates that the new UAN product version content installed successfully.
     
