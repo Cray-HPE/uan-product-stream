@@ -5,7 +5,7 @@ and operational procedures for Cray EX User Access Nodes (UAN).
 
 ## Table of Contents
 
-1. [Installation Prerequisites](prereqs/Prepare_for_UAN_Product_Installation.md#prepare-for-uan-product-installation)
+1. [Installation Prerequisites](portal/developer-portal/installation_prereqs/Prepare_for_UAN_Product_Installation.md)
 
     Topics:
     * Management Network Switch Configuration
@@ -14,7 +14,7 @@ and operational procedures for Cray EX User Access Nodes (UAN).
     * UAN BMC Firmware
     * Software Prerequisites
 
-1. [Upgrades](upgrades/Upgrades.md#upgrades)
+1. [Upgrades](./portal/developer-portal/upgrade/Upgrades.md)
 
     Topics:
 
@@ -22,14 +22,14 @@ and operational procedures for Cray EX User Access Nodes (UAN).
     * Notable Changes From Previous Versions
     * Merging UAN Configuration Data
 
-1. [UAN Software Installation](install/Install_the_UAN_Product_Stream.md#install-the-uan-product-stream)
+1. [UAN Software Installation](portal/developer-portal/install/Install_the_UAN_Product_Stream.md)
 
     Topics:
     * Download and Prepare the UAN Software Package
     * Run the Installation Script
     * Installation Verification
 
-1. [Operational Tasks](operations/Build_A_New_UAN_Image_Using_the_COS_Recipe.md#build-a-new-uan-image-using-the-cos-recipe)
+1. [Operational Tasks](portal/developer-portal/operations/Build_a_New_UAN_Image_Using_the_COS_Recipe.md)
 
     Topics:
     * Build a New UAN Image Using the COS Recipe
@@ -38,12 +38,12 @@ and operational procedures for Cray EX User Access Nodes (UAN).
     * Preparing UAN Boot Session Templates
     * Booting UAN Nodes
 
-1. [Advanced Topics](advanced/Customizing_UAN_Images_Manually.md#customizing-uan-images-manually)
+1. [Advanced Topics](portal/developer-portal/advanced/Customizing_UAN_Images_Manually.md)
 
     Topics:
     * Customizing UANs Manually
 
 1. Troubleshooting
 
-    * [Debugging UAN Booting Issues](advanced/debug_boot.md)
-    * [Debugging UAN Configuration Issues](advanced/debug_config.md)
+    * [Debugging UAN Booting Issues](portal/developer-portal/troubleshooting/Troubleshoot_UAN_Boot_Issues.md)
+    * [Debugging UAN Configuration Issues](portal/developer-portal/troubleshooting/Troubleshoot_UAN_CFS_and_Network_Configuration_Issues.md)

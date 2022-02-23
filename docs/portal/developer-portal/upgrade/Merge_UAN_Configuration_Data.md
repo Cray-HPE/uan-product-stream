@@ -4,7 +4,7 @@ Perform this procedure to update the UAN product configuration.
 
 Before performing this procedure:
 
-- Perform [Install the UAN Product Stream](install/Install_the_UAN_Product_Stream.md#install-the-uan-product-stream)
+- Perform [Install the UAN Product Stream](../install/Install_the_UAN_Product_Stream.md#install-the-uan-product-stream)
 
 In this procedure, an upgrade from UAN 2.0.0 to UAN 2.3.1 is being performed. Administrators should replace the versions seen in this procedure with the versions being upgraded on the system. Additionally, this guide describes upgrading an `integration` branch. Each CFS branch responsible for configuring the various types of Application and UANs should be upgraded. 
 
