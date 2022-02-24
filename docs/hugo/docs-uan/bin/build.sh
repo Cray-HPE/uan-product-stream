@@ -4,7 +4,8 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source $THIS_DIR/lib/*
 cd $THIS_DIR/..
 LAST_DIR=${OLDPWD}
-RELEASES=(v2.3.0 v2.1.9)
+RELEASES=(v2.3.1 v2.3.0 v2.1.9)
+DOCROOT=docs/portal/developer-portal
 
 function clean() {
   function clean_dir() {
@@ -27,6 +28,8 @@ function build () {
   cd ./docs-uan
   for release in ${RELEASES[@]}; do
     git clone --depth 1 -b $release git@github.com:Cray-HPE/uan-product-stream.git ./$release
+    echo "Copy Changelog.md to $DOCROOT..."
+    [[ -f $release/Changelog.md ]] && cp $release/Changelog.md $release/$DOCROOT
   done
   cd ${OLDPWD}
 
@@ -57,7 +60,7 @@ function test_links() {
 
   # Crawl the links for each version
   docker-compose -f $THIS_DIR/compose/test.yml up --no-color --remove-orphans \
-  linkcheck_en_230 linkcheck_en_219 | tee -a uan_docs_build.log
+  linkcheck_en_231 linkcheck_en_230 linkcheck_en_219 | tee -a uan_docs_build.log
 
   # Tear it all down
   docker-compose -f $THIS_DIR/compose/test.yml down

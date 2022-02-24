@@ -1,6 +1,19 @@
 version: '3'
 
 services:
+  hugo_prep_en_231:
+    container_name: hugo_prep_en_231
+    image: ubuntu
+    environment:
+      UAN_RELEASE: v2.3.1
+    volumes:
+      - ${PWD}:/src
+    entrypoint:
+      - /src/bin/convert-docs-to-hugo.sh
+      - --source
+      - /src/docs-uan/
+      - --destination
+      - /src/content/
   hugo_prep_en_230:
     container_name: hugo_prep_en_230
     image: ubuntu
