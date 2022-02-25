@@ -3,13 +3,17 @@
 
 Perform this procedure to set network interfaces on UANs by editing a configuration file.
 
+Interface configuration is performed by the `uan_interfaces` Ansible role. For details on the variables referred to in this procedure, see [UAN Ansible Roles](UAN_Ansible_Roles.md).
+
 In the command examples in this procedure, `PRODUCT_VERSION` refers to the current installed version of the UAN product. Replace `PRODUCT_VERSION` with the UAN version number string when executing the commands.  
 
-The Customer Access Network \(CAN\) is no longer setup by default as the networking connection to the site user access network. The default is now for sites to directly connect their user network to the User Access Node \(UAN\) or Application nodes, and to define that network configuration in the Configuration Framework Service \(CFS\) `host_vars/XNAME/customer_net.yml` file.
+User access may be configured to use either a direct connection to the UANs from the sites user network, or one of two optional user access networks implemented within the HPE Cray EX system.  The two optional networks are the Customer Access Network \(CAN\) or Customer High Speed Network \(CHN\).  The CAN is a VLAN on the Node Management Network \(NMN\), whereas the CHN is over the High Speed Network \(HSN\).
 
-Admins must create the `host_vars/XNAME/customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
+By default, a direct connection to the sites user network is assumed and the Admin must define the interface and default route using the `customer_uan_interfaces` and `customer_uan_routes` structures. When CAN or CHN are selected, the interfaces and default route are setup automatically.
 
-If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAME/customer_net.yml` for each node that will use the CAN, or in `group_vars/all/customer_net.yml` to enable the HPE Cray EX CAN on all UANs and Application nodes. The YAML files in `group_vars/all` define settings for every node in the system, whereas the YAML files in `host_vars/XNAME` define settings only for an individual node. Administrators can use either directory or both. When both YAML directories are used, the settings in `host_vars/XNAME` override the settings in `group_vars/all` files. 
+Network configuration settings are defined in the `uan-config-management` VCS repo under the `group_vars/ROLE_SUBROLE/` or `host_vars/XNAME/` directories, where `ROLE_SUBROLE` must be replaced by the role and subrole assigned for the node in HSM, and `XNAME` with the xname of the node. Values under `group_vars/ROLE_SUBROLE/` apply to all nodes with the given role and subrole.  Values under the `host_vars/XNAME/` apply to the specific node with the xname and will override any values set in `group_vars/ROLE_SUBROLE/`.  A yaml file is used by the Configuration Framwork Service \(CFS\).  The examples in this procedure use `customer_net.yml`, but any filename may be used.  Admins must create this yaml file and use the variables described in this procedure.
+
+If the HPE Cray EX CAN or CHN is required, set the `uan_user_access_cfg` variable to `CAN` or `CHN` in the yaml file.
 
 1. Obtain the password for the `crayvcs` user.
 
@@ -32,16 +36,25 @@ If the HPE Cray EX CAN is required, set `uan_can_setup : yes` in `host_vars/XNAM
     ncn-w001# cd uan-config-management
     ```
 
-5. Edit the `customer_net.yml` file in either the `host_vars/XNAME` or `group_vars/all` directory and configure the values as needed.
+5. Edit the yaml file, \(`customer_net.yml`, for example\), in either the `group_vars/ROLE_SUBROLE/` or `host_vars/XNAME` directory and configure the values as needed.
 
-    To set up CAN:
+    To set up CAN or CHN:
 
     ```bash
-    ## uan_can_setup
-    # Set uan_can_setup to 'yes' if the site will
-    # use the Shasta CAN network for user access to
-    # UAN/Application nodes.
-    uan_can_setup: no
+    ## uan_user_access_cfg
+    # Set uan_user_access_cfg to 'CAN' if the site will
+    # use the Shasta CAN network or to 'CHN' if the site
+    # will use the Shasta CHN network for user access.
+    # By default, uan_user_access_cfg is set to 'DIRECT'.
+    uan_user_access_cfg: CHN
+    ```
+
+    To allow a custom default route when CAN or CHN is selected:
+
+    ```bash
+    ## uan_customer_default_route
+    # Allow a custom default route when CAN or CHN is selected.
+    uan_customer_default_route: no
     ```
 
     To define interfaces:

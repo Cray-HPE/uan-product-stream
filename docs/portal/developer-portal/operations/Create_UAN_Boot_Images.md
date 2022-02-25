@@ -110,17 +110,25 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
 9. Apply any site-specific customizations and modifications to the Ansible configuration for the UAN nodes and commit the changes.
 
-    The default Ansible play to configure UAN nodes is `site.yml` in the base of the `uan-config-management` repository. The roles that are executed in this play allow for custom  configuration as required for the system.
+    The default Ansible play to configure UAN nodes is `site.yml` in the base of the `uan-config-management` repository. The roles that are executed in this play allow for custom configuration as required for the system.
 
     Consult the individual Ansible role `README.md` files in the uan-config-management repository roles directory to configure individual role variables. Roles prefixed with `uan_` are specific to UAN configuration and include network interfaces, disk, LDAP, software packages, and message of the day roles.
 
-    Variables should be defined and overridden in the Ansible inventory locations of the repository as shown in the following example and **not** in the Ansible plays and roles defaults. See [this page from the Ansible documentation](https://docs.ansible.com/ansible/2.9/user\_guide/playbooks\_best\_practices.html\#content-organization) for directory layouts for inventory.
+    ***NOTE:*** Admins ***must*** ensure the `uan_user_access_cfg` variable is set to the correct value for the site.  This variable controls how the nodes are configured for user access.  The options are:
+    * `DIRECT` \(default setting\): the site will directly connect to the nodes to their site user network.
+      * Admins ***must*** define the interface and default route using `customer_uan_interfaces` and `customer_uan_routes` variables or no default route will be set.
+    * `CAN`: the site will use the Cray EX Customer Access Network \(CAN\).
+      * Default route is automatically set over the `CAN`.
+    * `CHN`: the site will use the Cray EX Customer High Speed Network \(CHN\).
+      * Default route is automatically set over the `CHN`.
+
+    See [Configure Interfaces on UANs](Configure_Interfaces_on_UANs.md) for details on user access configuration.
 
     **Warning:** Never place sensitive information such as passwords in the git repository.
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.
 
-    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](operations/About_UAN_Configuration.md#about-uan-configuration) for instructions for site-specific UAN configuration, including CAN configuration.
+    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](operations/About_UAN_Configuration.md#about-uan-configuration) for instructions for site-specific UAN configuration, including CAN/CHN configuration.
 
     ```bash
     ncn-m001# vim group_vars/Application_UAN/vars.yml
