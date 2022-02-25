@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [2.3.2] - 2022-02-24
+- Add support for BiCAN (CHN) and customer defined default route with CHN/CAN
 
 ## [2.3.1] - 2022-02-15
 - Fix uan_packages to correctly check signatures
@@ -13,9 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updates CFS roles to Nvidia SDK 21.9
 - Extra testing added to CFS plays
 - Specify Application as a target group in CFS documentation
-## [2.3.1] - 2022-02-16
-- CASMUSER-2906: Add support for BiCAN (CHN) and customer defined default route with CHN/CAN
-
 ## [2.3.0] - 2021-12-15
 - CASMUSER-2926: Add loki fixes for COS 2.2 and CSM artifacts
 - Simplify builds of CFS and pin to COS 2.2 CFS plays

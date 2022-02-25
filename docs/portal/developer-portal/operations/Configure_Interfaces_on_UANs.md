@@ -3,15 +3,17 @@
 
 Perform this procedure to set network interfaces on UANs by editing a configuration file.
 
+Interface configuration is performed by the `uan_interfaces` Ansible role. For details on the variables referred to in this procedure, see [UAN Ansible Roles](UAN_Ansible_Roles.md).
+
 In the command examples in this procedure, `PRODUCT_VERSION` refers to the current installed version of the UAN product. Replace `PRODUCT_VERSION` with the UAN version number string when executing the commands.  
 
-User access is configurable to use either a direct connection to the UANs from the sites user network, or to use one of two optional user access networks implemented within the HPE Cray EX system.  The two optional networks are the Customer Access Network \(CAN\) or Customer High Speed Network \(CHN\).  CAN is a VLAN on the Node Management Network \(NMN\), whereas CHN is over the High Speed Network \(HSN\).  The default setting is to use a direct connection to the sites user network and the admin must define the interface and default route to use. When CAN or CHN are selected, the interfaces and default route setup will be configured automatically.
+User access may be configured to use either a direct connection to the UANs from the sites user network, or one of two optional user access networks implemented within the HPE Cray EX system.  The two optional networks are the Customer Access Network \(CAN\) or Customer High Speed Network \(CHN\).  The CAN is a VLAN on the Node Management Network \(NMN\), whereas the CHN is over the High Speed Network \(HSN\).
 
-Network configuration settings are defined in a `customer_net.yml` file which is used by the Configuration Framework Service \CFS\).  The path to the `customer_net.yml` file in the `uan-config-management` VCS repo will be `group_vars/NODE_GROUP/customer_net.yml` for settings common to all nodes in a given `NODE_GROUP`. `NODE_GROUP` should be replaced by the role and subrole defined in HSM for the nodes - such as `Application_UAN` if the nodes role is `Application` and subrole is `UAN`. Network configuration settings may be defined per node in `host_vars/XNAME/customer.yml`, where `XNAME` is the xname of the node.  These settings would override any settings in the `group_vars/NODE_GROUP/customer.yml` for the node with the given xname.
+By default, a direct connection to the sites user network is assumed and the Admin must define the interface and default route using the `customer_uan_interfaces` and `customer_uan_routes` structures. When CAN or CHN are selected, the interfaces and default route are setup automatically.
 
-Admins must create the `customer_net.yml` file and use the variables described in this procedure to define the interfaces and routes.
+Network configuration settings are defined in the `uan-config-management` VCS repo under the `group_vars/ROLE_SUBROLE/` or `host_vars/XNAME/` directories, where `ROLE_SUBROLE` must be replaced by the role and subrole assigned for the node in HSM, and `XNAME` with the xname of the node. Values under `group_vars/ROLE_SUBROLE/` apply to all nodes with the given role and subrole.  Values under the `host_vars/XNAME/` apply to the specific node with the xname and will override any values set in `group_vars/ROLE_SUBROLE/`.  A yaml file is used by the Configuration Framwork Service \(CFS\).  The examples in this procedure use `customer_net.yml`, but any filename may be used.  Admins must create this yaml file and use the variables described in this procedure.
 
-If the HPE Cray EX CAN or CHN is required, set `uan_user_access_cfg` to `CAN` or `CHN` in `customer_net.yml`, depending on whether the CAN or CHN user access network is desired.
+If the HPE Cray EX CAN or CHN is required, set the `uan_user_access_cfg` variable to `CAN` or `CHN` in the yaml file.
 
 1. Obtain the password for the `crayvcs` user.
 
@@ -34,7 +36,7 @@ If the HPE Cray EX CAN or CHN is required, set `uan_user_access_cfg` to `CAN` or
     ncn-w001# cd uan-config-management
     ```
 
-5. Edit the `customer_net.yml` file in either the `host_vars/XNAME` or `group_vars/all` directory and configure the values as needed.
+5. Edit the yaml file, \(`customer_net.yml`, for example\), in either the `group_vars/ROLE_SUBROLE/` or `host_vars/XNAME` directory and configure the values as needed.
 
     To set up CAN or CHN:
 
@@ -43,6 +45,7 @@ If the HPE Cray EX CAN or CHN is required, set `uan_user_access_cfg` to `CAN` or
     # Set uan_user_access_cfg to 'CAN' if the site will
     # use the Shasta CAN network or to 'CHN' if the site
     # will use the Shasta CHN network for user access.
+    # By default, uan_user_access_cfg is set to 'DIRECT'.
     uan_user_access_cfg: CHN
     ```
 

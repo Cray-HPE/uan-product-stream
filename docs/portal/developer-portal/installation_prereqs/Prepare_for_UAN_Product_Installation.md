@@ -12,7 +12,7 @@ Install and configure the COS product before performing this procedure.
 
     Refer to the procedure "Update the Management Network Firmware" in the HPE Cray EX hardware documentation.
 
-3. Ensure that the host reservations for the UAN CAN network have been properly set.
+3. Ensure that the host reservations for the UAN CAN/CHN network have been properly set.
 
     Refer to the procedure "Add UAN CAN IP Addresses to SLS" in the HPE Cray EX hardware documentation.
 
