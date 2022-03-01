@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.2] - 2022-03-01
+- Updates to CFS plays for GPU fixes
+- Updates to CFS plays for DVS/Lustre/configure_fs fixes
+
 ## [2.3.1] - 2022-02-15
 - Fix uan_packages to correctly check signatures
 - Updates CFS roles to ROCM 4.5.2
