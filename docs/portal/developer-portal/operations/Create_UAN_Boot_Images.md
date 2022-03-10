@@ -1,5 +1,5 @@
 
-## Create UAN Boot Images
+# Create UAN Boot Images
 
 This procedure updates the configuration management git repository to match the installed version of the UAN product. That updated configuration is then used to create UAN boot images and a BOS session template.
 
@@ -114,13 +114,13 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
     Consult the individual Ansible role `README.md` files in the uan-config-management repository roles directory to configure individual role variables. Roles prefixed with `uan_` are specific to UAN configuration and include network interfaces, disk, LDAP, software packages, and message of the day roles.
 
-    Variables should be defined and overridden in the Ansible inventory locations of the repository as shown in the following example and **not** in the Ansible plays and roles defaults. See [this page from the Ansible documentation](https://docs.ansible.com/ansible/2.9/user\_guide/playbooks\_best\_practices.html\#content-organization) for directory layouts for inventory.
+    Variables should be defined and overridden in the Ansible inventory locations of the repository as shown in the following example and **not** in the Ansible plays and roles defaults. See [this page from the Ansible documentation](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#content-organization) for directory layouts for inventory.
 
     **Warning:** Never place sensitive information such as passwords in the git repository.
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.
 
-    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](operations/About_UAN_Configuration.md#about-uan-configuration) for instructions for site-specific UAN configuration, including CAN configuration.
+    These and other Ansible files do not necessarily need to be modified for UAN image creation. See [About UAN Configuration](About_UAN_Configuration.md) for instructions for site-specific UAN configuration, including CAN configuration.
 
     ```bash
     ncn-m001# vim group_vars/Application_UAN/vars.yml
