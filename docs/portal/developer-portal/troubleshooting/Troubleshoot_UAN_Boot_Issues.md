@@ -1,7 +1,7 @@
 
-## Troubleshoot UAN Boot Issues
+# Troubleshoot UAN Boot Issues
 
-### The UAN boot process
+## The UAN boot process
 
 BOS boots UANs. BOS uses session templates to define various parameters such as:
 
@@ -19,13 +19,13 @@ UAN boots are performed in three phases:
     2. Mounting the rootfs
 3. Booting the UAN image rootfs.
 
-### PXE Issues
+## PXE Issues
 
 Most PXE boot failures are the result of misconfigured network switches and/or BIOS settings. The UAN must PXE boot over the Node Management Network \(NMN\) and the switches must be configured to allow connectivity to the NMN. The cable for the NMN must be connected to the first port of the OCP card on HPE DL325 and DL385 servers or to the first port of the built-in LAN-On-Motherboard \(LOM\) on Gigabyte servers. See "Prepare for UAN Product Installation" in the UAN Installation Guide for details on the switch and BIOS settings required to configure the UAN for PXE booting.
 
 UANs may fail to boot when the BIOS EFITIME is too far away from the time on management nodes. If there are x509 certificate problems, check that the BIOS time is correct. See "Configure the BIOS of an HPE UAN" or "Configure the BIOS of a Gigabyte UAN" in the UAN Installation Guide for examples of checking settings in the BIOS.
 
-### Initrd \(Dracut\) Issues
+## Initrd \(Dracut\) Issues
 
 Dracut failures are often caused by the wrong interface being named `nmn0`, or to multiple entries for the UAN xname in DNS. The latter is a result of multiple interfaces making DHCP requests. Either condition can cause IP address mismatches in the `dvs_node_map`. DNS configures entries based on DHCP leases.
 
@@ -49,7 +49,7 @@ ncn-w002
 
 If DVS and CPS are both healthy, then both of these commands will return all the worker NCNs in the HPE Cray EX system.
 
-### Image Boot Issues
+## Image Boot Issues
 
 Once dracut exits, the UAN will boot the `rootfs` image. Failures seen in this phase tend to be failures of `spire-agent`, `cfs-state-reporter`, or both. The `cfs-state-reporter` tells BOA that the node is ready and allows BOA to start CFS for Node Personalization. If `cfs-state-reporter` does not start, check if the `spire-agent` has started. The `cfs-state-reporter` depends on the `spire-agent`. Running systemctl status spire-agent will show that that service is enabled and running if there are no issues with that service. Similarly, running `systemctl status cfs-state-reporter` will show a status of SUCCESS.
 

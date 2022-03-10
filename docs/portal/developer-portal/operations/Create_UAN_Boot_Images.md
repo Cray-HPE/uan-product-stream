@@ -1,5 +1,5 @@
 
-## Create UAN Boot Images
+# Create UAN Boot Images
 
 This procedure updates the configuration management git repository to match the installed version of the UAN product. That updated configuration is then used to create UAN boot images and a BOS session template.
 

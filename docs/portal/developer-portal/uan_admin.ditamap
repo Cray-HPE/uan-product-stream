@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map id="uan_admin">
+    <title>HPE Cray User Access Node (UAN) Software Administration Guide (S-8033)</title>
+    <topicmeta>
+        <shortdesc>This publication provides instructions and examples for managing and troubleshooting User Access Nodes (UANs) on an HPE Cray EX supercomputer.</shortdesc>
+        <data name="pubsnumber" value="S-8033"></data>
+		<data name="edition" value="UAN Software Release 2.3.2"></data>
+    </topicmeta>
+    <topicref href="About_UAN_Administration.md" format="markdown">
+        <topicref href="operations/About_UAN_Configuration.md" format="markdown"/>
+    </topicref>
+    <topicref href="Manage_UAN_Boot_Images.md" format="markdown">
+        <topicref href="operations/Create_UAN_Boot_Images.md" format="markdown"/>
+        <topicref href="operations/Build_a_New_UAN_Image_Using_the_COS_Recipe.md" format="markdown"
+        />
+    </topicref>
+    <topicref href="Administrative_Tasks.md" format="markdown">
+        <topicref href="operations/Configure_Interfaces_on_UANs.md" format="markdown"/>
+        <topicref href="operations/Configure_Pluggable_Authentication_Modules_(PAM)_on_UANs.md"
+            format="markdown"/>
+        <topicref href="operations/Mount_a_New_File_System_on_an_UAN.md" format="markdown"/>
+    </topicref>
+    <topicref href="Advanced_Administrative_Tasks.md" format="markdown">
+        <topicref href="advanced/Customizing_UAN_Images_Manually.md" format="markdown"/>
+    </topicref>
+    <topicref href="Troubleshooting.md" format="markdown">
+        <topicref href="troubleshooting/Troubleshoot_UAN_Boot_Issues.md" format="markdown"/>
+        <topicref href="troubleshooting/Troubleshoot_UAN_CFS_and_Network_Configuration_Issues.md"
+            format="markdown"/>
+        <topicref href="troubleshooting/Troubleshoot_UAN_Disk_Configuration_Issues.md"
+            format="markdown"/>
+    </topicref>
+    <topicref href="Reference.md" format="markdown">
+        <topicref href="operations/UAN_Ansible_Roles.md" format="markdown"/>
+    </topicref>
+</map>

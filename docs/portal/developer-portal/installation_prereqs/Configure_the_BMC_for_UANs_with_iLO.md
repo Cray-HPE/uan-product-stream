@@ -1,4 +1,4 @@
-## Configure the BMC for UANs with iLO
+# Configure the BMC for UANs with iLO
 
 Perform this procedure to enable the IPMI/DCMI settings on an HPE UAN that are necessary to continue UAN product installation on an HPE Cray EX supercomputer.
 
@@ -6,17 +6,17 @@ Perform the first three steps of [Prepare for UAN Product Installation](Prepare_
 
 1. Create the SSH tunnel necessary to access the BMC web GUI interface.
 
-    a. Find the IP or hostname for a UAN.
+   1. Find the IP or hostname for a UAN.
 
-    b. Create an SSH tunnel to the UAN BMC. Run the following command on an external system.
+   2. Create an SSH tunnel to the UAN BMC. Run the following command on an external system.
 
-        In the following example, `UAN_MGMT` is the UAN iLO interface host name or IP address. `NCN` is the host name or IP address of a non-compute node on the system. This example assumes that `NCN` allows port forwarding. `USER` will usually be `root`.
+      In the following example, `UAN_MGMT` is the UAN iLO interface host name or IP address. `NCN` is the host name or IP address of a non-compute node on the system. This example assumes that `NCN` allows port forwarding. `USER` will usually be `root`.
 
-        ```bash
-        $ ssh -L 8443:UAN_MGMT:443 USER@NCN
-        ```
+      ```bash
+      $ ssh -L 8443:UAN_MGMT:443 USER@NCN
+      ```
 
-    c. Wait for SSH to establish the connection.
+   3. Wait for SSH to establish the connection.
 
 2. Open https://127.0.0.1:8443 in web browser on the NCN to access the BMC web GUI.
 
@@ -32,4 +32,4 @@ Perform the first three steps of [Prepare for UAN Product Installation](Prepare_
 
 8. Ensure that the remote management settings match the following screenshot.
 
-![IPMI/DCMI configuration screen](installation_prereqs/images/HPE_UAN_BMC_IPMI_DCMI_configuration.png)
+![IPMI/DCMI configuration screen](images/HPE_UAN_BMC_IPMI_DCMI_configuration.png)

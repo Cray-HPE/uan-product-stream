@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map id="uan_install">
+    <title>HPE Cray User Access Node (UAN) Software Installation Guide (S-8032)</title>
+        <topicmeta>
+            <shortdesc>This publication provides instructions and examples for installing the UAN product software on an HPE Cray EX supercomputer.</shortdesc>
+            <data name="pubsnumber" value="S-8032"></data>
+			<data name="edition" value="UAN Software Release 2.3.2"></data>
+        </topicmeta>
+    <topicref href="upgrade/Notable_Changes.md" format="markdown"/>
+    <topicref href="installation_prereqs/Hardware_and_Software_Prerequisites.md" format="markdown">
+        <topicref href="installation_prereqs/Prepare_for_UAN_Product_Installation.md"
+            format="markdown"/>
+        <topicref href="installation_prereqs/Configure_the_BMC_for_UANs_with_iLO.md"
+            format="markdown"/>
+        <topicref href="installation_prereqs/Configure_the_BIOS_of_an_HPE_UAN.md" format="markdown"/>
+        <topicref href="installation_prereqs/Configure_the_BIOS_of_a_Gigabyte_UAN.md"
+            format="markdown"/>
+    </topicref>
+    <topicref href="install/Install_the_UAN_Product_Stream.md" format="markdown"/>
+    <topicref href="upgrade/Merge_UAN_Configuration_Data.md" format="markdown"/>
+</map>
