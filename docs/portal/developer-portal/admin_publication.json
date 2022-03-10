@@ -8,6 +8,7 @@
 "source_system_id": "GUID-9999999999-ABCD-0000-9999-9999999999",
 "source_system_version": "1",
 "lifecycle": "DRAFT",
+"products": ["1013083813"],
 "col_id": "crs8033",
 "full_title": "HPE Cray User Access Node (UAN) Software Administration Guide (S-8033)",
 "description": "This publication describes how to manage and troubleshoot User Access Nodes (UANs).",

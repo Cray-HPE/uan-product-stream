@@ -375,8 +375,7 @@ to the `/etc/resolv.conf` DNS options list.
 
 `uan_access_control`
 
-`uan_access_control` is a boolean variable to control whether non-root access
-control is enabled.  Default is `no`.
+: `uan_access_control` is a boolean variable to control whether non-root access control is enabled.  Default is `no`.
 
   Example:
 

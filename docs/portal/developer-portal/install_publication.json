@@ -8,6 +8,7 @@
 "source_system_id": "GUID-9999999999-ABCD-9999-9999-9999999999",
 "source_system_version": "1",
 "lifecycle": "DRAFT",
+"products": ["1013083813"],
 "col_id": "crs8032",
 "full_title": "HPE Cray User Access Node (UAN) Software Installation Guide (S-8032)",
 "description": "This publication describes how to install and upgrade UAN product software.",
