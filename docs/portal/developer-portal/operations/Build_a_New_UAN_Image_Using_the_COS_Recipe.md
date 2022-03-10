@@ -1,5 +1,5 @@
 
-## Build a New UAN Image Using a COS Recipe
+# Build a New UAN Image Using a COS Recipe
 
 Prior to UAN 2.3, a similar copy of the COS recipe was imported with the UAN install. In the UAN 2.3 release, UAN does not install a recipe, and a COS recipe must be used. Additional uan packages will now be installed via CFS and the `uan_packages` role.
 

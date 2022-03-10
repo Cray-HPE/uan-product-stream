@@ -1,0 +1,1 @@
+curl -v -X POST -H "X-Communication-Id: $X_COMMUNICATION_ID" -H "X-Auth-Token: $X_AUTH_TOKEN" -H "Content-Type: multipart/form-data" -F "file=@build/x1234567en_us.zip" 'https://api-itg.support.hpe.com/document-loader/v1/pushcontent/'

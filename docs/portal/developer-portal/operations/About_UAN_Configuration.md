@@ -1,8 +1,8 @@
-## About UAN Configuration
+# About UAN Configuration
 
 This section describes the Ansible playbooks and roles that configure UANs.
 
-### UAN configuration overview
+## UAN configuration overview
 
 Configuration of UAN nodes is performed by the Configuration Framework Service \(CFS\). CFS can apply configuration to both images and nodes. When the configuration is applied to nodes, the nodes must be booted and accessible through SSH over the Node Management Network \(NMN\).
 
@@ -20,7 +20,7 @@ The UAN roles in site.yml are required and must not be removed, with exception o
 
 For more information about these roles, see [UAN Ansible Roles](UAN_Ansible_Roles.md#uan-ansible-roles).
 
-### UAN network configuration
+## UAN network configuration
 
 The `uan_interfaces` role configures the interfaces on the UAN nodes in three phases:
 
@@ -40,6 +40,6 @@ The `uan_interfaces` role configures the interfaces on the UAN nodes in three ph
 
 See [Configure Interfaces on UANs](Configure_Interfaces_on_UANs.md#configure-interfaces-on-uans) for detailed instructions.
 
-### UAN LDAP network requirements
+## UAN LDAP network requirements
 
 LDAP configuration requires either a CAN or another customer-provided network that can route to the LDAP servers. Both such networks route outside of the HPE Cray EX system. If a UAN only has the `nmn0` interface configured and active, the UAN cannot route outside of the system.

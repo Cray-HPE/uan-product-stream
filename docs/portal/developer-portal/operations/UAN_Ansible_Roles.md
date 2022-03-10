@@ -1,11 +1,11 @@
-## UAN Ansible Roles
+# UAN Ansible Roles
 
-### uan_disk_config
+## uan_disk_config
 
 The `uan_disk_config` role configures swap and scratch disk partitions on UAN
 nodes.
 
-#### Requirements
+### Requirements
 
 There must be disk devices found on the UAN node by the `device_filter` module
 or this role will exit with failure. This condition can be ignored by setting
@@ -17,11 +17,11 @@ The device that is found will be unmounted if mounted and a swap partition will
 be created on the first half of the disk, and a scratch partition on the second
 half. ext4 filesystems are created on each partition.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-##### `uan_require_disk`
+#### `uan_require_disk`
 
 Boolean to determine if this role continues to setup disk if no disks were found
 by the device filter. Set to `true` to exit with error when no disks are found.
@@ -30,7 +30,7 @@ by the device filter. Set to `true` to exit with error when no disks are found.
 uan_require_disk: false
 ```
 
-##### `uan_device_name_filter`
+#### `uan_device_name_filter`
 
 Regular expression of disk device name for this role to filter.
 Input to the `device_filter` module.
@@ -39,7 +39,7 @@ Input to the `device_filter` module.
 uan_device_name_filter: "^sd[a-f]$"
 ```
 
-##### `uan_device_host_filter`
+#### `uan_device_host_filter`
 
 Regular expression of host for this role to filter.
 Input to the `device_filter` module.
@@ -48,7 +48,7 @@ Input to the `device_filter` module.
 uan_device_host_filter: ""
 ```
 
-##### `uan_device_model_filter`
+#### `uan_device_model_filter`
 
 Regular expression of device model for this role to filter.
 Input to the `device_filter` module.
@@ -57,7 +57,7 @@ Input to the `device_filter` module.
 uan_device_model_filter: ""
 ```
 
-##### `uan_device_vendor_filter`
+#### `uan_device_vendor_filter`
 
 Regular expression of disk vendor for this role to filter.
 Input to the `device_filter` module.
@@ -66,7 +66,7 @@ Input to the `device_filter` module.
 uan_device_vendor_filter: ""
 ```
 
-##### `uan_device_size_filter`
+#### `uan_device_size_filter`
 
 
 Regular expression of disk size for this role to filter.
@@ -76,7 +76,7 @@ Input to the `device_filter` module.
 uan_device_size_filter: "<1TB"
 ```
 
-##### `uan_swap`
+#### `uan_swap`
 
 Filesystem location to mount the swap partition.
 
@@ -84,7 +84,7 @@ Filesystem location to mount the swap partition.
 uan_swap: "/swap"
 ```
 
-##### `uan_scratch`
+#### `uan_scratch`
 
 Filesystem location to mount the scratch partition.
 
@@ -92,7 +92,7 @@ Filesystem location to mount the scratch partition.
 uan_scratch: "/scratch"
 ```
 
-##### `swap_file`
+#### `swap_file`
 
 Name of the swapfile to create. Full path is `<uan_swap>/<swapfile>`.
 
@@ -100,7 +100,7 @@ Name of the swapfile to create. Full path is `<uan_swap>/<swapfile>`.
 swap_file: "swapfile"
 ```
 
-##### `swap_dd_command`
+#### `swap_dd_command`
 
 `dd` command to create the `swapfile`.
 
@@ -108,7 +108,7 @@ swap_file: "swapfile"
 swap_dd_command: "/usr/bin/dd if=/dev/zero of={{ uan_swap }}/{{ swap_file }} bs=1GB count=10"
 ```
 
-##### swap_swappiness
+#### swap_swappiness
 
 Value to set the swapiness in sysctl.
 
@@ -116,12 +116,11 @@ Value to set the swapiness in sysctl.
 swap_swappiness: "10"
 ```
 
-#### Dependencies
-
+### Dependencies
 
 `library/device_filter.py` is required to find eligible disk devices.
 
-#### Example Playbook
+### Example Playbook
 
 
 ```yaml
@@ -132,20 +131,20 @@ swap_swappiness: "10"
 
 This role is included in the UAN `site.yml` play.
 
-### uan_interfaces
+## uan_interfaces
 
 The `uan_interfaces` role configures site/customer-defined network interfaces
 and Shasta Customer Access Network (CAN) network interfaces on UAN nodes.
 
-#### Requirements
+### Requirements
 
 None.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-##### `uan_can_setup` (Deprecated)
+#### `uan_can_setup` (Deprecated)
 
 This variable is deprecated and `uan_user_access_cfg` should be used.
 
@@ -165,7 +164,7 @@ The default value of `uan_can_setup` is `no`.
 uan_can_setup: no
 ```
 
-##### `uan_user_access_cfg`
+#### `uan_user_access_cfg`
 
 `uan_user_access_cfg` defines the way users access the UAN nodes.  UANs may be
 configured to use a VLAN over the Node Management Network (CAN), a subnet on the
@@ -183,7 +182,7 @@ admin must define a default route in `customer_uan_routes`.
 uan_user_access_cfg: "CHN"
 ```
 
-##### `uan_customer_default_route`
+#### `uan_customer_default_route`
 
 `uan_customer_default_route` is a boolean variable that allows the default route
 to be set by the `customer_uan_routes` data when `uan_user_access_cfg` is set to
@@ -197,7 +196,7 @@ respectively.
 uan_customer_default_route: no
 ```
 
-##### `valid_uan_user_access_cfgs`
+#### `valid_uan_user_access_cfgs`
 
 `valid_uan_user_access_cfgs` is a list of valid values for `uan_user_access_cfg`.
 This value should not be changed.
@@ -208,7 +207,7 @@ valid_uan_user_access_cfgs:
   - "CAN"
   - "CHN"
 ```
-##### `sls_nmn_name`
+#### `sls_nmn_name`
 
 `sls_nmn_name` is the Node Management Network name used by SLS.
 This value should not be changed.
@@ -217,7 +216,7 @@ This value should not be changed.
 sls_nmn_name: "NMN"
 ```
 
-##### `sls_nmn_svcs_name`
+#### `sls_nmn_svcs_name`
 
 `sls_nmn_svcs_name` is the Node Management Services Network name used by SLS.
 This value should not be changed.
@@ -226,7 +225,7 @@ This value should not be changed.
 sls_nmn_svcs_name: "NMNLB"
 ```
 
-##### `sls_mnmn_svcs_name`
+#### `sls_mnmn_svcs_name`
 
 `sls_mnmn_svcs_name` is the Mountain Node Management Services Network name used
 by SLS.  This value should not be changed.
@@ -235,7 +234,7 @@ by SLS.  This value should not be changed.
 sls_mnmn_svcs_name: "NMN_MTN"
 ```
 
-##### `uan_required_dns_options`
+#### `uan_required_dns_options`
 
 `uan_required_dns_options` is a list of DNS options.  By default, `single-request` is set and must not be removed.
 
@@ -244,7 +243,7 @@ uan_required_dns_options:
   - 'single-request'
 ```
 
-##### `customer_uan_interfaces`
+#### `customer_uan_interfaces`
 
 `customer_uan_interfaces` is as list of interface names used for constructing
 `ifcfg-<customer_uan_interfaces.name>` files. Define ifcfg fields for each
@@ -272,7 +271,7 @@ customer_uan_interfaces:
       startmode: "auto"
 ```
 
-##### `customer_uan_routes`
+#### `customer_uan_routes`
 
 `customer_uan_routes` is as list of interface routes used for constructing
 `ifroute-<customer_uan_routes.name>` files.
@@ -292,7 +291,7 @@ customer_uan_routes:
       - "10.103.8.128/25 10.103.8.20 255.255.255.255 net2"
 ```
 
-##### `customer_uan_rules`
+#### `customer_uan_rules`
 
 `customer_uan_rules` is as list of interface rules used for constructing
 `ifrule-<customer_uan_routes.name>` files.
@@ -310,7 +309,7 @@ customer_uan_rules:
       - "from 10.103.8.0/24 lookup 3"
 ```
 
-##### `customer_uan_global_routes`
+#### `customer_uan_global_routes`
 
 `customer_uan_global_routes` is a list of global routes used for constructing
 the "routes" file.
@@ -325,7 +324,7 @@ customer_uan_global_routes:
     - "10.100.0.0 10.252.0.1 255.255.128.0 -"
 ```
 
-##### `external_dns_searchlist`
+#### `external_dns_searchlist`
 
 `external_dns_searchlist` is a list of customer-configurable fields to be added
 to the `/etc/resolv.conf` DNS search list.
@@ -339,7 +338,7 @@ external_dns_searchlist:
   - 'my.other.domain.com'
 ```
 
-##### `external_dns_servers`
+#### `external_dns_servers`
 
 `external_dns_servers` is a list of customer-configurable fields to be added
 to the `/etc/resolv.conf` DNS server list.
@@ -353,7 +352,7 @@ external_dns_servers:
   - '5.6.7.8'
 ```
 
-##### `external_dns_options`
+#### `external_dns_options`
 
 `external_dns_options` is a list of customer-configurable fields to be added
 to the `/etc/resolv.conf` DNS options list.
@@ -366,7 +365,7 @@ external_dns_options:
   - 'single-request'
 ```
 
-##### `uan_access_control`
+#### `uan_access_control`
 
 `uan_access_control` is a boolean variable to control whether non-root access
 control is enabled.  Default is `no`.
@@ -375,7 +374,7 @@ control is enabled.  Default is `no`.
 uan_access_control: no
 ```
 
-##### `api_gateways`
+#### `api_gateways`
 
 `api_gateways` is a list of API gateway DNS names to block non-user access
 
@@ -387,7 +386,7 @@ api_gateways:
   - "kubeapi-vip"
 ```
 
-##### `api_gw_ports`
+#### `api_gw_ports`
 
 `api_gw_ports` is a list of gateway ports to protect.
 
@@ -395,7 +394,7 @@ api_gateways:
 api_gw_ports: "80,443,8081,8888"
 ```
 
-##### `sls_url`
+#### `sls_url`
 
 `sls_url` is the SLS URL.
 
@@ -403,11 +402,11 @@ api_gw_ports: "80,443,8081,8888"
 sls_url: "http://cray-sls"
 ```
 
-#### Dependencies
+### Dependencies
 
 None.
 
-#### Example Playbook
+### Example Playbook
 
 ```yaml
 - hosts: Application_UAN
@@ -417,15 +416,15 @@ None.
 
 This role is included in the UAN `site.yml` play.
 
-### uan_ldap
+## uan_ldap
 
 The `uan_ldap` role configures LDAP and AD groups on UAN nodes.
 
-#### Requirements
+### Requirements
 
 NSCD, pam-config, sssd.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
@@ -480,11 +479,11 @@ uan_pam_modules:
       - "account required\tpam_access.so"
 ```
 
-#### Dependencies
+### Dependencies
 
 None.
 
-#### Example Playbook
+### Example Playbook
 
 ```yaml
 - hosts: Application_UAN
@@ -494,15 +493,15 @@ None.
 
 This role is included in the UAN `site.yml` play.
 
-### uan_motd
+## uan_motd
 
 The `uan_motd` role appends text to the `/etc/motd` file.
 
-#### Requirements
+### Requirements
 
 None.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
@@ -512,11 +511,11 @@ uan_motd_content: []
 
 `uan_motd_content` contains text to be added to the end of the `/etc/motd` file.
 
-#### Dependencies
+### Dependencies
 
 None.
 
-#### Example Playbook
+### Example Playbook
 
 ```yaml
 - hosts: Application_UAN
@@ -526,7 +525,7 @@ None.
 
 This role is included in the UAN `site.yml` play.
 
-### uan_packages
+## uan_packages
 
 The `uan_packages` role installs additional RPMs on UANs using the Ansible
 `zypper` module.
@@ -539,11 +538,11 @@ on large systems.
 
 This role will only run on SLES-based nodes.
 
-#### Requirements
+### Requirements
 
 Zypper must be installed.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
@@ -553,11 +552,11 @@ uan_additional_sles15_packages: []
 
 `uan_additional_sles15_packages` contains the list of RPM packages to install.
 
-#### Dependencies
+### Dependencies
 
 None.
 
-#### Example Playbook
+### Example Playbook
 
 ```yaml
 - hosts: Application_UAN
@@ -568,19 +567,19 @@ None.
 This role is included in the UAN `site.yml` play.
 
 
-### uan_shadow
+## uan_shadow
 
 The `uan_shadow` role configures the root password on UAN nodes.
 
-#### Requirements
+### Requirements
 
 The root password hash has to be installed in HashiCorp Vault at `secret/uan root_password`.
 
-#### Role Variables
+### Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-##### `uan_vault_url`
+#### `uan_vault_url`
 
 `uan_vault_url` is the URL for the HashiCorp Vault
 
@@ -588,7 +587,7 @@ Available variables are listed below, along with default values (see `defaults/m
 uan_vault_url: "http://cray-vault.vault:8200"
 ```
 
-##### `uan_vault_role_file`
+#### `uan_vault_role_file`
 
 `uan_vault_role_file` is the required Kubernetes role file for HashiCorp Vault access.
 
@@ -596,7 +595,7 @@ uan_vault_url: "http://cray-vault.vault:8200"
 uan_vault_role_file: /var/run/secrets/kubernetes.io/serviceaccount/namespace
 ```
 
-##### `uan_vault_jwt_file`
+#### `uan_vault_jwt_file`
 
 `uan_vault_jwt_file` is the path to the required Kubernetes token file for HashiCorp Vault access.
 
@@ -604,7 +603,7 @@ uan_vault_role_file: /var/run/secrets/kubernetes.io/serviceaccount/namespace
 uan_vault_jwt_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 ```
 
-##### `uan_vault_path`
+#### `uan_vault_path`
 
 `uan_vault_path` is the path to use for storing data for UANs in HashiCorp Vault.
 
@@ -612,7 +611,7 @@ uan_vault_jwt_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 uan_vault_path: secret/uan
 ```
 
-##### `uan_vault_key`
+#### `uan_vault_key`
 
 `uan_vault_key` is the key used for storing the root password in HashiCorp Vault.
 
@@ -620,11 +619,11 @@ uan_vault_path: secret/uan
 uan_vault_key: root_password
 ```
 
-#### Dependencies
+### Dependencies
 
 None.
 
-#### Example Playbook
+### Example Playbook
 
 
 ```yaml
