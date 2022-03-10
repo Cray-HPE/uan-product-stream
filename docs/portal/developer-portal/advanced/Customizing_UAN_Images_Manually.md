@@ -1,4 +1,4 @@
-## Customizing UAN Images Manually
+# Customizing UAN Images Manually
 
 1. Query IMS for the UAN Image you want to customize.
 

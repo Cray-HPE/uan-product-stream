@@ -1,5 +1,5 @@
 
-## Troubleshoot UAN Disk Configuration Issues
+# Troubleshoot UAN Disk Configuration Issues
 
 Perform this procedure to enable `uan_disk_config` to run successfully by erasing existing disk partitions. UAN disk configuration will fail if the disk on the node is already partitioned. Manually erase any existing partitions to fix the issue.
 
