@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+{%- for rel in releases %}
+  hugo_prep_en_{{ rel.translate(translation) }}:
+    container_name: hugo_prep_en_{{ rel.translate(translation) }}
+    image: ubuntu
+    environment:
+      UAN_RELEASE: {{ rel }}
+    volumes:
+      - ${PWD}:/src
+    entrypoint:
+      - /src/bin/convert-docs-to-hugo.sh
+      - --source
+      - /src/docs-uan/
+      - --destination
+      - /src/content/
+{%- endfor %}

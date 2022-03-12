@@ -1,0 +1,7 @@
+---
+# List releases in the order they should appear in the documentation
+# version menu.  Default at the top of the list.
+releases:
+  - v2.3.1
+  - v2.3.0 
+  - v2.1.9

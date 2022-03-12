@@ -1,0 +1,24 @@
+title = "User Access Node (UAN)"
+theme = "hugo-theme-learn"
+baseURL = "/docs-uan/"
+languageCode = "en-US"
+defaultContentLanguage = "en-{{ releases[0].translate(translation) }}"
+defaultContentLanguageInSubdir = true
+showVisitedLinks = true
+
+[outputs]
+home = ["HTML", "RSS", "JSON" ]
+
+[params]
+themeVariant = "blue"
+disableNextPrev = true
+disableLandingPageButton = true
+
+[languages]
+{%- for rel in releases %}
+  [languages.en-{{ rel.translate(translation) }}]
+    contentDir = "content/{{ rel }}"
+    languageName = "{{ rel }}"
+    weight = {{ releases.index(rel) + 1 }}
+    landingPageURL = "/docs-uan/en-{{ rel.translate(translation) }}"
+{%- endfor %}
