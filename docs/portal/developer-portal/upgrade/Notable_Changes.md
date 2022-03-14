@@ -2,7 +2,7 @@
 
 The following guide describes changes included in a particular UAN version that may be of note during an install or upgrade.
 
-When an upgrade is being performed, please review the notable changes for **all** of the UAN versions up to the version being installed. If a particular version does not appear in this guide, it may have only had minor changes. For a full account of the changes involved in a release, consult the [Change Log](../../../../ChangeLog.md)
+When an upgrade is being performed, please review the notable changes for **all** of the UAN versions up to the version being installed. If a particular version does not appear in this guide, it may have only had minor changes. For a full account of the changes involved in a release, consult the ChangeLog.md file at the root of the UAN product repository.
 
 ## UAN 2.2
 
