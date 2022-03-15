@@ -139,4 +139,6 @@ In this procedure, an upgrade from UAN 2.0.0 to UAN 2.3.1 is being performed. Ad
     ncn-m001# exit
     ```
 
-11. Perform [Build a New UAN Image Using the COS Recipe](../operations/Build_a_New_UAN_Image_Using_the_COS_Recipe.md) and [Create UAN Boot Images](../operations/Create_UAN_Boot_Images.md) to upgrade the boot images and perform CFS image customization for the UAN images.
+11. Deploy the updated UAN product software to the User Access Nodes. 
+    
+    Continue with "Build a New UAN Image Using the COS Recipe" and "Create UAN Boot Images" in the publication _HPE Cray User Access Node (UAN) Software Administration Guide_ to upgrade the boot images and perform CFS image customization for the UAN images.
