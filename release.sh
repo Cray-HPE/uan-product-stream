@@ -90,7 +90,7 @@ function sync_repo_content {
 }
 
 function sync_install_content {
-    rsync -aq "${ROOTDIR}/vendor/stash.us.cray.com/scm/shastarelm/release/lib/install.sh" "${BUILDDIR}/lib/install.sh"
+    rsync -aq "${VENDOR}/lib/install.sh" "${BUILDDIR}/lib/install.sh"
 
     sed -e "s/@major@/${MAJOR}/g
             s/@minor@/${MINOR}/g
@@ -120,8 +120,13 @@ function package_distribution {
 
 # Definitions and sourced variables
 ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
+VENDOR="${ROOTDIR}/vendor/github.hpe.com/hpe/hpc-shastarelm-release/"
+
+# Set PYTHONPATH to nothing so ${VENDOR}/lib/release.sh doesn't error on an undefined
+PYTHONPATH=""
+
 source "${ROOTDIR}/vars.sh"
-source "${ROOTDIR}/vendor/stash.us.cray.com/scm/shastarelm/release/lib/release.sh"
+source "${VENDOR}/lib/release.sh"
 requires rsync tar generate-nexus-config helm-sync skopeo-sync reposync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 
