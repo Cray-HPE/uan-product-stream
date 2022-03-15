@@ -5,130 +5,69 @@ static HTML format from the markdown source.
 
 ## Building the HTML Documentation
 
-To build the HTML files for the UAN documentation, run the `bin/build.sh` script
-from the `docs/hugo/docs-uan` directory.
+To build the HTML files for the UAN documentation, run the `bin/build-hugo-docs.py` script
+from the `docs/hugo/docs-uan` directory.  Here's the usage statement:
 
-The `bin/build.sh` script performs the following steps:
+```bash
+bin/build-hugo-docs.py -h
+Usage: build-hugo-docs.py [options]
 
-1. Clones the UAN markdown docs from the `uan-product-stream` GitHub repo to
-`docs/hugo/docs-uan/docs-uan/<release>` for each release listed in the `RELEASES`
-array variable defined in `bin/build.sh`.
+Options:
+  -h, --help            show this help message and exit
+  -f RELEASE_FILE, --release-file=RELEASE_FILE
+                        file containing list of releases
+  --no-clone            flag to not clone the doc source
+  --no-publish          flag to not publish to github pages
+  -r RELEASE1,RELEASE2,..., --releases=RELEASE1,RELEASE2,...
+                        comma-separated list of releases
+```
 
-    1. The following example shows the v2.3.0 and v2.1.9 releases of the `uan-product-stream`.
-    The releases to be cloned are defined by the `RELEASES` array variable in
-    `bin/build.sh`.
+The `bin/build-hugo-docs.py` script performs the following steps:
 
-        ```bash
-        RELEASES=(v2.3.0 v2.1.9)
-        ```
+1. Generates the following files based on the releases listed in
+`docs/hugo/docs-uan/release_list.yml` file.  These files control how hugo is
+configured and launch hugo to build the docs.
 
-        1. When additional releases are defined in `RELEASES`, additional
-        definitions must be made in the following files.
+    * `bin/build.sh` - the script that clones the doc source and calls hugo
+    to build the docs
 
-            1. `docs/hugo/docs-uan/config.toml`
+    * `config.toml` - the hugo configuration file
 
-                New Hugo `languages` must be defined in
-                `docs/hugo/docs-uan/config.toml` for each new release.
+    * `bin/compose/hugo_prep.yml` configuration to convert the raw doc markdown
+    source into a hugo annotated markdown format
 
-                The following example is the entry for the `v2.3.0` branch. The
-                language name is `en-230`. The `contentDir` value is the
-                location where Hugo creates the HTML content relative to
-                `docs/hugo/docs-uan`. This path will always be `content/<release>`,
-                where `<release>` is the name of the release.
-                For each additional release/language, increase the `weight` value
-                by 10.  The `landingPageURL` defines where the release/language
-                HTML pages will start on the webserver.
+    * `bin/compose/test.yml` - builds link checkers that ensure the links within
+    the document files are valid
 
-                ```bash
-                [languages]
-                  [languages.en-230]
-                    contentDir = "content/v2.3.0"
-                    languageName = "2.3"
-                    weight = 10
-                    landingPageURL = "/docs-uan/en-230"
-                ```
+    The values in `release_list.yml` may be overwritten on the command line
+    by the `-r` or `--releases` options.
 
-            1. `docs/hugo/docs-uan/bin/compose/hugo_prep.yml`
+    The path and name of the `release_list.yml` may be overwritten on the
+    command line by the `-f` or `--release-file` options.
 
-                New Hugo prep services must be defined in
-                `docs/hugo/docs-uan/bin/compose/hugo_prep.yml` for each new
-                release.
+1. Builds the HTML documents by calling the newly generated `bin/build.sh`
+script.  By default, `bin/build.sh` will clone the document source for each
+release to a working directory - `docs/hugo/docs-uan/docs-uan/RELEASE, where
+RELEASE is a release name being built.
 
-                The following example is the entry for the `v2.3.0` release.
-                When adding new releases, change `hugo_prep_en_230` to
-                `hugo_prep_en_<release>`, where `<release>` is the release name
-                and update the `UAN_RELEASE` value to the release name.
-
-                ```bash
-                hugo_prep_en_230:
-                  container_name: hugo_prep_en_230
-                  image: ubuntu
-                  environment:
-                    UAN_RELEASE: v2.3.0 
-                  volumes:
-                    - ${PWD}:/src
-                  entrypoint:
-                    - /src/bin/convert-docs-to-hugo.sh
-                    - --source
-                    - /src/docs-uan/
-                    - --destination
-                    - /src/content/
-                ```
-
-            1. `docs/hugo/docs-uan/bin/compose/test.yml`
-
-                New Hugo linkcheck services must be defined in
-                `docs/hugo/docs-uan/bin/compose/test.yml` for each new release tag.
-
-                The following example is the entry for the `v2.3.0` release.
-                When adding new branches, change `linkcheck_en_230` to
-                `linkcheck_en_<release>`, where `<release>` is the release name
-                update the `container_name` value with the release name.
-                Update `en-<release>` in the command to the new `en-<release>` and
-                increment the `ipv4_address`.
-
-                ```bash
-                linkcheck_en_230:
-                  build: ${PWD}/bin/compose/build/linkchecker
-                  container_name: uan_docs_linkcheck_230
-                  depends_on:
-                    - serve_static
-                  image: filiph/linkcheck
-                  command:
-                    - http://10.253.253.2/uan/docs-uan/en-230
-                  networks:
-                    uan_documentation:
-                      ipv4_address: 10.253.253.3
-                ```
-
-            1. `docs/hugo/docs-uan/bin/build.sh`
-
-                Update `bin/build.sh` with the new linkcheck service.
-                Add the new linkcheck service name (`linkcheck_en_<release>)
-                after the `linkcheck_en_<release>` in the following section of the
-                file.
-
-                ```bash
-                # Crawl the links for each version
-                docker-compose -f $THIS_DIR/compose/test.yml up --no-color
-                --remove-orphans \
-                linkcheck_en_<release> linkcheck_en_<new-release> | tee -a uan_docs_build.log
-                ```
-
-1. Prepare the contents of the UAN documentation markdown
-files for use with Hugo.  These files will be in placed in
-the `docs/hugo/docs-uan/content` directory.
-
-1. Generate the HTML files from the
-`docs/hugo/docs-uan/content` and place them in the
-`docs/hugo/docs-uan/public` directory.
+    ***NOTE*** If any modifications need to be made to the cloned document
+    source before publishing the docs, be sure to add the `--no-publish`
+    option to the `bin/build-hugo-docs.py` command line.  This will clone
+    the document source to the working directory and not publish to the
+    github pages repository.  Changes can then be made to the source.  When
+    the modifications are completed, `bin/build-hugo-docs.py --no-clone` must
+    be run to rebuild and publish the modified documentation to the github
+    pages repository.
 
 ## Viewing the HTML UAN Documentation
 
-To view the generated documentation locally, run the
-`bin/dev.sh` script from `docs/hugo/docs-uan`.  The
-`bin/dev.sh` script starts a webserver and hosts the
-UAN documentation at `http://localhost/uan`.
+By default, the documentation is published to the UAN github pages documentation
+URL - `https://cray-hpe.github.io/docs-uan`.
+
+When `bin/build-hugo-docs.py --no-publish` is executed, the HTML documentation
+may be viewed by running the `bin/dev.sh` script from `docs/hugo/docs-uan`.
+The `bin/dev.sh` script will start a local webserver and host the documentation
+at `http://localhost/uan`.
 
 Alternatively, the contents of `docs/hugo/docs-uan/public`
 may be copied to any webserver.

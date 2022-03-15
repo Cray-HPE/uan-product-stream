@@ -47,12 +47,12 @@ parser.add_option("-f", "--release-file", dest="release_file",
                   default=THIS_DIR + "/../release_list.yml",
                   help="file containing list of releases",
                   metavar="RELEASE_FILE")
-parser.add_option("-n", "--no-clone", dest="clone_docs",
+parser.add_option("--no-clone", dest="clone_docs",
                   action="store_false", default=True,
                   help="flag to not clone the doc source")
-parser.add_option("-p", "--publish", dest="publish_docs",
-                  action="store_true", default=False,
-                  help="flag to docs to github pages")
+parser.add_option("--no-publish", dest="publish_docs",
+                  action="store_false", default=True,
+                  help="flag to not publish to github pages")
 parser.add_option("-r", "--releases", dest="release_args",
                   action="store", type="string",
                   help="comma-separated list of releases",
