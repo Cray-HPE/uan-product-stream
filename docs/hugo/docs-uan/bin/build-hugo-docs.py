@@ -32,34 +32,35 @@
 # The default releases.yaml file may be overridden by the '--release-file'
 # option.
 
-from email.policy import default
 import pathlib
 import subprocess
-from tkinter import W
 import yaml
 from jinja2 import Environment, FileSystemLoader
 from optparse import OptionParser
 
 
-THIS_DIR = pathlib.Path(__file__).parent.resolve()
+THIS_DIR = str(pathlib.Path(__file__).parent.resolve())
 # Get options
 parser = OptionParser()
+parser.add_option("-f", "--release-file", dest="release_file",
+                  action="store", type="string",
+                  default=THIS_DIR + "/../release_list.yml",
+                  help="file containing list of releases",
+                  metavar="RELEASE_FILE")
+parser.add_option("-n", "--no-clone", dest="clone_docs",
+                  action="store_false", default=True,
+                  help="flag to not clone the doc source")
+parser.add_option("-p", "--publish", dest="publish_docs",
+                  action="store_true", default=False,
+                  help="flag to docs to github pages")
 parser.add_option("-r", "--releases", dest="release_args",
                   action="store", type="string",
                   help="comma-separated list of releases",
                   metavar="RELEASE1,RELEASE2,...")
-parser.add_option("-f", "--release-file", dest="release_file",
-                  action="store", type="string",
-                  default="../release_list.yml",
-                  help="file containing list of releases",
-                  metavar="RELEASE_FILE")
-parser.add_option("-n", "--no-clone", dest="clone_docs",
-                  action="store_false", type="boolean",
-                  default=True,
-                  help="flag to not clone the doc source")
 
 (options, args) = parser.parse_args()
 
+# Generate release list from command line or release_file
 if options.release_args:
     release_list = options.release_args.split(',')
 else:
@@ -68,11 +69,13 @@ else:
         out = yaml.safe_load(release_info)
     release_list = out['releases']
 
+# Convert release list to a space delimited string
 release_string = ' '.join(release_list)
-chars_to_strip = ['v', '.']
 # Create a mapping table to map the characters
 # to be deleted with empty string.  For example,
-# this converts 'v2.3.1' to '231'.
+# this converts the release name 'v2.3.1' to '231'
+# which is used in hugo language names.
+chars_to_strip = ['v', '.']
 translation_table = str.maketrans('', '', ''.join(chars_to_strip))
 linkcheck_string = ''
 version_list = []
@@ -80,39 +83,43 @@ for i in release_list:
     linkcheck_string = linkcheck_string + 'linkcheck_en_' + i.translate(translation_table) + ' '
     version_list.append(i.translate(translation_table))
 
-file_loader = FileSystemLoader('templates')
+# Create template loader
+file_loader = FileSystemLoader(THIS_DIR + "/templates")
 env = Environment(loader=file_loader)
 
+# Build docs/hugo/docs-uan/bin/build.sh from template
 build_template = env.get_template('build.sh.j2')
-hugo_template = env.get_template('hugo_prep.yml.j2')
-config_template = env.get_template('config.toml.j2')
-test_template = env.get_template('test.yml.j2')
-
 build_out = build_template.render(releases=release_string, linkchecks=linkcheck_string, clone=options.clone_docs)
-hugo_prep_out = hugo_template.render(releases=release_list, translation=translation_table)
-config_out = config_template.render(releases=release_list, translation=translation_table)
-test_out = test_template.render(releases=release_list, translation=translation_table)
-print(build_out)
-print()
-print(hugo_prep_out)
-print()
-print(config_out)
-print()
-print(test_out)
-
-### Build docs/hugo/docs-uan/bin/build.sh from template ###
-with open("./build.sh", "w") as fh:
+with open(THIS_DIR + "/build.sh", "w") as fh:
     fh.write(build_out)
-### Build docs/hugo/docs-uan/config.toml from template ###
-with open("../config.toml", "w") as fh:
+
+# Build docs/hugo/docs-uan/config.toml from template
+config_template = env.get_template('config.toml.j2')
+config_out = config_template.render(releases=release_list, translation=translation_table)
+with open(THIS_DIR + "/../config.toml", "w") as fh:
     fh.write(config_out)
-### Build docs/hugo/docs-uan/bin/compose/hugo_prep.yml from template ###
-with open("./compose/hugo_prep.yml", "w") as fh:
+
+# Build docs/hugo/docs-uan/bin/compose/hugo_prep.yml from template
+hugo_template = env.get_template('hugo_prep.yml.j2')
+hugo_prep_out = hugo_template.render(releases=release_list, translation=translation_table)
+with open(THIS_DIR + "/compose/hugo_prep.yml", "w") as fh:
     fh.write(hugo_prep_out)
-### Build docs/hugo/docs-uan/bin/compose/test.yml from template ###
-with open("./compose/test.yml", "w") as fh:
+
+# Build docs/hugo/docs-uan/bin/compose/test.yml from template
+test_template = env.get_template('test.yml.j2')
+test_out = test_template.render(releases=release_list, translation=translation_table)
+with open(THIS_DIR + "/compose/test.yml", "w") as fh:
     fh.write(test_out)
 
-### Run docs/hugo/docs-uan/bin/build.sh ###
-build_docs = subprocess.run(["./build.sh"])
-print("Results of the document build was: ", build_docs.returncode)
+# Run docs/hugo/docs-uan/bin/build.sh
+chmod_build_docs = subprocess.call(['chmod', '0755', THIS_DIR + "/build.sh"])
+print("Building docs...")
+build_docs = subprocess.run([THIS_DIR + "/build.sh"])
+print("build.sh exited with code ", build_docs.returncode)
+
+# Run docs/hugo/docs-uan/bin/push.sh
+if options.publish_docs:
+    chmod_build_docs = subprocess.call(['chmod', '0755', THIS_DIR + "/push.sh"])
+    print("Publishing docs to github pages...")
+    push_docs = subprocess.run([THIS_DIR + "/push.sh"])
+    print("push.sh exited with code ", push_docs.returncode)
