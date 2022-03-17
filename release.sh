@@ -79,11 +79,6 @@ function sync_repo_content {
     # sync container images
     skopeo-sync "${ROOTDIR}/docker/index.yaml" "${BUILDDIR}/docker"
 
-    # Modify how docker images will be imported so helm charts will work without changes
-    mkdir -p "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    mv ${BUILDDIR}/docker/artifactory.algol60.net/*-docker/*stable/* "${BUILDDIR}/docker/arti.dev.cray.com/cray"
-    rm -r "${BUILDDIR}/docker/artifactory.algol60.net"
-
     # sync uan repos from bloblet
     reposync "${BLOBLET_URL}/sle-15sp2" "${BUILDDIR}/rpms/sle-15sp2"
     reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
