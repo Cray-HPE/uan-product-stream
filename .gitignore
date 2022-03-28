@@ -2,3 +2,7 @@ dist/
 docs/hugo/docs-uan/content
 docs/hugo/docs-uan/public
 docs/hugo/docs-uan/uan_docs_build.log
+docs/hugo/docs-uan/config.toml
+docs/hugo/docs-uan/bin/build.sh
+docs/hugo/docs-uan/bin/compose/hugo_prep.yml
+docs/hugo/docs-uan/bin/compose/test.yml
