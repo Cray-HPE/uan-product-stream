@@ -5,10 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Updates to vendor directory for generating and installing releases
 
-## [2.3.2] - 2022-03-01
-- Updates to CFS plays for GPU fixes
-- Updates to CFS plays for DVS/Lustre/configure_fs fixes
+## [2.3.2] - 2022-02-24
+- Add support for BiCAN (CHN) and customer defined default route with CHN/CAN
 
 ## [2.3.1] - 2022-02-15
 - Fix uan_packages to correctly check signatures

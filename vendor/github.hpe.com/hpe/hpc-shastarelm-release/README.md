@@ -68,11 +68,11 @@ Asset directories, assuming the release distribution packages assets of that typ
 
 Use [`git-vendor`](https://github.com/brettlangdon/git-vendor), a wrapper
 around `git-subtree` commands for checking out and updating vendored
-dependencies. Installation via Homebrew is simply `brew install git-vendor`.
+dependencies. Installation via Homebrew is simply `breq install git-vendor`.
 Once installed, vendor this library into a product release repository via:
 
 ```bash
-$ git vendor add release https://stash.us.cray.com/scm/shastarelm/release.git master
+$ git vendor add release https://github.hpe.com/hpe/hpc-shastarelm-release.git master
 ```
 
 
