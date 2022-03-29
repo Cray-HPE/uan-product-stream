@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [2.3.2] - 2022-02-24
+## [2.3.2] - 2022-03-29
 - Add support for BiCAN (CHN) and customer defined default route with CHN/CAN
+- Enable publishing of docs to HPE Support Center
 
 ## [2.3.1] - 2022-02-15
 - Fix uan_packages to correctly check signatures
