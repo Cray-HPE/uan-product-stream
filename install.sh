@@ -26,8 +26,8 @@
 
 set -Eeuox pipefail
 function notify {
-        FAILED_COMMAND="$(caller): ${BASH_COMMAND}"
-        echo "ERROR: ${FAILED_COMMAND}"
+    FAILED_COMMAND="$(caller): ${BASH_COMMAND}"
+    echo "ERROR: ${FAILED_COMMAND}"
 }
 trap notify ERR
 
@@ -52,6 +52,13 @@ export CRAY_NEXUS_SETUP_IMAGE=${CRAY_NEXUS_SETUP_IMAGE}
 [[ -f "${ROOTDIR}/lib/nexus-upload.sh" ]] && . "${ROOTDIR}/lib/nexus-upload.sh"
 
 clean-install-deps
+
+# Verify the container runtime is configured to mirror artifactory.algol60.net
+if crictl  info | jq -e '.config.registry.mirrors | keys | map(select(. == "artifactory.algol60.net")) | length <= 0' >/dev/null; then
+    # It's not, so update image references to pull directly from registry.local
+    yq w -i "${ROOTDIR}/build/manifests/uan.yaml" 'spec.charts.(name == cray-uan-install).values.cray-import-config.config_image.image.repository' 'registry.local/artifactory.algol60.net/uan-docker/stable/cray-uan-config'
+    yq w -i "${ROOTDIR}/build/manifests/uan.yaml" 'spec.charts.(name == cray-uan-install).values.cray-import-config.catalog.image.repository' 'registry.local/artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update'
+fi
 
 # Deploy manifests
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
