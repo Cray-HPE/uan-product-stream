@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - Updates to vendor directory for generating and installing releases
-- Add support for BiCAN (CHN) and customer defined default route with CHN/CAN
 
 ## [2.3.2] - 2022-03-01
 - Updates to CFS plays for GPU fixes
