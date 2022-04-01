@@ -1,4 +1,4 @@
-## Upgrades
+# Upgrades
 
 Performing an upgrade of UAN from one version to the next follows the same general process as a fresh install. Some considerations may need to be made  when merging the existing CFS configuration with the latest CFS configuration provided by the release.
 

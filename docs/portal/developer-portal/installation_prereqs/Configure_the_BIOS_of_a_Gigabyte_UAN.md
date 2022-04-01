@@ -1,4 +1,4 @@
-## Configure the BIOS of a Gigabyte UAN
+# Configure the BIOS of a Gigabyte UAN
 
 Perform this procedure to configure the network interface and boot settings required by Gigabyte UANs.
 
@@ -8,7 +8,7 @@ Before the UAN product can be installed on Gigabyte UANs, specific network inter
 
 2. Navigate to the boot menu.
 
-3. Set the **Boot Option \#1** field to `Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection`.
+3. Set the **`Boot Option #1`** field to `Network:UEFI: PXE IP4 Intel(R) I350 Gigabit Network Connection`.
 
 4. Set all other **Boot Option** fields to `Disabled`.
 
@@ -26,7 +26,7 @@ Before the UAN product can be installed on Gigabyte UANs, specific network inter
 
 9. **Optional:** Run the following IPMI commands if the BIOS settings do not persist.
 
-    In these example commands, the BMC of the UAN is x3000c0s27b0. Replace USERNAME and PASSWORD with username and password of the BMC of the UAN. These commands do the following:
+    In these example commands, the BMC of the UAN is x3000c0s27b0. Replace `USERNAME` and `PASSWORD` with username and password of the BMC of the UAN. These commands do the following:
 
     - Power off the node
     - Perform a reset.
