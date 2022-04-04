@@ -1,4 +1,4 @@
-## Configure the BIOS of an HPE UAN
+# Configure the BIOS of an HPE UAN
 
 Perform this procedure to configure the network interface and boot settings required by HPE UANs.
 
@@ -8,7 +8,7 @@ Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iL
 
 1. Force a UAN to reboot into the BIOS.
 
-    In the following command, UAN\_BMC\_XNAME is the xname of the BMC of the UAN to configure. Replace USER and PASSWORD with the BMC username and password, respectively.
+    In the following command, `UAN_BMC_XNAME` is the xname of the BMC of the UAN to configure. Replace `USER` and `PASSWORD` with the BMC username and password, respectively.
 
     ```bash
     ncn-m001# ipmitool -U USER -P PASSWORD -H UAN_BMC_XNAME -I lanplus \
@@ -26,7 +26,7 @@ Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iL
 
 3. Press the **ESC** and **9** keys to access the BIOS System Utilities when the option appears.
 
-4. Ensure that OCP Slot 1 Port 1 is the only port with **Boot Mode** set to Network Boot \(PXE\). All other ports must have **Boot Mode** set to Disabled.
+4. Ensure that OCP Slot 10 Port 1 is the only port with **`Boot Mode`** set to Network Boot. All other ports must have **`Boot Mode`** set to Disabled.
 
     The settings must match the following example.
 
@@ -53,7 +53,7 @@ Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iL
         --------------------
     ```
 
-5. Set the **Link Speed** to SmartAN for all ports.
+5. Set the **`Link Speed`** to `SmartAN` for all ports.
 
     ```bash
         --------------------
@@ -122,19 +122,7 @@ Perform [Configure the BMC for UANs with iLO](Configure_the_BMC_for_UANs_with_iL
     ------------------------- 
     ```
 
-8. Ensure that the time is set correctly. 
+8. Refer to this [Setting the Date and Time](https://support.hpe.com/hpesc/public/docDisplay?docLocale=en_US&docId=a00112581en_us&page=s_date_time.html) in the HPE UEFI documentation to set the correct date and time.
 
-   If the time is not set correctly, PXE booting issues may occur.
+   If the time is not set correctly, then PXE network booting issues may occur.
 
-    ```bash
-    -----------------------
-            System Utilities
-
-            System Information > Summary
-
-            System Name                                       HPE ProLiant DL385 Gen10 Plus
-            ...lines omitted...
-
-            Date and Time                                     2021-08-09T12:59:45-34:07
-            ------------------------- 
-    ```
