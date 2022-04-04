@@ -3,32 +3,28 @@
 
 This procedure updates the configuration management git repository to match the installed version of the UAN product. That updated configuration is then used to create UAN boot images and a BOS session template.
 
-UAN specific configuration, and other required configurations related to UANs are covered in this topic. Consult the documentation for the individual HPE products \(for example, workload managers and the HPE Cray Programming Environment\) that must be configured on the UANs.
+UAN specific configuration, and other required configurations related to UANs are covered in this topic. Refer to *HPE Cray EX System Software Getting Started Guide* for further information on configuring other HPE products (for example, workload managers and the HPE Cray Programming Environment\) that may be configured on the UANs.
 
-This is the overall workflow for preparing UAN images for booting UANs:
+This is the overall workflow for preparing UAN images to boot UANs:
 
 1. Clone the UAN configuration git repository and create a branch based on the branch imported by the UAN installation.
 2. Update the configuration content and push the changes to the newly created branch.
-3. Create a Configuration Framework Service \(CFS\) configuration for the UANs, specifying the git configuration and the UAN image to apply the configuration to. More HPE products can also be added to the CFS configuration so that the UANs can install multiple HPE products into the UAN image at the same time.
-3. Add the Slingshot Host Software (SHS) CFS layer. SHS is a required layer in the CFS config for COS and UAN images.
-4. Configure the UAN image using CFS and generate a newly configured version of the UAN image.
-5. Create a Boot Orchestration Service \(BOS\) boot session template for the UANs. This template maps the configured image, the CFS configuration to be applied post-boot, and the nodes which will receive the image and configuration.
+3. Use Shasta Admin Toolkit (SAT) command `sat bootprep`, to automate the creation of IMS image, CFS configurations, and BOS session templates.
 
 Once the UAN BOS session template is created, the UANs will be ready to be booted by a BOS session.
 
 Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this procedure with the current UAN product version installed \(See Step 1\) and the hostname of the HPE Cray EX system, respectively.
 
-**UAN IMAGE PRE-BOOT CONFIGURATION**
+**PREPARE CFS CONFIGURATION**
 
 1. Obtain the artifact IDs and other information from the `cray-product-catalog` Kubernetes ConfigMap. Record the following information:
    - the `clone_url`
-   - the `commit`
    - the `import_branch` value
    
    Upon successful installation of the UAN product, the UAN configuration is cataloged in this ConfigMap. This information is required for this procedure.
-
+   
     `PRODUCT_VERSION` will be replaced by a numbered version string, such as `2.1.7` or `2.3.0`.
-
+   
     ```bash
     ncn-m001# kubectl get cm -n services cray-product-catalog -o json | jq -r .data.uan
     PRODUCT_VERSION:
@@ -81,7 +77,8 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 6. Obtain the password for the `crayvcs` user from the Kubernetes secret for use in the next command.
 
     ```bash
-    ncn-m001# kubectl get secret -n services vcs-user-credentials --template={{.data.vcs_password}} | base64 --decode
+    ncn-m001# VCS_USER=$(kubectl get secret -n services vcs-user-credentials --template={{.data.vcs_username}} | base64 --decode)
+              VCS_PASS=$(kubectl get secret -n services vcs-user-credentials --template={{.data.vcs_password}} | base64 --decode)
     ```
     
 7. Clone the UAN configuration management repository. Replace CRAY\_EX\_HOSTNAME in the clone url with **api-gw-service-nmn.local** when cloning the repository.
@@ -89,7 +86,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     The repository is in the VCS/Gitea service and the location is reported in the cray-product-catalog Kubernetes ConfigMap in the `configuration.clone_url` key. The CRAY\_EX\_HOSTNAME from the `clone_url` is replaced with `api-gw-service-nmn.local` in the command that clones the repository.
 
     ```bash
-    ncn-m001# git clone https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git
+    ncn-m001# git clone https://$VCS_USER:$VCS_PASS@api-gw-service-nmn.local/vcs/cray/uan-config-management.git
     . . .
     ncn-m001# cd uan-config-management && git checkout cray/uan/PRODUCT_VERSION && git pull
     Branch 'cray/uan/PRODUCT_VERSION' set up to track remote branch 'cray/uan/PRODUCT_VERSION' from 'origin'.
@@ -139,7 +136,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
      create mode 100644 group_vars/Application_UAN/vars.yml
     ```
 
-11. Push the changes to the repository using the proper credentials, including the password obtained previously.
+10. Push the changes to the repository using the proper credentials, including the password obtained previously.
 
     ```bash
     ncn-m001# git push --set-upstream origin integration
@@ -152,165 +149,96 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
      Branch 'integration' set up to track remote branch 'integration' from 'origin'.
     ```
 
-12. Capture the most recent commit for reference in setting up a CFS configuration and navigate to the parent directory.
+    The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process uses `sat bootprep` to handle creating the CFS configurations, IMS images, and BOS sessiontemplates for UANs.
 
-    ```bash
-    ncn-m001# git rev-parse --verify HEAD
-    ecece54b1eb65d484444c4a5ca0b244b329f4667
-    ncn-m001# cd ..
-    ```
-    
-    The configuration parameters have been stored in a branch in the UAN git repository. The next phase of the process initiates the Configuration Framework Service \(CFS\) to customize the image.
+**CREATE UAN IMAGES**
 
-**CONFIGURE UAN IMAGES**
+With Shasta Admin Toolkit (SAT) version `2.2.16` and later, it is recommended that administrators create an input file for use with `sat bootprep`. Use the following command to determine which version of SAT is installed:
 
-13. Create a JSON input file for generating a CFS configuration for the UAN.
+```bash
+ncn-m001# sat showrev --products --filter 'product_name="sat"'
+```
 
-    Gather the git repository clone URL, commit, and top-level play for each configuration layer \(that is, Cray product\). Add them to the CFS configuration for the UAN, if needed.
+A `sat bootprep` input file will have three sections: `configurations`, `images`, and `session_templates`. These sections create CFS configurations, IMS images, and BOS session templates respectively. Each section may have multiple elements to create more than one CFS, IMS, or BOS artifact. The format is similar to the input files for CFS, IMS, and BOS, but SAT will automate the process with fewer steps. Follow the subsections below to create a UAN bootprep input file.
 
-    For the commit value for the UAN layer, use the Git commit value obtained in the previous step.
+Refer to *HPE Cray EX System Software Getting Started Guide* for further information on configuring other HPE products, as this procedure documents only the required configuration of the UAN.
 
-    See the product-specific documentation for further information on configuring other HPE products, as this procedure documents only the required configuration of the UAN. More layers can be added to be configured in a single CFS session.
+**SAT Bootprep Configuration**
 
-    The following configuration example can be used for preboot image customization as well as post-boot node configuration.
+The SAT bootprep input file should have a configuration section that specifies each layer to be included in the CFS configuration for the UAN images for image customization and node personalization. This section will result in a CFS configuration named `uan-config`. The versions of each layer may be gathered using `sat showrev`. 
 
-    Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
+Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
 
-    ```json
-    {
-      "layers": [
-        {
-          "name": "shs-integration-SHS_PRODUCT_VERSION",
-          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/slingshot-host-software-config-management.git",
-          "playbook": "shs_cassini_install.yml"
-          "commit": "45f891adb9a2e7ca304565b21b29f29226fa3e0f",
-        },
-        {
-          "name": "uan-integration-PRODUCT_VERSION",
-          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
-          "playbook": "site.yml",
-          "commit": "ecece54b1eb65d484444c4a5ca0b244b329f4667"
-        }
-        # **{ ... add configuration layers for other products here, if desired ... }**
-      ]
-    }
-    ```
+```yaml
+configurations:
+- name: uan-config
+  layers:
+  - name: slingshot-host-software
+    playbook: shs_mellanox_install.yml
+    product:
+      name: slingshot-host-software
+      version: 2.0.0
+      branch: integration
 
-14. Add the configuration to CFS using the JSON input file.
+  ... add configuration layers for other products here, if desired ...
 
-    In the following example, the JSON file created in the previous step is named `uan-config-PRODUCT_VERSION.json` only the details for the UAN layer are shown.
+  - name: uan
+    playbook: site.yml
+    product:
+      name: uan
+      version: 2.4.0
+      branch: integration
+```
 
-    ```bash
-    ncn-m001# cray cfs configurations update uan-config-PRODUCT_VERSION --file ./uan-config-PRODUCT_VERSION.json --format json
-    {
-      "lastUpdated": "2021-07-28T03:26:00:37Z",
-      "layers": [
-        {
-          "name": "shs-integration-SHS_PRODUCT_VERSION",
-          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/slingshot-host-software-config-management.git",
-          "playbook": "shs_cassini_install.yml"
-          "commit": "45f891adb9a2e7ca304565b21b29f29226fa3e0f",
-        },
-        {
-          "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
-          "commit": "ecece54b1eb65d484444c4a5ca0b244b329f4667",
-          "name": "uan-integration-PRODUCT_VERSION",
-          "playbook": "site.yml"
-        }  **# <-- Additional layers not shown, but would be inserted here**
-      ],
-      "name": "uan-config-PRODUCT_VERSION"
-    }
-    ```
-    
-    The UAN layer must be first as it configures the network interfaces that may be required by subsequent layers. When other products are added to the CFS configuration used to boot UANs, the suggested order of the layers would be:
+**SAT Bootprep Image**
 
-      1. Slingshot Host Software (must be specified before UAN)
-      2. UAN
-      3. CPE (Cray Programming Environment)
-      4. Workload Manager (Either Slurm or PBS Pro)
-      5. Analytics
-      6. customer
+The SAT bootprep input file should have a section that specifies which IMS images to create for UAN nodes. UANs are built using the COS recipe, so the section below specifies which image recipe to use based on what is provided by COS. To determine which COS recipes are available run the following command:
 
-15. Create a CFS session to perform preboot image customization of the UAN image.
+```bash
+ncn-m001# sat showrev --products --filter 'product_name="cos"'
+```
 
-    ```bash
-    ncn-m001# cray cfs sessions create --name uan-config-PRODUCT_VERSION \
-                      --configuration-name uan-config-PRODUCT_VERSION \
-                      --target-definition image \
-                      --target-group Application IMAGE_ID \
-                      --target-group Application_UAN IMAGE_ID \
-                      --format json
-    ```
+This example will create an IMS image with the name `cray-shasta-uan-sles15sp3.x86_64-2.3.25`. An appropriate name should be used to correctly identify the UAN image being built. Also note that the CFS configuration `uan-config` is being referenced so that CFS image customization will be run using that configuration along with the specified node groups.
 
-16. Wait until the CFS configuration session for the image customization to complete. Then record the ID of the IMS image created by CFS.
+```yaml
+images:
+- name: cray-shasta-uan-sles15sp3.x86_64-2.3.25
+  ims:
+    is_recipe: true
+    name: cray-shasta-compute-sles15sp3.x86_64-2.3.25
+  configuration: uan-config
+  configuration_group_names:
+  - Application
+  - Application_UAN
+```
 
-    The following command will produce output while the process is running. If the CFS session completes successfully, an IMS image ID will appear in the output.
+**SAT Bootprep Session Template**
 
-    ```bash
-    ncn-m001# cray cfs sessions describe uan-config-PRODUCT_VERSION --format json | jq
-    ```
+The final section of the SAT bootprep input file creates BOS session templates. This section references the named IMS image that `sat bootprep` generates, as well as a CFS configuration. 
 
-**PREPARE UAN BOOT SESSION TEMPLATES**
+```yaml
+session_templates:
+- name: uan-2.4.0
+  image: cray-shasta-uan-sles15sp3.x86_64-2.3.25
+  configuration: uan-config
+  bos_parameters:
+    boot_sets:
+      compute:
+        kernel_parameters: spire_join_token=${SPIRE_JOIN_TOKEN}
+        node_roles_groups:
+        - Application_UAN
+```
 
-17. Retrieve the xnames of the UAN nodes from the Hardware State Manager \(HSM\).
+**Run SAT Bootprep**
 
-    These xnames are needed for Step 18.
+Initiate the `sat bootprep` command to generate the configurations and artifacts needed to boot UANs. This command may take some time as it will initiate IMS image creation and CFS image customization.
 
-    ```bash
-    ncn-m001# cray hsm state components list --role Application --subrole UAN --format json | jq -r .Components[].ID
-    x3000c0s19b0n0
-    x3000c0s24b0n0
-    x3000c0s20b0n0
-    x3000c0s22b0n0
-    ```
-    
-19. Construct a JSON BOS boot session template for the UAN.
+```bash
+ncn-m001# sat bootprep run uan-bootprep.yaml
+```
 
-    a. Populate the template with the following information:
+If changes are necessary to complete `sat bootprep` with the provided input file, make adjustments to the CFS layers or input file as needed and rerun the `sat bootprep` command. If any artifacts are going to be overwritten, SAT will prompt for confirmation before taking action. This is useful when making CFS changes as SAT will automatically configure the layers to use the latest git commits if the branches are specified correctly.
 
-        - The xnames of Application nodes from Step 17
-        - The customized image ID from Step 16 for
-        - The CFS configuration session name from Step 14
+Once `sat bootprep` completes successfully, save the input file to a known location. This input file will be useful to regenerate artifacts as changes are made or different product layers are added.
 
-    b. Verify that the session template matches the format and structure in the following example.
-    
-       The `kernel_parameters` field and value must all be on a single line.
-
-    ```json
-    {
-       "boot_sets": {
-         "uan": {
-           "boot_ordinal": 2,
-           "kernel_parameters": "spire_join_token=${SPIRE_JOIN_TOKEN}",
-           "network": "nmn",
-           "node_list": [
-             **... comma-separated list of Application Nodes from cray hsm state command. Surround each node in the list with quotes...**
-           ],
-           "path": "s3://boot-images/IMS_IMAGE_ID/manifest.json",  **<-- result_id from Step 15**
-           "rootfs_provider": "cpss3",
-           "rootfs_provider_passthrough": "dvs:api-gw-service-nmn.local:300:nmn0",
-           "type": "s3"
-         }
-       },
-       "cfs": {
-           "configuration": "uan-config-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
-       },
-       "enable_cfs": true,
-       "name": "uan-sessiontemplate-PRODUCT_VERSION" **<-- PRODUCT_VERSION from Step 1**
-     }
-    ```
-    
-    c. Save the template with a descriptive name, such as `uan-sessiontemplate-PRODUCT_VERSION.json`.
-    
-20. Register the session template with BOS.
-
-    The following command uses the JSON session template file to save a session template in BOS. This step allows administrators to boot UANs by referring to the session template name.
-
-    ```bash
-    ncn-m001# cray bos sessiontemplate create \
-                       --name uan-sessiontemplate-PRODUCT_VERSION \
-                       --file uan-sessiontemplate-PRODUCT_VERSION.json
-    /sessionTemplate/uan-sessiontemplate-PRODUCT_VERSION
-    ```
-
-21. Perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new image and BOS session template.
+Finally, perform [Boot UANs](Boot_UANs.md#boot-uans) to boot the UANs with the new BOS session template.
