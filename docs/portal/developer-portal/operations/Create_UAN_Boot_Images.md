@@ -111,6 +111,8 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
     Consult the individual Ansible role `README.md` files in the uan-config-management repository roles directory to configure individual role variables. Roles prefixed with `uan_` are specific to UAN configuration and include network interfaces, disk, LDAP, software packages, and message of the day roles.
 
+    ***NOTE:*** Admins ***must*** ensure the `uan_can_setup` variable is set to the correct value for the site.  This variable controls how the nodes are configured for user access. When `uan_can_setup` is `yes`, user access is over the `CAN` or `CHN`, based on the BICAN System Default Route setting in SLS.  When `uan_can_setup` is `no`, the Admin must configure the user access interface and default route. See [Configure Interfaces on UANs](Configure_interfaces_on_UANs.md)
+
     **Warning:** Never place sensitive information such as passwords in the git repository.
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.
