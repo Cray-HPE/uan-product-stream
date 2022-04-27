@@ -111,16 +111,6 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
     Consult the individual Ansible role `README.md` files in the uan-config-management repository roles directory to configure individual role variables. Roles prefixed with `uan_` are specific to UAN configuration and include network interfaces, disk, LDAP, software packages, and message of the day roles.
 
-    ***NOTE:*** Admins ***must*** ensure the `uan_user_access_cfg` variable is set to the correct value for the site.  This variable controls how the nodes are configured for user access.  The options are:
-    * `DIRECT` \(default setting\): the site will directly connect to the nodes to their site user network.
-      * Admins ***must*** define the interface and default route using `customer_uan_interfaces` and `customer_uan_routes` variables or no default route will be set.
-    * `CAN`: the site will use the Cray EX Customer Access Network \(CAN\).
-      * Default route is automatically set over the `CAN`.
-    * `CHN`: the site will use the Cray EX Customer High Speed Network \(CHN\).
-      * Default route is automatically set over the `CHN`.
-
-    See [Configure Interfaces on UANs](Configure_Interfaces_on_UANs.md) for details on user access configuration.
-
     **Warning:** Never place sensitive information such as passwords in the git repository.
 
     The following example shows how to add a `vars.yml` file containing site-specific configuration values to the `Application_UAN` group variable location.

@@ -13,7 +13,7 @@ By default, a direct connection to the sites user network is assumed and the Adm
 
 Network configuration settings are defined in the `uan-config-management` VCS repo under the `group_vars/ROLE_SUBROLE/` or `host_vars/XNAME/` directories, where `ROLE_SUBROLE` must be replaced by the role and subrole assigned for the node in HSM, and `XNAME` with the xname of the node. Values under `group_vars/ROLE_SUBROLE/` apply to all nodes with the given role and subrole.  Values under the `host_vars/XNAME/` apply to the specific node with the xname and will override any values set in `group_vars/ROLE_SUBROLE/`.  A yaml file is used by the Configuration Framwork Service \(CFS\).  The examples in this procedure use `customer_net.yml`, but any filename may be used.  Admins must create this yaml file and use the variables described in this procedure.
 
-If the HPE Cray EX CAN or CHN is required, set the `uan_user_access_cfg` variable to `CAN` or `CHN` in the yaml file.
+If the HPE Cray EX CAN or CHN is desired, set the `uan_can_setup` variable to `yes` in the yaml file.  The UAN will be configured to use the CAN or CHN based on what the BICAN System Default Route is set to in SLS.
 
 1. Obtain the password for the `crayvcs` user.
 
@@ -41,12 +41,11 @@ If the HPE Cray EX CAN or CHN is required, set the `uan_user_access_cfg` variabl
     To set up CAN or CHN:
 
     ```bash
-    ## uan_user_access_cfg
-    # Set uan_user_access_cfg to 'CAN' if the site will
-    # use the Shasta CAN network or to 'CHN' if the site
-    # will use the Shasta CHN network for user access.
-    # By default, uan_user_access_cfg is set to 'DIRECT'.
-    uan_user_access_cfg: CHN
+    ## uan_can_setup
+    # Set uan_can_setup to 'yes' if the site will
+    # use the Shasta CAN or CHN network for user access.
+    # By default, uan_can_setup is set to 'no'.
+    uan_can_setup: yes
     ```
 
     To allow a custom default route when CAN or CHN is selected:

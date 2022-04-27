@@ -164,75 +164,32 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-`uan_can_setup` (Deprecated)
+### `uan_can_setup`
 
-: This variable is deprecated and `uan_user_access_cfg` should be used.
+`uan_can_setup` is a boolean variable controlling the configuration of user
+access to UAN nodes.  When true, user access is configured over either the
+Customer Access Network (CAN) or Customer High Speed Network (CHN), depending on which is configured on the system.
 
-: `uan_can_setup` is a boolean variable controlling the configuration of user
-access to UAN nodes over the Customer Access Network (CAN).  The CAN is a VLAN
-on the Node Management Network (NMN).
+When `uan_can_setup` is false, user access over the CAN or CHN is not configured
+on the UAN nodes and no default route is configured.  The Admin must then specify
+the default route in `customer_uan_routes`.
 
-: When `uan_can_setup` has a true value, the default route is set to be on the CAN
-unless `uan_customer_default_route` has a true value.  If `uan_can_setup` has a
-false value, user access over the CAN is not configured on the UAN nodes and no
-default route configured.  The admin must then specify the default route in
-`customer_uan_routes`.
+The default value of `uan_can_setup` is `no`.
 
-: The default value of `uan_can_setup` is `no`.
+```yaml
+uan_can_setup: no
+```
 
-  Example:
+### `uan_customer_default_route`
 
-  ```yaml
-  uan_can_setup: no
-  ```
+`uan_customer_default_route` is a boolean variable that allows the default route
+to be set by the `customer_uan_routes` data when `uan_can_setup` is true.
 
-`uan_user_access_cfg`
+By default, no default route is setup unless `uan_can_setup` is true, which sets the default route to the CAN or CHN.
 
-: `uan_user_access_cfg` defines the way users access the UAN nodes.  UANs may be
-configured to use a VLAN over the Node Management Network (CAN), a subnet on the
-High Speed Network (CHN), or a direct connection to a site network (DIRECT).
-
-: Valid values for `uan_user_access_cfg` are `"CAN"`, `"CHN"`, or `"DIRECT"`.  The
-default value is `"DIRECT"`.  With `uan_user_access_cfg: "DIRECT"`, the admin
-must define the interface and and routing to use.  See `customer_uan_interfaces`
-and `customer_uan_routes`.  With `uan_user_access_cfg: "CAN"` or
-`uan_user_access_cfg: "CHN"`, the default route will be set to the CAN or CHN,
-respectively, unless `uan_customer_default_route` has a true value.  Then the
-admin must define a default route in `customer_uan_routes`.
-
-  Example:
-
-  ```yaml
-  uan_user_access_cfg: "CHN"
-  ```
-
-`uan_customer_default_route`
-
-: `uan_customer_default_route` is a boolean variable that allows the default route
-to be set by the `customer_uan_routes` data when `uan_user_access_cfg` is set to
-CAN or CHN.
-
-: By default, no default route is setup unless `uan_user_access_cfg` is set to
-either `"CAN"` or `"CHN"` which sets the default route to the CAN or CHN,
-respectively.
-
-  Example:
-
-  ```yaml
-  uan_customer_default_route: no
-  ```
-
-`valid_uan_user_access_cfgs`
-
-: `valid_uan_user_access_cfgs` is a list of valid values for `uan_user_access_cfg`.
-This value should not be changed.
-
-  ```yaml
-  valid_uan_user_access_cfgs:
-    - "DIRECT"
-    - "CAN"
-    - "CHN"
-  ```
+```yaml
+uan_customer_default_route: no
+```
 
 `sls_nmn_name`
 
