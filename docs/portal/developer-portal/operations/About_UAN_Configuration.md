@@ -13,6 +13,8 @@ The UAN-specific roles involved in post-boot UAN node configuration are:
 - `uan_disk_config`: this role configures the last disk found on the UAN that is smaller than 1TB, by default. That disk will be formatted with a scratch and swap partition mounted at /scratch and /swap, respectively. Each partition is 50% of the disk.
 - `uan_packages`: this role installs any RPM packages listed in the uan-config-management repo.
 - `uan_interfaces`: this role configures the UAN node networking. By default, this role does not configure a default route or the Customer Access Network \(CAN or CHN\) connection for the HPE Cray EX supercomputer. If CAN or CHN is enabled, the default route will be on the CAN or CHN. Otherwise, a default route must be set up in the customer interfaces definitions. Without the CAN or CHN, there will not be an external connection to the customer site network unless one is defined in the customer interfaces. See [Configure Interfaces on UANs](Configure_Interfaces_on_UANs.md).
+
+  ***NOTE:*** If a UAN layer is used in the Compute node CFS configuration, the `uan_interfaces` role will configure the default route on Compute nodes to be on the HSN, if the BICAN System Default Route is set to `CHN`.
 - `uan_motd`: this role Provides a default message of the day that can be customized by the administrator.
 - `uan_ldap`: this optional role configures the connection to LDAP servers. To disable this role, the administrator must set 'uan_ldap_setup:no' in the 'uan-config-management' VCS repository.
 
