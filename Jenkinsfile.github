@@ -26,6 +26,13 @@
 // Jenkinsfile to push uan-product-stream repo to github
 @Library('csm-shared-library') _
 
+// Disable pr-merge builds
+if ( env.BRANCH_NAME ==~ ~"^PR-\\d+" ) {
+    currentBuild.result = 'SUCCESS'
+    echo "Pull-Requests are not built for uan-product-stream; this is a no-op build."
+    return
+}
+
 pipeline {
     agent {
         label "metal-gcp-builder"
