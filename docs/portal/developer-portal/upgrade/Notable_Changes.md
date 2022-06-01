@@ -24,3 +24,13 @@ When an upgrade is being performed, please review the notable changes for **all*
     * Application nodes may now set a default route other than the CAN or CHN default route when `uan_can_setup: yes`.
     * `uan_customer_default_route: true` will allow a customer defined default route to be set using the `customer_uan_routes` structure when `uan_can_setup` is set to `yes`.
 * `sat bootprep` is now used in the documentation to streamline the IMS, CFS, and BOS commands to create and customize images and creating sessiontemplates.
+
+## UAN 2.4.1
+
+* The UAN CFS playbook now supports a section for Compute nodes. The Compute section will run the role `uan_interfaces` to provide Customer High Speeed Network \(CHN\) routing.
+  * CHN on the Compute nodes requires:
+    * Customer High Speed Network has been enabled in CSM. See "Enabling Customer High Speed Network Routing" in the CSM Documentation
+    * UAN CFS configurd with `uan_can_setup: yes`
+    * Fully configured HSN
+    * SLS has IP assignments for compute nodes on hsn0
+* Updates to GPU roles to match COS 2.3
