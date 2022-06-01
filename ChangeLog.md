@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2022-05-24
+- Increase short LDAP timeout
+- CHN fixes for compute nodes leveraging an IP in SLS
+- Include GPU changes from COS 2.3
+- Remove cray-diags-fabric from uan-packages
+
 ## [2.4.0] - 2022-04-29
 - Change documentation to reflect streamlined selection of CAN/CHN
 - Change documentation to reflect uan_interfaces can configure compute default route
