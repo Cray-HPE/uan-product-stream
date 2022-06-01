@@ -206,7 +206,7 @@ images:
 
 **SAT Bootprep Session Template**
 
-The final section of the SAT bootprep input file creates BOS session templates. This section references the named IMS image that `sat bootprep` generates, as well as a CFS configuration. 
+The final section of the SAT bootprep input file creates BOS session templates. This section references the named IMS image that `sat bootprep` generates, as well as a CFS configuration. The boot_sets key "uan" may be changed as needed. If there are more than one boot_sets in the session template, each key will need to be unique.
 
 ```yaml
 session_templates:
@@ -215,7 +215,7 @@ session_templates:
   configuration: uan-config
   bos_parameters:
     boot_sets:
-      compute:
+      uan:
         kernel_parameters: spire_join_token=${SPIRE_JOIN_TOKEN}
         node_roles_groups:
         - Application_UAN
