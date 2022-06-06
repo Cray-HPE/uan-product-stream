@@ -27,7 +27,7 @@ metadata:
 spec:
   charts:
   - name: cray-uan-install
-    version: 1.8.2
+    version: 1.8.3
     namespace: services
     values:
       cray-import-config:
