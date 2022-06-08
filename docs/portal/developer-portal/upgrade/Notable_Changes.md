@@ -34,3 +34,7 @@ When an upgrade is being performed, please review the notable changes for **all*
     * Fully configured HSN
     * SLS has IP assignments for compute nodes on hsn0
 * Updates to GPU roles to match COS 2.3
+
+## UAN 2.4.2
+
+* There is a known issue with the version of GPU support included in the UAN CFS repo. The result is that both AMD and Nvidia SDKs are not able to be projected at the same time. Until this is resolved in a later release, modify the site.yml in the UAN CFS repo to only include either amd or nvidia.
