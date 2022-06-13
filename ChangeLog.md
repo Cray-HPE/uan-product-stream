@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2] - 2022-06-06
+- Reverse the order of CHN Gateway conditions to avoid undefined references in ansible
+- Add where clause to Mountain NMN gateway play to avoid undefined reference on non-Mountain systems
+- Update zypper repo to UAN-2.4 version
+
 ## [2.4.1] - 2022-05-24
 - Increase short LDAP timeout
 - CHN fixes for compute nodes leveraging an IP in SLS

@@ -24,4 +24,4 @@
 https://artifactory.algol60.net/artifactory/uan-helm-charts/:
   charts:
     cray-uan-install:
-    - 1.8.1
+    - 1.8.3
