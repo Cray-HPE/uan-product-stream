@@ -5,7 +5,7 @@
     <topicmeta>
         <shortdesc>This publication provides instructions and examples for managing and troubleshooting User Access Nodes (UANs) on an HPE Cray EX supercomputer.</shortdesc>
         <data name="pubsnumber" value="S-8033"></data>
-		<data name="edition" value="UAN Software Release 2.3.2"></data>
+		<data name="edition" value="UAN Software Release 2.4.3"></data>
     </topicmeta>
     <topicref href="About_UAN_Administration.md" format="markdown">
         <topicref href="operations/About_UAN_Configuration.md" format="markdown"/>
@@ -20,6 +20,7 @@
         <topicref href="operations/Configure_Pluggable_Authentication_Modules_(PAM)_on_UANs.md"
             format="markdown"/>
         <topicref href="operations/Mount_a_New_File_System_on_an_UAN.md" format="markdown"/>
+        <topicref href="operations/Boot_UANs.md" format="markdown"/>
     </topicref>
     <topicref href="Advanced_Administrative_Tasks.md" format="markdown">
         <topicref href="advanced/Customizing_UAN_Images_Manually.md" format="markdown"/>
