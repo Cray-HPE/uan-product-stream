@@ -25,7 +25,7 @@ artifactory.algol60.net/uan-docker/stable:
   tls-verify: true
   images:
     cray-uan-config:
-    - 1.8.4
+    - 1.8.5
 
 artifactory.algol60.net/csm-docker/stable:
   tls-verify: true
