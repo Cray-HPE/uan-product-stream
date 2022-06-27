@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.4.3] - 2022-06-24
 - Add routing to CHN and CAN MetalLB
 - Prevent loss of existing routes
+- Add new uan_hardening role to block SSH traffic to NCNs
 
 ## [2.4.2] - 2022-06-06
 - Reverse the order of CHN Gateway conditions to avoid undefined references in ansible
