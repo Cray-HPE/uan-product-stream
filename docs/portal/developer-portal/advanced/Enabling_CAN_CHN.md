@@ -21,7 +21,6 @@ The UAN product provides a role, `uan_interfaces` in the Configuration Framework
     ```bash
     ncn-m001:~/ $ cat group_vars/Compute/can.yml
     uan_can_setup: true
-    uan_set_compute_default_route: true
     ```
 
 1. Once `uan_can_setup` has been enabled, update the CFS configuration used for the nodes to initate a reconfiguration (see the Configuration Management section of the CSM documentation for more information)
