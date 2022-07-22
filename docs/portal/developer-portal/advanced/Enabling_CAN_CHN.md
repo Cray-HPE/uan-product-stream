@@ -16,7 +16,7 @@ The UAN product provides a role, `uan_interfaces` in the Configuration Framework
    CHN
    ```
 
-1. (Optional) If the compute nodes are going to use the UAN CFS role `uan_interfaces` to set a default on the CHN, make sure there is an appopriate ansible setting for the compute nodes in addition to the UANs:
+1. (Optional) If the compute nodes are going to use the UAN CFS role `uan_interfaces` to set a default route on the CHN, make sure there is an appopriate ansible setting for the compute nodes in addition to the UANs:
 
     ```bash
     ncn-m001:~/ $ cat group_vars/Compute/can.yml
