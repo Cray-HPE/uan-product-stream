@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2022-07-15
+## [Unreleased] - 2022-07-26
 - Add support for uan_hardening role on computes
+- Enable Pressure Stall Information (PSI) in kernels >= 4.20
 
 ## [2.4.3] - 2022-06-24
 - Add routing to CHN and CAN MetalLB

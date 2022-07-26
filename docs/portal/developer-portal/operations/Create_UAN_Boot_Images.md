@@ -216,7 +216,7 @@ session_templates:
   bos_parameters:
     boot_sets:
       uan:
-        kernel_parameters: spire_join_token=${SPIRE_JOIN_TOKEN}
+        kernel_parameters: "spire_join_token=${SPIRE_JOIN_TOKEN} psi=1"
         node_roles_groups:
         - Application_UAN
 ```
