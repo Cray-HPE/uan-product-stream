@@ -113,6 +113,13 @@ function package_distribution {
     tar -C $(realpath -m "${ROOTDIR}/dist") -zcvf $(dirname "$BUILDDIR")/${PACKAGE_NAME}.tar.gz $(basename $BUILDDIR)
 }
 
+function sync_image_content {
+    mkdir -p "${BUILDDIR}/images/application"
+    pushd "${BUILDDIR}/images/application"
+    for url in "${KUBERNETES_ASSETS[@]}"; do cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"; done
+    popd
+}
+
 # Definitions and sourced variables
 ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
 VENDOR="${ROOTDIR}/vendor/github.hpe.com/hpe/hpc-shastarelm-release/"
@@ -121,6 +128,7 @@ VENDOR="${ROOTDIR}/vendor/github.hpe.com/hpe/hpc-shastarelm-release/"
 PYTHONPATH=""
 
 source "${ROOTDIR}/vars.sh"
+source "${ROOTDIR}/assets.sh"
 source "${VENDOR}/lib/release.sh"
 requires rsync tar generate-nexus-config helm-sync skopeo-sync reposync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
@@ -137,6 +145,7 @@ copy_docs
 sync_install_content
 setup_nexus_repos
 sync_repo_content
+sync_image_content
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
