@@ -33,5 +33,5 @@ skopeo-sync "${ROOTDIR}/docker"
 nexus-upload helm "${ROOTDIR}/helm" "${CHARTS_REPO:-"charts"}"
 
 # Upload repository contents
-nexus-upload raw "${ROOTDIR}/rpms/sle-15sp2" "uan-@major@.@minor@.@patch@-sle-15sp2"
+nexus-upload raw "${ROOTDIR}/rpms/sle-15sp4" "uan-@major@.@minor@.@patch@-sle-15sp4"
 nexus-upload raw "${ROOTDIR}/rpms/sle-15sp3" "uan-@major@.@minor@.@patch@-sle-15sp3"

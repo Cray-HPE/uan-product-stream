@@ -48,7 +48,7 @@ Replace `PRODUCT_VERSION` in the example commands with the UAN product stream st
     
 4. Verify that the UAN RPM repositories have been created in Nexus:
 
-   `PRODUCT_VERSION` is the UAN release number and `SLE_VERSION` is the SLE release version, such as `15sp2` or `15sp3`.
+   `PRODUCT_VERSION` is the UAN release number and `SLE_VERSION` is the SLE release version, such as `15sp4` or `15sp3`.
 
     Query Nexus through its REST API to display the repositories prefixed with the name uan:
    
