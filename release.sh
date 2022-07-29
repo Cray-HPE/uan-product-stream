@@ -80,7 +80,7 @@ function sync_repo_content {
     skopeo-sync "${ROOTDIR}/docker/index.yaml" "${BUILDDIR}/docker"
 
     # sync uan repos from bloblet
-    reposync "${BLOBLET_URL}/sle-15sp2" "${BUILDDIR}/rpms/sle-15sp2"
+    reposync "${BLOBLET_URL}/sle-15sp4" "${BUILDDIR}/rpms/sle-15sp4"
     reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
 }
 
