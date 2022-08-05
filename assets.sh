@@ -22,13 +22,6 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-APPLICATION_ASSETS=(
-    https://artifactory.algol60.net/artifactory/user-uan-images/stable/application/0.0.1/kubernetes-0.0.1.squashfs
-    https://artifactory.algol60.net/artifactory/user-uan-images/stable/application/0.0.1/5.3.18-150300.59.43-default-0.0.1.kernel
-    https://artifactory.algol60.net/artifactory/user-uan-images/stable/application/0.0.1/initrd.img-0.0.1.xz
-)
-
-HPE_SIGNING_KEY=https://arti.dev.cray.com/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
 
 set -exo pipefail
 

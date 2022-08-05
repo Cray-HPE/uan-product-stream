@@ -32,7 +32,22 @@ function notify {
 trap notify ERR
 
 ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
+SYS_NAME=$(craysys metadata get system-name)
+SITE_DOMAIN=$(craysys metadata get site-domain)
+API_GW=https://api.nmnlb.$SYS_NAME.$SITE_DOMAIN
+
+function list_ims_images {
+    set +x
+    TOKEN=$(curl -s -k -S -d grant_type=client_credentials -d client_id=admin-client -d \
+                             client_secret=`kubectl get secrets admin-client-auth -o jsonpath='{.data.client-secret}' | base64 -d` \
+                             $API_GW/keycloak/realms/shasta/protocol/openid-connect/token | jq -r '.access_token')
+    curl -s -H "Authorization: Bearer ${TOKEN}" $API_GW/apis/ims/images
+    unset $TOKEN
+    set -x
+}
+
 source "${ROOTDIR}/lib/install.sh"
+source "${ROOTDIR}/vars.sh"
 
 : "${RELEASE:="$(basename "$(realpath "$ROOTDIR")")"}"
 
@@ -54,7 +69,7 @@ export CRAY_NEXUS_SETUP_IMAGE=${CRAY_NEXUS_SETUP_IMAGE}
 clean-install-deps
 
 # Verify the container runtime is configured to mirror artifactory.algol60.net
-if crictl  info | jq -e '.config.registry.mirrors | keys | map(select(. == "artifactory.algol60.net")) | length <= 0' >/dev/null; then
+if crictl info | jq -e '.config.registry.mirrors | keys | map(select(. == "artifactory.algol60.net")) | length <= 0' >/dev/null; then
     # It's not, so update image references to pull directly from registry.local
     yq w -i "${ROOTDIR}/build/manifests/uan.yaml" 'spec.charts.(name == cray-uan-install).values.cray-import-config.config_image.image.repository' 'registry.local/artifactory.algol60.net/uan-docker/stable/cray-uan-config'
     yq w -i "${ROOTDIR}/build/manifests/uan.yaml" 'spec.charts.(name == cray-uan-install).values.cray-import-config.catalog.image.repository' 'registry.local/artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update'
@@ -62,3 +77,39 @@ fi
 
 # Deploy manifests
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
+
+ARTIFACT_PATH=${ROOTDIR}/images/application
+KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-default-$UAN_IMAGE_VERSION.kernel
+INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION.xz
+ROOTFS=${ARTIFACT_PATH}/filesystem-$UAN_IMAGE_VERSION.squashfs
+
+# Check for the existence of the SLES image to be installed
+IMAGE_ID=$(list_ims_images | jq --arg img_name "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == img_name ) | .id' | head -1)
+if [ -z $IMAGE_ID ]; then
+  ${ROOTDIR}/init-ims-image.sh -k ${KERNEL} -i ${INITRD}  -r ${ROOTFS}
+  IMAGE_ID=$(list_ims_images | jq --arg img_name "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == img_name ) | .id' | head -1)
+else
+  echo "Found $SLES_UAN_IMAGE already exists as $IMAGE_ID... Skipping image upload"
+fi
+
+if [ -z $IMAGE_ID]; then
+    echo "Could not find an IMS Image ID for $UAN_IMAGE_NAME"
+    exit 1
+fi
+
+cat << EOF > "$UAN_PRODUCT_VERSION-$IMAGE_ID.json"
+$UAN_PRODUCT_VERSION:
+  images:
+    $UAN_IMAGE_NAME:
+      $IMAGE_ID
+EOF
+
+# Register the image with the product catalog
+podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update --network podman-cni-config \
+    -e PRODUCT=uan \
+    -e PRODUCT_VERSION=$UAN_PRODUCT_VERSION \
+    -e YAML_CONTENT=$UAN_PRODUCT_VERSION-$IMAGE_ID.json \
+    -e KUBECONFIG=/.kube/admin.conf \
+    -v /etc/kubernetes:/.kube:ro \
+    -v ${PWD}:/results:ro \
+    artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update:$PRODUCT_CATALOG_UPDATE_VERSION
