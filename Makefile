@@ -24,7 +24,15 @@ BUILD_DATE ?= $(shell date +'%Y%m%d%H%M%S')
 RELEASE_VERSION ?= $(shell ./version.sh)-local
 GIT_TAG ?= $(shell git rev-parse --short HEAD)
 
-all : generate_release
+all : check_env generate_release
+
+check_env:
+ifndef ARTIFACTORY_USER
+        $(error ARTIFACTORY_USER is undefined)
+endif
+ifndef ARTIFACTORY_TOKEN
+        $(error ARTIFACTORY_TOKEN is undefined)
+endif
 
 generate_release:
 	./release.sh

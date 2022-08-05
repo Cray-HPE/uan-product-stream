@@ -52,16 +52,24 @@ pipeline {
     }
 
     stages {
-        stage("Build") {
+          stage("Build") {
             steps {
-                sh "make"
+                  withCredentials([
+                            usernamePassword(credentialsId: 'artifactory-algol60', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                    ]) {
+                    sh "make"
+                }
             }
         }
 
         stage("Publish") {
             steps {
-                script {
-                    publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
+                  withCredentials([
+                            usernamePassword(credentialsId: 'artifactory-algol60', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                    ]) {
+                    script {
+                        publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
+                    }
                 }
             }
         }
