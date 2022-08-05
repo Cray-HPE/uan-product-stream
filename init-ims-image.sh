@@ -5,8 +5,26 @@ CRAY_FORMAT=json
 KERNEL_NAME=kernel
 INITRD_NAME=initrd
 ROOTFS_NAME=filesystem.squashfs
+BUCKET=boot-images
+
+function check_auth() {
+
+  # Check if a Cray CLI configuration exists...
+  if cray uas mgr-info list 2>&1 | egrep --silent "Error: No configuration exists"; then
+    echo "cray command not initialized. Initialize with 'cray init' and try again"
+    exit 1
+  fi
+
+  # Check if Cray CLI has a valid authentication token...
+  if cray uas mgr-info list 2>&1 | egrep --silent "Token not valid for UAS|401|403"; then
+    echo "cray command not authorized. Authorize with 'cray auth login' and try again"
+    exit 1
+  fi
+
+}
 
 function usage() {
+
   echo "$0 will create a new IMS image from a kernel, initrd, and rootfs. The "
   echo "artifacts will be uploaded to an S3 bucket, and the manifest.json file expected by "
   echo "IMS will be calculated and registered to the appropriate IMS image ID. The resultant "
@@ -23,32 +41,36 @@ function usage() {
   echo "b      S3 Bucket (default boot-images)"
   echo ""
   exit 0
+
 }
 
 function cleanup() {
 
   if ! [ -z $KERNEL_META ]; then
-    cray artifacts create $BUCKET $IMAGE_ID/$KERNEL_NAME $KERNEL_PATH
+    cray artifacts delete $BUCKET $IMAGE_ID/$KERNEL_NAME
   fi
-  if ! [ -z $INITRD_META]; then
-    cray artifacts create $BUCKET $IMAGE_ID/$KERNEL_NAME $KERNEL_PATH
+  if ! [ -z $INITRD_META ]; then
+    cray artifacts delete $BUCKET $IMAGE_ID/$INITRD_NAME
   fi
   if ! [ -z $ROOTFS_META ]; then
-    cray artifacts create $BUCKET $IMAGE_ID/$KERNEL_NAME $KERNEL_PATH
+    cray artifacts delete $BUCKET $IMAGE_ID/$ROOTFS_NAME
   fi
   if ! [ -z $IMAGE_ID ]; then
-    cray ims image delete $IMAGE_ID
+    cray ims images delete $IMAGE_ID
   fi
 
 }
 
-while getopts "hvk:i:r:b:" arg; do
+while getopts "hvn:k:i:r:b:" arg; do
   case $arg in
     h)
       usage
       ;;
     v)
       set -x
+      ;;
+    n)
+      IMAGE_NAME=$OPTARG
       ;;
     k)
       KERNEL_PATH=$OPTARG
@@ -65,8 +87,10 @@ while getopts "hvk:i:r:b:" arg; do
   esac
 done
 
-if [ -z $KERNEL_PATH ] || [ -z $INITRD_PATH ] || [ -z $ROOTFS_PATH ] ; then
-  echo "Specify a path to a kernel, initrd, and a rootfs"
+check_auth
+
+if [ -z $IMAGE_NAME ] || [ -z $KERNEL_PATH ] || [ -z $INITRD_PATH ] || [ -z $ROOTFS_PATH ] ; then
+  echo "Specify an image name, and the path to the kernel, initrd, and rootfs"
   usage
   exit 1
 fi
@@ -85,13 +109,20 @@ if [ $error -eq "1" ]; then
 fi
 
 # Register a new IMS image
-IMAGE_ID=$( cray ims images create --name "$IMG_NAME" --format json | jq -r .id )
+IMAGE_ID=$( cray ims images create --name "$IMAGE_NAME" | jq -r .id )
 if [ $? -ne 0 ]; then
   echo "Failed to create IMS image"
   exit 1
 fi
 
+# Make sure we don't continue if this somehow return 0 with no id
+if [ -z $IMAGE_ID ]; then
+  echo "No IMAGE_ID detected"
+  exit 1
+fi
+
 # Upload kernel artifacts and collect metadata
+echo "Uploading kernel for $IMAGE_NAME"
 cray artifacts create $BUCKET $IMAGE_ID/$KERNEL_NAME $KERNEL_PATH
 KERNEL_META=$( cray artifacts describe boot-images $IMAGE_ID/$KERNEL_NAME | jq -r .artifact )
 if [ $? -ne 0 ]; then
@@ -101,6 +132,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Upload initrd artifacts and collect metadata
+echo "Uploading initrd for $IMAGE_NAME"
 cray artifacts create $BUCKET $IMAGE_ID/$INITRD_NAME $INITRD_PATH
 INITRD_META=$( cray artifacts describe boot-images $IMAGE_ID/$INITRD_NAME | jq -r .artifact )
 if [ $? -ne 0 ]; then
@@ -110,6 +142,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Upload rootfs artifacts and collect metadata
+echo "Uploading rootfs for $IMAGE_NAME"
 cray artifacts create $BUCKET $IMAGE_ID/$ROOTFS_NAME $ROOTFS_PATH
 ROOTFS_META=$( cray artifacts describe boot-images $IMAGE_ID/$ROOTFS_NAME | jq -r .artifact )
 if [ $? -ne 0 ]; then
@@ -122,9 +155,9 @@ fi
 KERNEL_MD5S=$( echo $KERNEL_META | jq -r .Metadata.md5sum )
 INITRD_MD5S=$( echo $INITRD_META | jq -r .Metadata.md5sum )
 ROOTFS_MD5S=$( echo $ROOTFS_META | jq -r .Metadata.md5sum )
-KERNEL_ETAG=$( echo $KERNEL_META | jq -r .ETag | sed -e 's/"/\\"/g' )
-INITRD_ETAG=$( echo $INITRD_META | jq -r .ETag | sed -e 's/"/\\"/g' )
-ROOTFS_ETAG=$( echo $ROOTFS_META | jq -r .ETag | sed -e 's/"/\\"/g' )
+KERNEL_ETAG=$( echo $KERNEL_META | jq -r .ETag | sed -e 's/\"//g' )
+INITRD_ETAG=$( echo $INITRD_META | jq -r .ETag | sed -e 's/\"//g' )
+ROOTFS_ETAG=$( echo $ROOTFS_META | jq -r .ETag | sed -e 's/\"//g' )
 
 MANIFEST=$(mktemp)
 if [ $? -ne 0 ]; then
@@ -142,7 +175,7 @@ cat <<EOF > $MANIFEST
       {
         "link": {
             "etag": "${KERNEL_ETAG}",
-            "path": "s3://boot-images/$IMAGE_ID/$KERNEL_FILENAME",
+            "path": "s3://boot-images/$IMAGE_ID/$KERNEL_NAME",
             "type": "s3"
         },
         "md5": "$KERNEL_MD5S",
@@ -151,7 +184,7 @@ cat <<EOF > $MANIFEST
       {
         "link": {
             "etag": "${INITRD_ETAG}",
-            "path": "s3://boot-images/$IMAGE_ID/$INITRD_FILENAME",
+            "path": "s3://boot-images/$IMAGE_ID/$INITRD_NAME",
             "type": "s3"
         },
         "md5": "$INITRD_MD5S",
@@ -160,7 +193,7 @@ cat <<EOF > $MANIFEST
       {
         "link": {
             "etag": "${ROOTFS_ETAG}",
-            "path": "s3://boot-images/$IMAGE_ID/$ROOTFS_FILENAME",
+            "path": "s3://boot-images/$IMAGE_ID/$ROOTFS_NAME",
             "type": "s3"
         },
         "md5": "$ROOTFS_MD5S",
@@ -170,7 +203,7 @@ cat <<EOF > $MANIFEST
   }
 EOF
 
-cray artifacts create boot-images $IMAGE_ID/$MANIFEST manifest.json
+cray artifacts create boot-images $IMAGE_ID/manifest.json $MANIFEST
 if [ $? -ne 0 ]; then
   echo "Failed to upload the manifest"
   cleanup

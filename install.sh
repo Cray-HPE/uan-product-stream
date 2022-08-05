@@ -42,7 +42,7 @@ function list_ims_images {
                              client_secret=`kubectl get secrets admin-client-auth -o jsonpath='{.data.client-secret}' | base64 -d` \
                              $API_GW/keycloak/realms/shasta/protocol/openid-connect/token | jq -r '.access_token')
     curl -s -H "Authorization: Bearer ${TOKEN}" $API_GW/apis/ims/images
-    unset $TOKEN
+    unset TOKEN
     set -x
 }
 
@@ -84,31 +84,31 @@ INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION.xz
 ROOTFS=${ARTIFACT_PATH}/filesystem-$UAN_IMAGE_VERSION.squashfs
 
 # Check for the existence of the SLES image to be installed
-IMAGE_ID=$(list_ims_images | jq --arg img_name "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == img_name ) | .id' | head -1)
+IMAGE_ID=$(list_ims_images | jq --arg UAN_IMAGE_NAME "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $UAN_IMAGE_NAME ) | .id' | head -1)
 if [ -z $IMAGE_ID ]; then
-  ${ROOTDIR}/init-ims-image.sh -k ${KERNEL} -i ${INITRD}  -r ${ROOTFS}
-  IMAGE_ID=$(list_ims_images | jq --arg img_name "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == img_name ) | .id' | head -1)
+  ${ROOTDIR}/init-ims-image.sh -n ${UAN_IMAGE_NAME} -k ${KERNEL} -i ${INITRD}  -r ${ROOTFS}
+  IMAGE_ID=$(list_ims_images | jq --arg UAN_IMAGE_NAME "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $UAN_IMAGE_NAME ) | .id' | head -1)
 else
-  echo "Found $SLES_UAN_IMAGE already exists as $IMAGE_ID... Skipping image upload"
+  echo "Found $UAN_IMAGE_NAME already exists as $IMAGE_ID... Skipping image upload"
 fi
 
-if [ -z $IMAGE_ID]; then
+if [ -z $IMAGE_ID ]; then
     echo "Could not find an IMS Image ID for $UAN_IMAGE_NAME"
     exit 1
 fi
 
 cat << EOF > "$UAN_PRODUCT_VERSION-$IMAGE_ID.json"
-$UAN_PRODUCT_VERSION:
-  images:
-    $UAN_IMAGE_NAME:
-      $IMAGE_ID
+images:
+  $UAN_IMAGE_NAME:
+    id: $IMAGE_ID
 EOF
 
 # Register the image with the product catalog
-podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update --network podman-cni-config \
+podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update \
+    -u $USER \
     -e PRODUCT=uan \
     -e PRODUCT_VERSION=$UAN_PRODUCT_VERSION \
-    -e YAML_CONTENT=$UAN_PRODUCT_VERSION-$IMAGE_ID.json \
+    -e YAML_CONTENT=/results/$UAN_PRODUCT_VERSION-$IMAGE_ID.json \
     -e KUBECONFIG=/.kube/admin.conf \
     -v /etc/kubernetes:/.kube:ro \
     -v ${PWD}:/results:ro \
