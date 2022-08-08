@@ -98,9 +98,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
 8. Create a branch using the imported branch from the installation to customize the UAN image.
 
-    This will be reported in the `cray-product-catalog` Kubernetes ConfigMap in the `configuration.import_branch` key under the UAN section. The format is cray/uan/PRODUCT\_VERSION. In this guide, an `integration` branch is used for examples, but the name can be any valid git branch name.
-
-    Modifying the cray/uan/PRODUCT\_VERSION branch that was created by the UAN product installation is not allowed by default.
+    This will be reported in the `cray-product-catalog` Kubernetes ConfigMap in the `configuration.import_branch` key under the UAN section. In this guide, an `integration` branch is used for examples, but the name can be any valid git branch name.
 
     ```bash
     ncn-m001# git checkout -b integration origin/integration
