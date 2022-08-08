@@ -95,17 +95,33 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 
 8. Create a branch using the imported branch from the installation to customize the UAN image.
 
-    This will be reported in the `cray-product-catalog` Kubernetes ConfigMap in the `configuration.import_branch` key under the UAN section. The format is cray/uan/PRODUCT\_VERSION. In this guide, an `integration` branch is used for examples, but the name can be any valid git branch name.
-
-    Modifying the cray/uan/PRODUCT\_VERSION branch that was created by the UAN product installation is not allowed by default.
+    This will be reported in the `cray-product-catalog` Kubernetes ConfigMap in the `configuration.import_branch` key under the UAN section. In this guide, an `integration` branch is used for examples, but the name can be any valid git branch name.
 
     ```bash
-    ncn-m001# git checkout -b integration && git merge cray/uan/PRODUCT_VERSION
+    ncn-m001# git checkout -b integration origin/integration
     Switched to a new branch 'integration'
     Already up to date.
     ```
 
-9. Apply any site-specific customizations and modifications to the Ansible configuration for the UAN nodes and commit the changes.
+9. Enable kernel watchdog modules by applying the following diff to `roles/kdump/files/kdump_initrd.sh`:
+
+   ```
+   # diff -c kdump_initrd.sh.orig kdump_initrd.sh
+   *** kdump_initrd.sh.orig	2022-08-08 16:17:14.876239045 +0000
+   --- kdump_initrd.sh	2022-08-05 21:42:58.504182223 +0000
+   ***************
+   *** 39,44 ****
+   --- 39,45 ----
+     terminfo \
+     udev-rules \
+     url-lib \
+   + watchdog-modules \
+     "
+
+     # Add network-legacy for SP2
+   ```
+
+10. Apply any site-specific customizations and modifications to the Ansible configuration for the UAN nodes and commit the changes.
 
     The default Ansible play to configure UAN nodes is `site.yml` in the base of the `uan-config-management` repository. The roles that are executed in this play allow for custom configuration as required for the system.
 
@@ -128,7 +144,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
      create mode 100644 group_vars/Application_UAN/vars.yml
     ```
 
-10. Push the changes to the repository using the proper credentials, including the password obtained previously.
+11. Push the changes to the repository using the proper credentials, including the password obtained previously.
 
     ```bash
     ncn-m001# git push --set-upstream origin integration
