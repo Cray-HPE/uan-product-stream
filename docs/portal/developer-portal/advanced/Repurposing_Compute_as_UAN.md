@@ -22,6 +22,7 @@ There are no changes needed in hardware, network cabling, or UEFI/BIOS/BMC confi
 
 * The SLS Networks setting for the `SystemDefaultRoute` must be `CHN`
 * The repurposed compute nodes must have CHN IP addresses in SLS
+* `uan_can_setup` must be set to `true` in the uan-config-management repo
 
 ## Procedure
 
@@ -38,8 +39,10 @@ Perform the following steps to repurpose a compute node for use as a UAN.
 1. Verify a CHN IP address exists in SLS for each repurposed compute node. Repeat the following command and replace `<XNAME>` with the xname of each repurposed compute node. The compute node must have a CHN IP address in SLS or it cannot be repurposed as a UAN.  See `Add Compute IP addresses to CHN SLS data` section of the Cray System Management documentation for information on adding compute nodes to the CHN.
 
     ```bash
-    ncn-m001# cray sls networks describe CHN | grep -A 2 <XNAME>
+    ncn-m001# cray sls networks describe CHN | q -r '.ExtraProperties.Subnets[] | select(.FullName == "CHN Bootstrap DHCP Subnet") | .IPReservations[] | select(.Comment == "<XNAME>")'
     ```
+
+1. Verify that `uan_can_setup: true` is set in the `uan-config-management` CFS repo.  See [Enabling the Customer Access Network (CAN) or the Customer High Speed Network (CHN)](../advanced/Enabling_CAN_CHN.md) for more information.
 
 1. Change the role and sub-role in HSM of the compute node(s) being repurposed as UANs to `Application` and `UAN`, respectively.  Repeat the following command and replace `<XNAME>` with the xname of each repurposed compute node.
 
@@ -53,10 +56,10 @@ Perform the following steps to repurpose a compute node for use as a UAN.
     ncn-m001# cray hsm state components describe <XNAME>
     ```
 
-1. Run the BOS session template used to boot the UAN nodes. See [Boot UAN Nodes](../operations/Boot_UANs.md) for more information on booting UAN nodes with BOS.  Replace `<UAN_SESSIONTEMPLATE>` with the name of the BOS session template used to boot the UAN nodes.
+1. Run the BOS session template used to boot the UAN nodes. See [Boot UAN Nodes](../operations/Boot_UANs.md) for more information on booting UAN nodes with BOS.  Replace `<UAN_SESSIONTEMPLATE>` with the name of the BOS session template used to boot the UAN nodes and `<XNAME>` with the xname of the repurposed compute node.
 
     ```bash
-    ncn-m001# cray bos session create --template-uuid <UAN_SESSIONTEMPLATE> --operation reboot
+    ncn-m001# cray bos session create --template-uuid <UAN_SESSIONTEMPLATE> --operation reboot --limit <XNAME>
     ```
 
 ## Verification as a UAN
@@ -64,6 +67,12 @@ Perform the following steps to repurpose a compute node for use as a UAN.
 Once the repurposed compute node is booted as a UAN, the following steps will verify it is configured as a UAN. These steps may vary dependent upon how the site has configured the UAN nodes.
 
 ### Basic UAN Configuration Checks
+
+1. Verify the repurposed compute node has finished the configuration phase. The output should "configured".
+
+    ```bash
+    ncn-m001# cray cfs components describe <XNAME> --format json | jq -r .configurationStatus
+    ```
 
 1. Login to the repurposed compute node from the master node `ncn-m001` as the root user.
 
