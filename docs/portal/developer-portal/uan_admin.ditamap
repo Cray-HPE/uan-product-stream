@@ -24,6 +24,8 @@
     </topicref>
     <topicref href="Advanced_Administrative_Tasks.md" format="markdown">
         <topicref href="advanced/Customizing_UAN_Images_Manually.md" format="markdown"/>
+        <topicref href="advanced/Repurposing_Compute_as_UAN.md" format="markdown"/>
+        <topicref href="advanced/Enabling_CAN_CHN" format="markdown"/>
     </topicref>
     <topicref href="Troubleshooting.md" format="markdown">
         <topicref href="troubleshooting/Troubleshoot_UAN_Boot_Issues.md" format="markdown"/>
