@@ -18,6 +18,7 @@
         <topicref href="installation_prereqs/Configure_the_BIOS_of_a_Gigabyte_UAN.md"
             format="markdown"/>
     </topicref>
+    <topicref href="advanced/Enabling_CAN_CHN.md" format="markdown"/>
     <topicref href="install/Install_the_UAN_Product_Stream.md" format="markdown"/>
     <topicref href="upgrade/Merge_UAN_Configuration_Data.md" format="markdown"/>
 </map>
