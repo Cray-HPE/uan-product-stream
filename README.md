@@ -79,10 +79,31 @@ SEMVER-compliant.
   `${git_tag}-{# commits since tag}-g{commit}`
 * If there are unstaged changes, `-dirty` is appended to the version string.
 
-This naming scheme is in place to ensure that development release distributions
-can be created and not conflict with official releases.
+Use [`git-vendor`](https://github.com/brettlangdon/git-vendor), a wrapper
+around `git-subtree` commands for checking out and updating vendored
+dependencies. Installation via Homebrew is simply `brew install git-vendor`.
+Once installed, vendor this library into a product release repository via:
 
-## Documentation
+```bash
+$ git vendor add release git@github.hpe.com:hpe/hpc-shastarelm-release.git master
++ git subtree add --prefix vendor/github.hpe.com/hpe/hpc-shastarelm-release --message 'Add "release" from "git@github.hpe.com:hpe/hpc-shastarelm-release.git@master"
+
+git-vendor-name: release
+git-vendor-dir: vendor/github.hpe.com/hpe/hpc-shastarelm-release
+git-vendor-repository: git@github.hpe.com:hpe/hpc-shastarelm-release.git
+git-vendor-ref: master
+' git@github.hpe.com:hpe/hpc-shastarelm-release.git master --squash
+git fetch git@github.hpe.com:hpe/hpc-shastarelm-release.git master
+remote: Enumerating objects: 172, done.
+remote: Counting objects: 100% (21/21), done.
+remote: Compressing objects: 100% (16/16), done.
+remote: Total 172 (delta 8), reused 15 (delta 5), pack-reused 151
+Receiving objects: 100% (172/172), 39.91 KiB | 510.00 KiB/s, done.
+Resolving deltas: 100% (81/81), done.
+From github.hpe.com:hpe/hpc-shastarelm-release
+ * branch            master     -> FETCH_HEAD
+Added dir 'vendor/github.hpe.com/hpe/hpc-shastarelm-release'
+```
 
 UAN documentation is stored in the `docs` directory. Please keep it up to date
 with the procedures associated with the artifacts that are referenced in the UAN
