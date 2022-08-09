@@ -2,7 +2,7 @@
 #
 # MIT License
 #
-# (C) Copyright [2020-2021] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -34,7 +34,17 @@ trap notify ERR
 function copy_manifests {
     rsync -aq "${ROOTDIR}/manifests/" "${BUILDDIR}/manifests/"
     # Set any dynamic variables in the UAN manifest
-    sed -i.bak -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+    sed -i -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+    sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+
+    rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
+    # Set any dynamic variables in the UAN manifest
+    sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@product_catalog_version@/${PRODUCT_CATALOG_UPDATE_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+
+    rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
+    # Set any dynamic variables in the UAN manifest
+    sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/helm/index.yaml"
 }
 
 function copy_tests {
@@ -74,10 +84,10 @@ function setup_nexus_repos {
 
 function sync_repo_content {
     # sync helm charts
-    helm-sync "${ROOTDIR}/helm/index.yaml" "${BUILDDIR}/helm"
+    helm-sync "${BUILDDIR}/helm/index.yaml" "${BUILDDIR}/helm"
 
     # sync container images
-    skopeo-sync "${ROOTDIR}/docker/index.yaml" "${BUILDDIR}/docker"
+    skopeo-sync "${BUILDDIR}/docker/index.yaml" "${BUILDDIR}/docker"
 
     # sync uan repos from bloblet
     reposync "${BLOBLET_URL}/sle-15sp4" "${BUILDDIR}/rpms/sle-15sp4"
@@ -103,14 +113,30 @@ function sync_install_content {
             s/@minor@/${MINOR}/g
             s/@patch@/${PATCH}/g" include/nexus-upload.sh > "${BUILDDIR}/lib/nexus-upload.sh"
 
-    rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
+    cat << EOF > "${BUILDDIR}/vars.sh"
+UAN_PRODUCT_VERSION=$VERSION
+UAN_CONFIG_VERSION=$UAN_CONFIG_VERSION
+PRODUCT_CATALOG_UPDATE_VERSION=$PRODUCT_CATALOG_UPDATE_VERSION
+UAN_IMAGE_VERSION=$UAN_IMAGE_VERSION
+UAN_IMAGE_NAME=$UAN_IMAGE_NAME
+UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
+EOF
 
+    rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
+    rsync -aq "${ROOTDIR}/init-ims-image.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
 }
 
 function package_distribution {
     PACKAGE_NAME=${NAME}-${VERSION}
     tar -C $(realpath -m "${ROOTDIR}/dist") -zcvf $(dirname "$BUILDDIR")/${PACKAGE_NAME}.tar.gz $(basename $BUILDDIR)
+}
+
+function sync_image_content {
+    mkdir -p "${BUILDDIR}/images/application"
+    pushd "${BUILDDIR}/images/application"
+    for url in "${APPLICATION_ASSETS[@]}"; do cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"; done
+    popd
 }
 
 # Definitions and sourced variables
@@ -121,6 +147,7 @@ VENDOR="${ROOTDIR}/vendor/github.hpe.com/hpe/hpc-shastarelm-release/"
 PYTHONPATH=""
 
 source "${ROOTDIR}/vars.sh"
+source "${ROOTDIR}/assets.sh"
 source "${VENDOR}/lib/release.sh"
 requires rsync tar generate-nexus-config helm-sync skopeo-sync reposync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
@@ -137,6 +164,7 @@ copy_docs
 sync_install_content
 setup_nexus_repos
 sync_repo_content
+sync_image_content
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"

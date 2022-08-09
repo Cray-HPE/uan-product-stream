@@ -1,7 +1,7 @@
 #
 # MIT License
 #
-# (C) Copyright [2020-2021] Hewlett Packard Enterprise Development LP
+# (C) Copyright [2020-2022] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -30,5 +30,23 @@ VERSION=$(./version.sh)
 MAJOR=`./vendor/semver get major ${VERSION}`
 MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
+
+# Versions for container images and helm charts
+PRODUCT_CATALOG_UPDATE_VERSION=1.3.1
+UAN_CONFIG_VERSION=1.8.7
+
+# Versions for UAN images
+UAN_IMAGE_VERSION=0.0.1
+UAN_KERNEL_VERSION=5.3.18-150300.59.43
+UAN_IMAGE_NAME=cray-application-sles15sp3.x86_64-$UAN_IMAGE_VERSION
+UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/stable/application
+
+APPLICATION_ASSETS=(
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/filesystem-$UAN_IMAGE_VERSION.squashfs
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-default-$UAN_IMAGE_VERSION.kernel
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION.xz
+)
+
+HPE_SIGNING_KEY=https://arti.dev.cray.com/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
 
 BLOBLET_URL="https://artifactory.algol60.net/artifactory/uan-rpms/hpe/stable"
