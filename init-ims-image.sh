@@ -190,7 +190,6 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# todo write a temp file instead
 cat <<EOF > $MANIFEST
   {
     "created": "`date '+%Y-%m-%d %H:%M:%S'`",
