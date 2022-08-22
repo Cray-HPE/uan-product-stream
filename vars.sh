@@ -36,15 +36,16 @@ PRODUCT_CATALOG_UPDATE_VERSION=1.3.1
 UAN_CONFIG_VERSION=1.9.0
 
 # Versions for UAN images
-UAN_IMAGE_VERSION=0.0.1
-UAN_KERNEL_VERSION=5.3.18-150300.59.43
+UAN_IMAGE_RELEASE=stable
+UAN_IMAGE_VERSION=0.2.0
+UAN_KERNEL_VERSION=5.3.18-150300.59.43-default
 UAN_IMAGE_NAME=cray-application-sles15sp3.x86_64-$UAN_IMAGE_VERSION
-UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/stable/application
+UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/$UAN_IMAGE_RELEASE/application
 
 APPLICATION_ASSETS=(
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/filesystem-$UAN_IMAGE_VERSION.squashfs
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-default-$UAN_IMAGE_VERSION.kernel
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION.xz
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/application.squashfs
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION.kernel
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img.xz
 )
 
 HPE_SIGNING_KEY=https://arti.dev.cray.com/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc

@@ -27,7 +27,7 @@ export CRAY_FORMAT=json
 
 KERNEL_NAME=kernel
 INITRD_NAME=initrd
-ROOTFS_NAME=filesystem.squashfs
+ROOTFS_NAME=rootfs
 BUCKET=boot-images
 
 function check_auth() {

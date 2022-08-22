@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.3] - 2022-08-26
+- Update cray-application to 0.2.0 for new packages and build pipeline
+- Add docs for SLES Image booting
+
 ## [2.5.2] - 2022-08-11
 - Update vendored product /hpe/hpc-shastarealm-release
 - Create UAN artifacts based on COS 2.4
