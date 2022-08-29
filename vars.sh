@@ -37,8 +37,8 @@ UAN_CONFIG_VERSION=1.9.0
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE=stable
-UAN_IMAGE_VERSION=0.2.0
-UAN_KERNEL_VERSION=5.3.18-150300.59.43-default
+UAN_IMAGE_VERSION=0.1.0
+UAN_KERNEL_VERSION=5.3.18-150300.59.87.1-default
 UAN_IMAGE_NAME=cray-application-sles15sp3.x86_64-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/$UAN_IMAGE_RELEASE/application
 
