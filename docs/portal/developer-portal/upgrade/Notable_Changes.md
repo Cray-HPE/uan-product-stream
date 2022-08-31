@@ -42,3 +42,8 @@ When an upgrade is being performed, please review the notable changes for **all*
 ## UAN 2.4.3
 
 * A new CFS role, `uan_hardening` adds iptables rules that will block SSH traffic to NCNs. See the README.md in the uan_hardening role for more information.
+
+## UAN 2.5.3
+
+* A technical preview of a standard SLES image for UAN/Application nodes is included.
+* Support SLES15SP4 COS based images
