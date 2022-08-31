@@ -8,7 +8,7 @@ The image is built with the same packer/qemu pipeline as Non-Compute-Node Images
 
 As this is currently a "Technical Preview" of supporting SLES Images on Application Nodes, there are several limitations:
 
-* S3 presigned URLs with an expiration limit for the rootfs must be created
+* S3 presigned URLs with an expiration limit for the rootfs must be created.
 * BSS parameters must be set with `cray bss bootparameters replace ...`
 * BOS Sessions and Templates are not supported.
 * CFS Configurations that operate on COS and NCN images are not yet supported.
@@ -37,14 +37,14 @@ Perform the following steps to configure and boot a SLES image on an Application
 1. Verify the UAN release contains a SLES image.
 
     ```bash
-    ncn-m001# UAN_RELEASE=2.5.2
+    ncn-m001# UAN_RELEASE=2.5
     ncn-m001# sat showrev --filter 'product_name = uan' | grep $UAN_RELEASE
     ```
 
 1. Select an Image to boot or customize.
 
     ```bash
-    ncn-m001# APP_IMAGE_NAME=cray-application-sles15sp3.x86_64-0.2.0
+    ncn-m001# APP_IMAGE_NAME=cray-application-sles15sp3.x86_64-0.1.0
     ncn-m001# APP_IMAGE_ID=$(cray ims images list --format json  | jq --arg APP_IMAGE_NAME "$APP_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $APP_IMAGE_NAME ) | .id' | head -1)
     ncn-m001# cray ims images describe $APP_IMAGE_ID --format json
     {
@@ -55,11 +55,11 @@ Perform the following steps to configure and boot a SLES image on an Application
         "path": "s3://boot-images/13964414-bbad-40e9-9e31-a3683010febb/manifest.json",
         "type": "s3"
       },
-      "name": "cray-application-sles15sp3.x86_64-0.0.1"
+      "name": "cray-application-sles15sp3.x86_64-0.1.0"
     }
     ```
 
-1. Customize the image using SAT Bootprep. If CFS is not going to be used on this node, this step is optional. Support for additional product layers will be added in subsequent releases.
+1. Customize the image using SAT Bootprep. This will add a root password to the image as one is not included. If CFS is not going to be used on this node, this step is optional. Support for additional product layers will be added in subsequent releases.
 
     ```bash
     ncn-m001# cat bootprep-sles-uan.yml
@@ -77,7 +77,7 @@ Perform the following steps to configure and boot a SLES image on an Application
     - name: sles-uan-image
       ims:
         is_recipe: false
-        name: cray-application-sles15sp3.x86_64-0.2.0
+        name: cray-application-sles15sp3.x86_64-0.1.0
       configuration: sles-uan-configuration
       configuration_group_names:
       - Application
@@ -97,9 +97,10 @@ Perform the following steps to configure and boot a SLES image on an Application
       },
       "name": "sles-uan-image"
     }
+    ncn-m001# APP_IMAGE_ID=13964414-bbad-40e9-9e31-a36830101234
     ```
 
-1. Create a presigned URL for the rootfs. This is needed for the node to boot in this release, in the future, this will be integrated to BSS and will not need to performed. This URL will be valid for 1 hour and will need to be recreated if the node reboots after the URL expires. To set a longer expiration, adjust the "aws s3 presign" command accordingly.
+1. Create a presigned URL for the rootfs. This is needed for the node to boot in this release, in the future, this will be integrated into BSS and will not need to be performed. This URL will be valid for 1 hour and will need to be recreated if the node reboots after the URL expires. To set a longer expiration, adjust the "aws s3 presign" command accordingly.
 
     ```base
     ncn-m001# export AWS_ACCESS_KEY_ID=`kubectl get secrets -o yaml ims-s3-credentials -ojsonpath='{.data.access_key}' | base64 -d`
@@ -133,18 +134,18 @@ Perform the following steps to configure and boot a SLES image on an Application
     ncn-m001:~ # cray bss bootparameters replace --hosts $NODE --initrd "s3://boot-images/$IMG_ID/initrd" --kernel "s3://boot-images/$IMG_ID/kernel" --params "$PARAMS"
     ```
 
-1. Reboot the node.
+1. Reboot the node. Wait for the status to return off before issuing the power on command.
 
     ```bash
     ncn-m001:# USERNAME=root
     ncn-m001:# read -r -s -p "$NODE BMC ${USERNAME} password: " IPMI_PASSWORD; echo
     ncn-m001:# export IPMI_PASSWORD
-    ncn-m001:# ipmitool -U "${USERNAME}" -I lanplus -H ${NODE::-2} power off
-    ncn-m001:# ipmitool -U "${USERNAME}" -I lanplus -H ${NODE::-2} power status
-    ncn-m001:# ipmitool -U "${USERNAME}" -I lanplus -H ${NODE::-2} power on
+    ncn-m001:# ipmitool -U "${USERNAME}" -E -I lanplus -H ${NODE::-2} power off
+    ncn-m001:# ipmitool -U "${USERNAME}" -E -I lanplus -H ${NODE::-2} power status
+    ncn-m001:# ipmitool -U "${USERNAME}" -E -I lanplus -H ${NODE::-2} power on
     ```
 
-1. Connect to the console for the node and verify it boots into multi-user mode.
+1. Connect to the console for the node and verify it boots into multi-user mode. Find the correct pod by using `conman -q` to list the available connections in each pod.
 
     ```bash
     ncn-m001# kubectl exec -it -n services cray-console-node-0 -- conman -j $NODE
@@ -163,7 +164,7 @@ Some general troublshooting tips may help in getting started using the SLES imag
 
 ### Dracut failures during booting
 
-1. Could not find the kernel or the initrd.
+1. Could not find the kernel or the initrd. Verify the BSS bootparameters for the node. Specifically, check that the IMS Image ID is correct.
 
     ```bash
     http://rgw-vip.nmn/boot-images/13964414-bbad-40e9-9e31-a3683010febbasdf/kernel...HTTP 0x7f0fa808 status 404 Not Found
@@ -172,9 +173,8 @@ Some general troublshooting tips may help in getting started using the SLES imag
     http://rgw-vip.nmn/boot-images/13964414-bbad-40e9-9e31-a3683010febbasdf/initrd...HTTP 0x7f0fa808 status 404 Not Found
      No such file or directory (http://ipxe.org/2d0c618e)
     ```
-    Verify the BSS bootparameters for the node. Specifically check that the IMS Image ID is correct.    
 
-1. 
+1. The presigned URL was generated incorrectly.
 
     ```bash
     2022-08-22 18:49:33 [    9.170981] dracut-initqueue[1427]: curl: (22) The requested URL returned error: 404 Not Found
@@ -183,7 +183,7 @@ Some general troublshooting tips may help in getting started using the SLES imag
     2022-08-22 18:49:33 [    9.222966] dracut-initqueue[1411]: Warning: failed to download live image: error 0
     ```
 
-1. No carrier detected on interface nmn0.
+1. No carrier detected on interface nmn0. Select a different MAC address to be assigned as nmn0.
 
     ```bash
     http://rgw-vip.nmn/boot-images/13964414-bbad-40e9-9e31-a3683010febb/kernel... ok
@@ -197,9 +197,7 @@ Some general troublshooting tips may help in getting started using the SLES imag
     [   28.400096] dracut-initqueue[945]: Warning: Could not boot.
     ```
 
-Select a different MAC address to be assigned as nmn0.
-
-1. The root filesystem doesn't won't download because the URL is too long.
+1. The root filesystem doesn't won't download because the URL is too long. Regenerate the URL using the aws command.
 
     ```bash
     2022-08-03 19:41:52   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0Warning: Failed to create the file
@@ -222,7 +220,7 @@ Select a different MAC address to be assigned as nmn0.
     [    9.807724] dracut-initqueue[1429]: Warning: Downloading 'http://rgw-vip/boot-images/13964414-bbad-40e9-9e31-a3683010febb/rootfs?AWSAccessKeyId=I43RBLH07R65TRO3AL02&Signature=7%2FgOCotleoyLPGmeyG%2FFX8tpkWg%3D&Expires=1661523713' failed!
     ```
 
-1. 
+1. The dracut module livenet is missing from the initrd. Make sure the initrd was regenerated with `/srv/cray/scripts/common/create-ims-initrd.sh` if CFS was used.
 
     ```bash
     2022-08-24 14:48:53 [    5.784023] dracut: FATAL: Don't know how to handle 'root=live:http://rgw-vip/boot-images/e88ed416-5d58-4421-9013-fa2171ac11b8/rootfs?AWSAccessKeyId=I43RBLH07R65TRO3AL02&Signature=bL661kZHPyEgBsLLEuJHFz3zKVs%3D&Expires=1661438587'
@@ -231,13 +229,14 @@ Select a different MAC address to be assigned as nmn0.
 
 ### Unable to log in to the node.
 
-1.  The node is not up. Connect to the console and determine why the node has not booted starting with the troubleshooting tips.
+1.  The node is not up. Connect to the console and determine why the node has not booted, starting with the troubleshooting tips.
+
     ```bash
     ncn-m001:# ssh app01 
     ssh: connect to host uan01 port 22: No route to host
     ```
 
-1. Unable to log in to the node with a password.
+1. Unable to log in to the node with a password. No root password is defined in the image by default, one must be added via CFS or by modifying the squashfs filesystem.
 
     ```bash
     ncn-m001:# ssh app01
@@ -247,8 +246,6 @@ Select a different MAC address to be assigned as nmn0.
     root@app01's password:
     Permission denied, please try again
     ```
-
-No root password is defined in the image by default, one must be added via CFS or by manually modifying the squashfs filesystem.
 
 ### DHCP hostname is not set
 
@@ -280,5 +277,3 @@ No root password is defined in the image by default, one must be added via CFS o
     ```bash
     app01# systemctl status spire-agent
     ```
-
-1. Check the console logs for messages from spire during dracut.
