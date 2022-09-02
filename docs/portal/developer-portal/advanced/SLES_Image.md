@@ -97,7 +97,6 @@ Perform the following steps to configure and boot a SLES image on an Application
       },
       "name": "sles-uan-image"
     }
-    ncn-m001# APP_IMAGE_ID=13964414-bbad-40e9-9e31-a36830101234
     ```
 
 1. Create a presigned URL for the rootfs. This is needed for the node to boot in this release, in the future, this will be integrated into BSS and will not need to be performed. This URL will be valid for 1 hour and will need to be recreated if the node reboots after the URL expires. To set a longer expiration, adjust the "aws s3 presign" command accordingly.
@@ -130,8 +129,8 @@ Perform the following steps to configure and boot a SLES image on an Application
 1. Update BSS with the kernel, initrd, and desired parameters. 
 
     ```bash
-    ncn-m001:~ # PARAMS="ifname=nmn0:$MAC ip=nmn0:dhcp spire_join_token=\${SPIRE_JOIN_TOKEN} biosdevname=1 pcie_ports=native transparent_hugepage=never console=tty0 console=ttyS0,115200 iommu=pt metal.no-wipe=1 initrd=initrd root=live:$ROOTFS_URL rd.live.ram=0 rd.writable.fsimg=0 rd.skipfsck rd.live.squashimg=filesystem.squashfs rd.live.overlay.thin=1 rd.live.overlay.overlayfs=1 rd.luks=0 rd.luks.crypttab=0 rd.lvm.conf=0 rd.lvm=1 rd.auto=1 rd.md=1 rd.dm=0 rd.neednet=0 rd.peerdns=1 rd.md.waitclean=1 rd.multipath=0 rd.md.conf=1 rd.bootif=0 hostname=$NODE rd.net.dhcp.retry=3 append nosplash quiet log_buf_len=1 rd.retry=10 rd.shell
-    ncn-m001:~ # cray bss bootparameters replace --hosts $NODE --initrd "s3://boot-images/$IMG_ID/initrd" --kernel "s3://boot-images/$IMG_ID/kernel" --params "$PARAMS"
+    ncn-m001:~ # PARAMS="ifname=nmn0:$MAC ip=nmn0:dhcp spire_join_token=\${SPIRE_JOIN_TOKEN} biosdevname=1 pcie_ports=native transparent_hugepage=never console=tty0 console=ttyS0,115200 iommu=pt metal.no-wipe=1 initrd=initrd root=live:$ROOTFS_URL rd.live.ram=0 rd.writable.fsimg=0 rd.skipfsck rd.live.squashimg=filesystem.squashfs rd.live.overlay.thin=1 rd.live.overlay.overlayfs=1 rd.luks=0 rd.luks.crypttab=0 rd.lvm.conf=0 rd.lvm=1 rd.auto=1 rd.md=1 rd.dm=0 rd.neednet=0 rd.peerdns=1 rd.md.waitclean=1 rd.multipath=0 rd.md.conf=1 rd.bootif=0 hostname=$NODE rd.net.dhcp.retry=3 append nosplash quiet log_buf_len=1 rd.retry=10 rd.shell"
+    ncn-m001:~ # cray bss bootparameters replace --hosts $NODE --initrd "s3://boot-images/$APP_IMAGE_ID/initrd" --kernel "s3://boot-images/$APP_IMAGE_ID/kernel" --params "$PARAMS"
     ```
 
 1. Reboot the node. Wait for the status to return off before issuing the power on command.
