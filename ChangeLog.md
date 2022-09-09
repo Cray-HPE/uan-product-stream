@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.4] - 2022-09-07
 - Update UAN with the latest COS CFS changes
+- Use a new cf-gitea-import
 
 ## [2.5.3] - 2022-08-26
 - Update uan_interfaces role to optimize SLS queries
