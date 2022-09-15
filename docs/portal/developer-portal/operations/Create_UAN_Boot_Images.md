@@ -53,7 +53,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
     The vault login command will request a token. That token value is the output of the previous step. The vault `read secret/uan` command verifies that the hash was stored correctly. This password hash will be written to the UAN for the `root` user by CFS.
 
     ```bash
-    ncn-m001# kubectl exec -it -n vault cray-vault-0 -- sh
+    ncn-m001# kubectl exec -it -n vault cray-vault-0 -c vault -- sh
     export VAULT_ADDR=http://cray-vault:8200
     vault login
     vault write secret/uan root_password='HASH'
