@@ -8,7 +8,7 @@
 			<data name="edition" value="UAN Software Release 2.5.4"></data>
         </topicmeta>
     <topicref href="upgrade/Notable_Changes.md" format="markdown"/>
-    <topicref href="upgrade/Upgrades.md" format="markdown"/>
+    <topicref href="upgrade/Upgrade_UAN_Software_Product.md" format="markdown"/>
     <topicref href="installation_prereqs/Hardware_and_Software_Prerequisites.md" format="markdown">
         <topicref href="installation_prereqs/Prepare_for_UAN_Product_Installation.md"
             format="markdown"/>
