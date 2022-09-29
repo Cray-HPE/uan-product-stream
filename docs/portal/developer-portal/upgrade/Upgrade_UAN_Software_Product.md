@@ -31,17 +31,13 @@ HPE recommends that customers:
 
 Customer sites can use `cne-install` to upgrade UAN separately from COS, when necessary.
 
-## Upgrade UAN automatically `cne-install`
+## Upgrade UAN automatically with `cne-install`
 
-Do not perform this procedure if UAN and COS were upgraded at the same time using `cne-install`.
+Perform this procedure if UAN was not already upgraded according to the workflow in the [*HPE Cray EX System Software Getting Started Guide (S-8000)*](https://www.hpe.com/support/ex-S-8000).
 
-1. Copy the UAN release distribution tarball file to a directory on ncn-m001 dedicated for the upgrade.
+1. Copy the release distribution tarball file for UAN and any other products you wish to upgrade to a dedicated directory on ncn-m001.
 
-If you only want to upgrade UAN, only the UAN tarball should be copied in the media directory.
-
-2. **Optional:** Copy to the same directory as the previous step the tarballs of any other products that will be upgraded at the same time.
-
-The `cne-install` tool inspects the contents of the media directory and automatically upgrades supported products.
+If you only want to upgrade UAN, only the UAN tarball should be copied in this directory. The `cne-install` tool inspects the contents of the media directory and automatically upgrades supported products.
 
 3. Run the CNE installer using the instructions in the [*HPE Cray EX System Software Getting Started Guide (S-8000)*](https://www.hpe.com/support/ex-S-8000).
 
