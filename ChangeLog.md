@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.5] - 2022-10-05
+- Disable cray-ifconf
+- Fix edge case in uan_interfaces
+
 ## [2.5.4] - 2022-09-07
 - Update UAN with the latest COS CFS changes
 - Use a new cf-gitea-import
