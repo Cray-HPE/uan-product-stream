@@ -39,7 +39,7 @@ Replace `PRODUCT_VERSION` and `CRAY_EX_HOSTNAME` in the example commands in this
 2. **Optional** Generate the password hash for the `root` user. Replace PASSWORD with the `root` password you wish to use.  If an upgrade or image rebuild is being performed, the root password may have already been added to vault.
 
     ```bash
-    ncn-m001# openssl passwd -6 -salt $(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c4) PASSWORD
+    ncn-m001# openssl passwd -6 -salt $(< /dev/urandom tr -dc ./A-Za-z0-9 | head -c4) PASSWORD
     ```
 
 3. **Optional** Obtain the HashiCorp Vault `root` token.
