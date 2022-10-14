@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.6] - 2022-10-14
+- Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf
+
 ## [2.5.5] - 2022-10-05
 - Disable cray-ifconf
 - Fix edge case in uan_interfaces
