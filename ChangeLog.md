@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.7] - 2022-10-20
+- Take the latest COS 2.4 CFS changes for an amdgpu module issue
+
 ## [2.5.6] - 2022-10-14
 - Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf
 
