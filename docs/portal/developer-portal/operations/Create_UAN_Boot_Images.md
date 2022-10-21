@@ -161,25 +161,79 @@ The SAT bootprep input file should have a configuration section that specifies e
 
 Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
 
+Beginning with UAN version `2.6.0`, CFS configuration roles which are provided by COS are now defined as two separate COS configuration layers as shown in the example below.  Prior to UAN version `2.6.0`, these roles were included in the UAN configuration layer.  Separating these roles into COS layers allows COS updates to be independent from UAN updates. To pick up any COS, Slingshot Host Software, or other layered product updates into the UAN configurations, simply run `sat bootprep` again to regenerate the updated UAN CFS configurations, images, and BOS session templates.
+
 ```yaml
 configurations:
 - name: uan-config
   layers:
-  - name: slingshot-host-software
+  - name: shs-mellanox_install-integration-{{shs.version}}
     playbook: shs_mellanox_install.yml
     product:
       name: slingshot-host-software
-      version: 2.0.0
-      branch: integration
-
-  ... add configuration layers for other products here, if desired ...
-
+      version: "{{shs.version}}"
+      branch: integration-{{shs.version}}
+#  - name: shs-cassini_install-integration-{{shs.version}}
+#    playbook: shs_cassini_install.yml
+#    product:
+#      name: slingshot-host-software
+#      version: "{{shs.version}}"
+#      branch: integration-{{shs.version}}
+  - name: cos-application-integration-{{cos.version}}
+    playbook: cos-application.yml
+    product:
+      name: cos
+      version: "{{cos.version}}"
+  - name: csm-packages-integration-{{csm.version}}
+    playbook: csm_packages.yml
+    product:
+      name: csm
+      version: "{{csm.version}}"
   - name: uan
     playbook: site.yml
     product:
       name: uan
-      version: 2.4.0
+      version: "{{uan.version}}"
       branch: integration
+  - name: csm-diags-application-{{csm_diags.version}}
+    playbook: csm-diags-application.yml
+    product:
+      name: csm-diags
+      version: "{{csm_diags.version}}"
+  - name: sma-ldms-application-{{sma.version}}
+    playbook: sma-ldms-application.yml
+    product:
+      name: sma
+      version: "{{sma.version}}"
+  - name: cpe-pe_deploy-integration-{{cpe.version}}
+    playbook: pe_deploy.yml
+    product:
+      name: cpe
+      version: "{{cpe.version}}"
+      branch: cpe-{{cpe.version.split('.')[0]}}.{{cpe.version.split('.')[1].zfill(2)}}-integration
+  - name: analytics-site-integration-{{analytics.version}}
+    playbook: site.yml
+    product:
+      name: analytics
+      version: "{{analytics.version}}"
+      branch: integration
+  - name: slurm-site-{{slurm.version}}
+    playbook: site.yml
+    product:
+      name: slurm
+      version: "{{slurm.version}}"
+      branch: master
+#  - name: pbs-site-{{pbs.version}}
+#    playbook: site.yml
+#    product:
+#      name: pbs
+#      version: "{{pbs.version}}"
+#      branch: master
+  - name: cos-application-last-integration-{{cos.version}}
+    playbook: cos-application-after.yml
+    product:
+      name: cos
+      version: "{{cos.version}}"
 ```
 
 **SAT Bootprep Image**
