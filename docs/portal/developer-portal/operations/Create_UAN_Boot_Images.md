@@ -161,79 +161,49 @@ The SAT bootprep input file should have a configuration section that specifies e
 
 Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
 
-Beginning with UAN version `2.6.0`, CFS configuration roles which are provided by COS are now defined as two separate COS configuration layers as shown in the example below.  Prior to UAN version `2.6.0`, these roles were included in the UAN configuration layer.  Separating these roles into COS layers allows COS updates to be independent from UAN updates. To pick up any COS, Slingshot Host Software, or other layered product updates into the UAN configurations, simply run `sat bootprep` again to regenerate the updated UAN CFS configurations, images, and BOS session templates.
+Beginning with UAN version `2.6.0`, CFS configuration roles which are provided by COS are now defined as two separate COS configuration layers as shown in the example below.  Prior to UAN version `2.6.0`, these roles were included in the UAN configuration layer.  Separating these roles into COS layers allows COS updates to be independent from UAN updates.
 
 ```yaml
 configurations:
 - name: uan-config
   layers:
-  - name: shs-mellanox_install-integration-{{shs.version}}
+  - name: shs-mellanox_install-integration
     playbook: shs_mellanox_install.yml
     product:
       name: slingshot-host-software
-      version: "{{shs.version}}"
-      branch: integration-{{shs.version}}
-#  - name: shs-cassini_install-integration-{{shs.version}}
+      version: 2.0.0
+      branch: integration
+#  - name: shs-cassini_install-integration
 #    playbook: shs_cassini_install.yml
 #    product:
 #      name: slingshot-host-software
-#      version: "{{shs.version}}"
-#      branch: integration-{{shs.version}}
-  - name: cos-application-integration-{{cos.version}}
+#      version: 2.0.0
+#      branch: integration
+  - name: cos-application-integration
     playbook: cos-application.yml
     product:
       name: cos
-      version: "{{cos.version}}"
-  - name: csm-packages-integration-{{csm.version}}
+      version: 2.4
+  - name: csm-packages-integration
     playbook: csm_packages.yml
     product:
       name: csm
-      version: "{{csm.version}}"
+      version: 1.4
   - name: uan
     playbook: site.yml
     product:
       name: uan
-      version: "{{uan.version}}"
+      version: 2.6.0
       branch: integration
-  - name: csm-diags-application-{{csm_diags.version}}
-    playbook: csm-diags-application.yml
-    product:
-      name: csm-diags
-      version: "{{csm_diags.version}}"
-  - name: sma-ldms-application-{{sma.version}}
-    playbook: sma-ldms-application.yml
-    product:
-      name: sma
-      version: "{{sma.version}}"
-  - name: cpe-pe_deploy-integration-{{cpe.version}}
-    playbook: pe_deploy.yml
-    product:
-      name: cpe
-      version: "{{cpe.version}}"
-      branch: cpe-{{cpe.version.split('.')[0]}}.{{cpe.version.split('.')[1].zfill(2)}}-integration
-  - name: analytics-site-integration-{{analytics.version}}
-    playbook: site.yml
-    product:
-      name: analytics
-      version: "{{analytics.version}}"
-      branch: integration
-  - name: slurm-site-{{slurm.version}}
-    playbook: site.yml
-    product:
-      name: slurm
-      version: "{{slurm.version}}"
-      branch: master
-#  - name: pbs-site-{{pbs.version}}
-#    playbook: site.yml
-#    product:
-#      name: pbs
-#      version: "{{pbs.version}}"
-#      branch: master
-  - name: cos-application-last-integration-{{cos.version}}
+  
+  ... add configuration layers for other products here, if desired ...
+
+  - name: cos-application-last-integration
     playbook: cos-application-after.yml
     product:
       name: cos
-      version: "{{cos.version}}"
+      version: 2.4
+      branch: integration
 ```
 
 **SAT Bootprep Image**

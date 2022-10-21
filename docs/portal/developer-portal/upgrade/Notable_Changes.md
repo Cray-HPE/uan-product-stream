@@ -47,3 +47,7 @@ When an upgrade is being performed, please review the notable changes for **all*
 
 * A technical preview of a standard SLES image for UAN/Application nodes is included.
 * Support SLES15SP4 COS based images
+
+## UAN 2.6.0
+
+* UAN CFS configurations now require a CSM and two COS layers.
