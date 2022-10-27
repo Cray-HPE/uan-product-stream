@@ -35,13 +35,29 @@ ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
 SYS_NAME=$(craysys metadata get system-name)
 SITE_DOMAIN=$(craysys metadata get site-domain)
 API_GW=https://api.nmnlb.$SYS_NAME.$SITE_DOMAIN
+CURL_ARGS="-s"
+
+if [ $SYS_NAME == "gcp" ]; then
+    API_GW="https://api-gw-service-nmn.local"
+    CURL_ARGS="-sk"
+
+    # Initialize and auth craycli
+    if [[ ! -f /tmp/setup-token.json ]]; then
+      ADMIN_SECRET=$(kubectl get secrets admin-client-auth -ojsonpath='{.data.client-secret}' | base64 -d)
+      curl -k -s -d grant_type=client_credentials \
+                 -d client_id=admin-client \
+                 -d client_secret=$ADMIN_SECRET https://api-gw-service-nmn.local/keycloak/realms/shasta/protocol/openid-connect/token > /tmp/setup-token.json
+    fi
+    export CRAY_CREDENTIALS=/tmp/setup-token.json
+    cray init --hostname $API_GW --no-auth --overwrite
+fi
 
 function list_ims_images {
     set +x
     TOKEN=$(curl -s -k -S -d grant_type=client_credentials -d client_id=admin-client -d \
                              client_secret=`kubectl get secrets admin-client-auth -o jsonpath='{.data.client-secret}' | base64 -d` \
                              $API_GW/keycloak/realms/shasta/protocol/openid-connect/token | jq -r '.access_token')
-    curl -s -H "Authorization: Bearer ${TOKEN}" $API_GW/apis/ims/images
+    curl $CURL_ARGS -H "Authorization: Bearer ${TOKEN}" $API_GW/apis/ims/images
     unset TOKEN
     set -x
 }
