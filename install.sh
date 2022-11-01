@@ -95,9 +95,9 @@ fi
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
 
 ARTIFACT_PATH=${ROOTDIR}/images/application
-KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION.kernel
-INITRD=${ARTIFACT_PATH}/initrd.img.xz
-ROOTFS=${ARTIFACT_PATH}/application.squashfs
+KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION.kernel
+INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION.xz
+ROOTFS=${ARTIFACT_PATH}/application-$UAN_IMAGE_VERSION.squashfs
 
 # Check for the existence of the SLES image to be installed
 IMAGE_ID=$(list_ims_images | jq --arg UAN_IMAGE_NAME "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $UAN_IMAGE_NAME ) | .id' | head -1)
