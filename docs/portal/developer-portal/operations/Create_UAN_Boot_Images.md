@@ -183,7 +183,7 @@ configurations:
     playbook: cos-application.yml
     product:
       name: cos
-      version: 2.4
+      version: 2.5
   - name: csm-packages-integration
     playbook: csm_packages.yml
     product:
@@ -198,11 +198,11 @@ configurations:
   
   ... add configuration layers for other products here, if desired ...
 
-  - name: cos-application-last-integration
-    playbook: cos-application-after.yml
+  - name: uan-rebuild-initrd
+    playbook: rebuild-initrd.yml
     product:
-      name: cos
-      version: 2.4
+      name: uan
+      version: 2.6.0
       branch: integration
 ```
 

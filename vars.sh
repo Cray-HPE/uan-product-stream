@@ -32,20 +32,23 @@ MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
 
 # Versions for container images and helm charts
-PRODUCT_CATALOG_UPDATE_VERSION=1.3.1
-UAN_CONFIG_VERSION=1.9.8
+PRODUCT_CATALOG_UPDATE_VERSION=1.6.0
+UAN_CONFIG_VERSION=1.10.1
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE=stable
-UAN_IMAGE_VERSION=0.1.0
+UAN_IMAGE_VERSION=0.2.1
 UAN_KERNEL_VERSION=5.3.18-150300.59.87-default
 UAN_IMAGE_NAME=cray-application-sles15sp3.x86_64-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/$UAN_IMAGE_RELEASE/application
 
+# Versions for doc product manifest
+DOC_PRODUCT_MANIFEST_VERSION="^0.1.0" # Keep this field like this until further notice
+
 APPLICATION_ASSETS=(
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/application.squashfs
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION.kernel
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img.xz
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/application-$UAN_IMAGE_VERSION.squashfs
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION.kernel
+    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION.xz
 )
 
 HPE_SIGNING_KEY=https://arti.dev.cray.com/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc

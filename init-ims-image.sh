@@ -33,13 +33,13 @@ BUCKET=boot-images
 function check_auth() {
 
   # Check if a Cray CLI configuration exists...
-  if cray uas mgr-info list 2>&1 | egrep --silent "Error: No configuration exists"; then
+  if cray ims images list 2>&1 | egrep --silent "Error: No configuration exists"; then
     echo "cray command not initialized. Initialize with 'cray init' and try again"
     exit 1
   fi
 
   # Check if Cray CLI has a valid authentication token...
-  if cray uas mgr-info list 2>&1 | egrep --silent "Token not valid for UAS|401|403"; then
+  if cray ims images list 2>&1 | egrep --silent "401|403"; then
     echo "cray command not authorized. Authorize with 'cray auth login' and try again"
     exit 1
   fi
