@@ -55,7 +55,7 @@ function copy_docs {
     DATE="`date`"
     rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
     # Set any dynamic variables in the UAN docs
-    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -type f`;
+    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -o -name "*.ditamap" -type f`;
     do
         sed -i.bak -e "s/@product_version@/${VERSION}/g" "$docfile"
         sed -i.bak -e "s/@date@/${DATE}/g" "$docfile"
