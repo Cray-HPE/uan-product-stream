@@ -1,6 +1,6 @@
-name: uan
-version: 2.6.0
-docs_product_manifest_version: ^0.1.0 # Keep this field like this until further notice
+name: @name@
+version: @product_version*
+docs_product_manifest_version: @doc_product_manifest_version@ # Keep this field like this until further notice
  
 csm-based-install-docs: uan_install_guide.md
  

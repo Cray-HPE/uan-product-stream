@@ -42,6 +42,9 @@ UAN_KERNEL_VERSION=5.3.18-150300.59.87-default
 UAN_IMAGE_NAME=cray-application-sles15sp3.x86_64-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/user-uan-images/$UAN_IMAGE_RELEASE/application
 
+# Versions for doc product manifest
+DOC_PRODUCT_MANIFEST_VERSION="^0.1.0" # Keep this field like this until further notice
+
 APPLICATION_ASSETS=(
     $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/application-$UAN_IMAGE_VERSION.squashfs
     $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION.kernel
