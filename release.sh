@@ -36,6 +36,11 @@ function copy_manifests {
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+    # Set any dynamic variables in the iuf-product-manifest
+    sed -e "s/@product_version@/${VERSION}/g 
+               s/@major@/${MAJOR}/g
+               s/@minor@/${MINOR}/g
+               s/@patch@/${PATCH}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -167,6 +172,7 @@ sync_install_content
 setup_nexus_repos
 sync_repo_content
 sync_image_content
+iuf-validate "${ROOTDIR}/iuf-product-manifest.yaml"
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"

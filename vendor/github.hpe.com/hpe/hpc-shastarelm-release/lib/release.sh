@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 
-# Copyright 2020-2021 Hewlett Packard Enterprise Development LP
+# Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
 : "${PACKAGING_TOOLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/internal-docker-stable-local/packaging-tools:0.12.3}"
 : "${RPM_TOOLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/internal-docker-stable-local/rpm-tools:1.0.0}"
 : "${SKOPEO_IMAGE:=arti.hpc.amslabs.hpecorp.net/quay-remote/skopeo/stable:v1.4.1}"
-: "${CRAY_NEXUS_SETUP_IMAGE:=artifactory.algol60.net/csm-docker/stable/cray-nexus-setup:0.7.1}"
+: "${CRAY_NEXUS_SETUP_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nexus-setup:0.7.1}"
 : "${ARTIFACTORY_HELPER_IMAGE:=arti.hpc.amslabs.hpecorp.net/dst-docker-master-local/arti-helper:latest}"
-: "${CFS_CONFIG_UTIL_IMAGE:=artifactory.algol60.net/csm-docker/stable/cfs-config-util:3.1.0}"
+: "${CFS_CONFIG_UTIL_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cfs-config-util:3.3.1}"
+: "${LIST_IMAGES_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/list-images:1.0.0}"
+: "${SNYK_SCAN_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-scan:1.0.0}"
+: "${SNYK_AGGREGATE_RESULTS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-aggregate-results:1.0.1}"
+: "${SNYK_TO_HTML_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-to-html:1.0.0}"
+: "${CRAY_NLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nls:0.3.0}"
+
 
 # Prefer to use docker, but for environments with podman
 if [[ "${USE_PODMAN_NOT_DOCKER:-"no"}" == "yes" ]]; then
@@ -116,7 +122,7 @@ function rpm-sync-latest() {
             -v "$(realpath "$destdir"):/artifactory/downloads" \
             "$ARTIFACTORY_HELPER_IMAGE" \
             latest-rpms -r "${artifactory_rpm_release_url}" \
-            -d "/artifactory/downloads/${RELEASE_NAME}" \
+            -d "/artifactory/downloads" \
             -u "${HPE_ARTIFACTORY_USR}" \
             -p "${HPE_ARTIFACTORY_PSW}"
 }
@@ -569,4 +575,102 @@ else
     esac
 fi
 EOF
+}
+
+# usage: list-images INDEX_FILE [INDEX_FILE ... ]
+#
+# Reads one or more index.yaml files specifying container image locations
+# and writes a list to stdout.
+function list-images() {
+    local index_files="$*"
+    local index_file file_path
+    declare -a file_paths
+    declare -a file_mount_options
+    # Get full paths of each file
+    for index_file in $index_files; do
+        file_path="$(realpath "$index_file")"
+        file_paths+=( "$file_path" )
+        file_mount_options+=( "--mount" )
+        file_mount_options+=( "type=bind,src=${file_path},target=${file_path},ro=true" )
+    done
+
+    docker run --user "$(id -u):$(id -g)" --rm "${file_mount_options[@]}" \
+         $LIST_IMAGES_IMAGE "${file_paths[@]}"
+}
+
+# usage: snyk-scan IMAGE [WORKDIR]
+#
+# Scans a container image with Snyk. This will output results
+# into the current working directory.
+function snyk-scan() {
+    local image="$1"
+    local image_basename
+    image_basename="$(basename "$image")"
+
+    docker run --user "$(id -u):$(id -g)" --rm --env "SNYK_TOKEN=${SNYK_TOKEN}" \
+        --mount "type=bind,src=${PWD},target=/workdir" \
+        "$SNYK_SCAN_IMAGE" "/workdir" "$image" "$image_basename"
+}
+
+# usage: snyk-aggregate-results [--helm-chart-map MAP.csv] SNYK_RESULTS_FILE [SNYK_RESULTS_FILE ...]
+#
+# Aggregates results from one or more `snyk.json` files (the results from snyk-scan)
+# and creates an Excel spreadsheet from them. The spreadsheet is saved to the current
+# working directory. Optionally, pass in a CSV file containing a mapping of containers
+# to helm charts.
+function snyk-aggregate-results() {
+    local args="$*"
+    local container_args file_mount_options arg
+    declare -a container_args
+    declare -a file_mount_options
+    for arg in ${args}; do
+        # If arg is not an option string, then assume it is a file which needs to be mounted.
+        if [[ "$arg" != --* ]]; then
+          file_path="$(realpath "$arg")"
+          container_args+=( "$file_path" )
+          file_mount_options+=( "--mount" )
+          file_mount_options+=( "type=bind,src=${file_path},target=${file_path},ro=true" )
+        else
+          container_args+=( "$arg" )
+        fi
+    done
+    docker run --user "$(id -u):$(id -g)" --rm "${file_mount_options[@]}" \
+        --mount "type=bind,src=${PWD},target=/workdir" \
+        "$SNYK_AGGREGATE_RESULTS_IMAGE" -o "/workdir/snyk.xlsx" "${container_args[@]}"
+}
+
+# usage: snyk-to-html SNYK_RESULTS_DIR
+#
+# Aggregates results from one or more `snyk.json` files (the results from snyk-scan)
+# and creates HTML reports from them. Unlike snyk-aggregate-results which creates a single
+# spreadsheet from multiple snyk results files, this function creates one HTML report per snyk
+# results file. These files are saved in the same directory as `snyk.json`.
+function snyk-to-html() {
+    snyk_results_files="$*"
+    local results_file results_file_dir results_filename
+    for results_file in ${snyk_results_files}; do
+        results_file_dir="$(dirname "$(realpath "$results_file")")"
+        results_filename="$(basename "$results_file")"
+        docker run --user "$(id -u):$(id -g)" --rm \
+            --mount "type=bind,src=${results_file_dir},target=/workdir" \
+            "$SNYK_TO_HTML_IMAGE" -i "/workdir/${results_filename}" -o "/workdir/snyk.html"
+    done
+}
+
+# usage: iuf-validate IUF_PRODUCT_MANIFEST_FILE
+#
+# Validates the given Installation and Upgrade Framework (IUF) Product Manifest
+# file against the IUF Product Manifest schema. On successful validation, the
+# function returns 0. On a failed validation, the errors are printed to stderr,
+# and the function returns 1.
+function iuf-validate() {
+    local manifest_file="$1"
+    local manifest_basename
+    manifest_basename="$(basename "$manifest_file")"
+
+    docker run --rm -u "$(id -u):$(id -g)" ${podman_run_flags[@]} \
+        ${DOCKER_NETWORK:+"--network=${DOCKER_NETWORK}"} \
+        -v "$(realpath "$manifest_file"):/$manifest_basename" \
+        "$CRAY_NLS_IMAGE" \
+        validate "/$manifest_basename"
 }
