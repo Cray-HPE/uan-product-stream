@@ -1,7 +1,0 @@
-name: @name@
-version: @product_version@
-docs_product_manifest_version: @doc_product_manifest_version@ # Keep this field like this until further notice
- 
-csm-based-install-docs: uan_install_guide.md
- 
-csm-based-upgrade-docs: uan_install_guide.md
