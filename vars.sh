@@ -32,7 +32,7 @@ MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
 
 # Versions for container images and helm charts
-PRODUCT_CATALOG_UPDATE_VERSION=1.6.0
+PRODUCT_CATALOG_UPDATE_VERSION=1.3.2
 UAN_CONFIG_VERSION=1.10.1
 
 # Versions for UAN images
