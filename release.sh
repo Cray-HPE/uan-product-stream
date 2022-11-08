@@ -172,7 +172,7 @@ sync_install_content
 setup_nexus_repos
 sync_repo_content
 sync_image_content
-iuf-validate "${ROOTDIR}/iuf-product-manifest.yaml"
+iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
