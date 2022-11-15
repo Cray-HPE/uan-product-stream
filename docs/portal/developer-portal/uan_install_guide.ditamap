@@ -21,4 +21,7 @@
     <topicref href="advanced/Enabling_CAN_CHN.md" format="markdown"/>
     <topicref href="install/Install_the_UAN_Product_Stream.md" format="markdown"/>
     <topicref href="upgrade/Merge_UAN_Configuration_Data.md" format="markdown"/>
+    <topicref href="Known_Issues.md" format="markdown">
+        <topicref href="known_issues/KDUMP_Configuration.md" format="markdown"/>
+    </topicref>
 </map>

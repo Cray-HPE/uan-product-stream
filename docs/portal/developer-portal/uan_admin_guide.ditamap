@@ -35,6 +35,9 @@
         <topicref href="troubleshooting/Troubleshoot_UAN_Disk_Configuration_Issues.md"
             format="markdown"/>
     </topicref>
+    <topicref href="Known_Issues.md" format="markdown">
+        <topicref href="known_issues/KDUMP_Configuration.md" format="markdown"/>
+    </topicref>
     <topicref href="Reference.md" format="markdown">
         <topicref href="operations/UAN_Ansible_Roles.md" format="markdown"/>
     </topicref>
