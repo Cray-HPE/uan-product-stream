@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.7] - 2022-11-17
+- Fix issue with kdump role position in site.yml
+
 ## [2.5.6] - 2022-10-14
 - Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf
 
