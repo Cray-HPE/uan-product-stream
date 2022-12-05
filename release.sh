@@ -41,6 +41,9 @@ function copy_manifests {
                s/@major@/${MAJOR}/g
                s/@minor@/${MINOR}/g
                s/@patch@/${PATCH}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+    sed -e "s/@name@/${NAME}/g
+               s/@product_version@/${VERSION}/g
+               s/@doc_product_manifest_version@/${DOC_PRODUCT_MANIFEST_VERSION}/g" "${BUILDDIR}/manifests/docs-product-manifest.yaml" > "${BUILDDIR}/docs-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -60,11 +63,10 @@ function copy_docs {
     DATE="`date`"
     rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
     # Set any dynamic variables in the UAN docs
-    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -o -name "*.ditamap" -o -name "*.yaml" -type f`;
+    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -o -name "*.ditamap" -type f`;
     do
         sed -i.bak -e "s/@product_version@/${VERSION}/g" "$docfile"
         sed -i.bak -e "s/@name@/${NAME}/g" "$docfile"
-        sed -i.bak -e "s/@doc_product_manifest_version@/${DOC_PRODUCT_MANIFEST_VERSION}/g" "$docfile"
         sed -i.bak -e "s/@date@/${DATE}/g" "$docfile"
     done
     for bakfile in `find "${BUILDDIR}/docs/" -name "*.bak" -type f`;
