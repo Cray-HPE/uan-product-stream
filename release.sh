@@ -40,7 +40,10 @@ function copy_manifests {
     sed -e "s/@product_version@/${VERSION}/g 
                s/@major@/${MAJOR}/g
                s/@minor@/${MINOR}/g
-               s/@patch@/${PATCH}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+               s/@patch@/${PATCH}/g
+               s/@uan_image_name@/${UAN_IMAGE_NAME}/g
+               s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+               s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
     sed -e "s/@name@/${NAME}/g
                s/@product_version@/${VERSION}/g
                s/@doc_product_manifest_version@/${DOC_PRODUCT_MANIFEST_VERSION}/g" "${BUILDDIR}/manifests/docs-product-manifest.yaml" > "${BUILDDIR}/docs-product-manifest.yaml"
@@ -142,10 +145,34 @@ function package_distribution {
 }
 
 function sync_image_content {
-    mkdir -p "${BUILDDIR}/images/application"
-    pushd "${BUILDDIR}/images/application"
-    for url in "${APPLICATION_ASSETS[@]}"; do cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"; done
+    mkdir -p "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    for url in "${APPLICATION_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
     popd
+}
+
+function update_iuf_product_manifest {
+    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    for asset in "${APPLICATION_ASSETS[@]}"; do
+      ASSET=$(basename $asset);
+      if [[ ${ASSET} == *squashfs ]]; then
+        UAN_ROOTFS_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+      if [[ ${ASSET} == *kernel ]]; then
+        UAN_KERNEL_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+      if [[ ${ASSET} == *xz ]]; then
+        UAN_INITRD_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+    done
+    popd
+    sed -i -e "s/@uan_rootfs_md5sum@/${UAN_ROOTFS_MD5SUM}/g
+               s/@uan_kernel_md5sum@/${UAN_KERNEL_MD5SUM}/g
+               s/@uan_initrd_md5sum@/${UAN_INITRD_MD5SUM}/g" "${BUILDDIR}/iuf-product-manifest.yaml"
 }
 
 # Definitions and sourced variables
@@ -174,6 +201,7 @@ sync_install_content
 setup_nexus_repos
 sync_repo_content
 sync_image_content
+update_iuf_product_manifest
 iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh

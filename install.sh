@@ -94,7 +94,7 @@ fi
 # Deploy manifests
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
 
-ARTIFACT_PATH=${ROOTDIR}/images/application
+ARTIFACT_PATH=${ROOTDIR}/images/application/${UAN_IMAGE_NAME}
 KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION.kernel
 INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION.xz
 ROOTFS=${ARTIFACT_PATH}/application-$UAN_IMAGE_VERSION.squashfs
