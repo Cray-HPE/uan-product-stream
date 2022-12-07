@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable install.sh to work on GCP vshastav2
 - Add support for unified docs project - docs-product-manifest.yaml
 - Update documentation for new COS CFS layers
+- Add support for the install and upgrade framework (IUF)
 
 ## [2.5.6] - 2022-10-14
 - Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf
