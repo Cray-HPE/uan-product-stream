@@ -9,10 +9,10 @@
 : "${ARTIFACTORY_HELPER_IMAGE:=arti.hpc.amslabs.hpecorp.net/dst-docker-master-local/arti-helper:latest}"
 : "${CFS_CONFIG_UTIL_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cfs-config-util:3.3.1}"
 : "${LIST_IMAGES_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/list-images:1.0.0}"
-: "${SNYK_SCAN_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-scan:1.0.0}"
+: "${SNYK_SCAN_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-scan:1.1.0}"
 : "${SNYK_AGGREGATE_RESULTS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-aggregate-results:1.0.1}"
 : "${SNYK_TO_HTML_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-to-html:1.0.0}"
-: "${CRAY_NLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nls:0.3.0}"
+: "${CRAY_NLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nls:0.8.0}"
 
 
 # Prefer to use docker, but for environments with podman
@@ -159,6 +159,61 @@ function rpm-sync() {
         "$PACKAGING_TOOLS_IMAGE" \
         rpm-sync ${REPO_CREDS_RPMSYNC_OPTIONS} -n "${RPM_SYNC_NUM_CONCURRENT_DOWNLOADS:-1}" ${FAIL_ON_SIG_ERROR} -v -d /data /index.yaml
 }
+
+# usage: extract-from-container SOURCE DESTINATION KEY
+#
+# Extracts files or directories with names matching the regular expression KEY from the directory-formatted
+# Docker image SOURCE to the directory DESTINATION.
+#
+# input:
+#     SOURCE      -- Directory where the Docker image layers reside
+#     DESTINATION -- Directory where the extracted content should be placed; will be created if it does not exist
+#     KEY         -- Key to match against; Key can be a file or a directory; Either the file or entire directory
+#                    is copied to the destination directory; The key can use the wildcards used in regular expressions for grep.
+# Exit codes:
+#     0 - item found and extracted
+#     1 - item not found or extraction failed
+#
+
+function extract-from-container () {
+    set +e
+    trap - ERR
+    local SRC_DIR=$1
+    local DEST_DIR=$2
+    local KEY=$3
+
+    if [ "$#" -ne 3 ]; then
+        echo "Expected parameters: <Source Directory> <Destination Directory> <Key>";
+        echo "Received $# parameters: $*"
+        exit 1;
+    fi
+
+    if [ ! -d "${SRC_DIR}" ]; then
+        echo "ERROR -- Source directory: ${SRC_DIR} is not a directory."
+        exit 1;
+    fi
+
+    [[ -d "${DEST_DIR}" ]] || mkdir -p "${DEST_DIR}"
+
+    layers="$(find "${SRC_DIR}" -type f | grep -Ev 'manifest|version')"
+    for i in $layers; do
+        file_matches=$(tar --force-local -tf "${i}" 2> /dev/null | grep -o "${KEY}" | sort -u)
+        if [[ -n "$file_matches" ]]; then
+            local cmd="tar --force-local -xf ${i} -C${DEST_DIR} ${file_matches//$'\n'/ }"
+            echo "$cmd"
+            $cmd
+            echo ""
+            # If key found a directory, move the contents out of the directory.
+            name=$(basename "${file_matches}")
+            if [[ -d "${DEST_DIR}"/"${name}" ]]; then
+                shopt -s dotglob
+                cp -a "${DEST_DIR}"/"${name}"/* "${DEST_DIR}"
+                rm -rf "${DEST_DIR:?}"/"${name}"
+            fi
+        fi
+    done
+}
+
 
 # There are some debug statements included in the following Python script and in
 # the skopeo-sync function. These can be removed later, but until we have more

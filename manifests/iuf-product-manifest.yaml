@@ -54,3 +54,19 @@ content:
   - path: rpms/sle-15sp3
     repository_name: uan-@major@.@minor@.@patch@-sle-15sp3
     repository_type: raw
+
+  vcs:
+    path: ansible
+
+  ims:
+    images:
+    - path: images/application/@uan_image_name@
+      rootfs:
+        path: application-@uan_image_version@.squashfs
+        md5sum: @uan_rootfs_md5sum@
+      kernel:
+        path: @uan_kernel_version@-@uan_image_version@.kernel
+        md5sum: @uan_kernel_md5sum@
+      initrd:
+        path: initrd.img-@uan_image_version@.xz
+        md5sum: @uan_initrd_md5sum@
