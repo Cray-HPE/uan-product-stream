@@ -53,40 +53,42 @@ pipeline {
     }
 
     stages {
-        parallel {
-            stage("Build release") {
-                steps {
-                      withCredentials([
-                                usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
-                        ]) {
-                        sh "make generate_release"
+        stage {
+            parallel {
+                stage("Release") {
+                    steps {
+                          withCredentials([
+                                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                            ]) {
+                            sh "make generate_release"
+                        }
+                    }
+                }
+
+                stage("Docs") {
+                    steps {
+                          withCredentials([
+                                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                            ]) {
+                            sh "make build_docs"
+                        }
                     }
                 }
             }
-
-            stage("Build docs") {
+            stage("Publish") {
                 steps {
-                      withCredentials([
-                                usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                    withCredentials([
+                            usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
                         ]) {
-                        sh "make build_docs"
+                        script {
+                            publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
+                        }
                     }
                 }
             }
         }
     }
 
-    stage("Publish") {
-        steps {
-            withCredentials([
-                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
-                ]) {
-                script {
-                    publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
-                }
-            }
-        }
-    }
 
     post {
         always {
