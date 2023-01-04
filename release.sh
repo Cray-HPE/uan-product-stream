@@ -103,7 +103,6 @@ function sync_repo_content {
 
     # sync uan repos from bloblet
     reposync "${BLOBLET_URL}/sle-15sp4" "${BUILDDIR}/rpms/sle-15sp4"
-    reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
 }
 
 function sync_third_party_content {

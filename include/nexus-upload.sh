@@ -34,5 +34,4 @@ nexus-upload helm "${ROOTDIR}/helm" "${CHARTS_REPO:-"charts"}"
 
 # Upload repository contents
 nexus-upload raw "${ROOTDIR}/rpms/sle-15sp4" "uan-@major@.@minor@.@patch@-sle-15sp4"
-nexus-upload raw "${ROOTDIR}/rpms/sle-15sp3" "uan-@major@.@minor@.@patch@-sle-15sp3"
 nexus-upload raw "${ROOTDIR}/third-party" "uan-@major@.@minor@.@patch@-third-party"
