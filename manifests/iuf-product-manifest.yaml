@@ -54,6 +54,9 @@ content:
   - path: rpms/sle-15sp3
     repository_name: uan-@major@.@minor@.@patch@-sle-15sp3
     repository_type: raw
+  - path: third-party
+    repository_name: uan-@major@.@minor@.@patch@-third-party
+    repository_type: raw
 
   vcs:
     path: ansible
