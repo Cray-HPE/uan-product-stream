@@ -53,7 +53,7 @@ pipeline {
     }
 
     stages {
-        stage {
+        stage("Build") {
             parallel {
                 stage("Release") {
                     steps {
@@ -75,14 +75,14 @@ pipeline {
                     }
                 }
             }
-            stage("Publish") {
-                steps {
-                    withCredentials([
-                            usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
-                        ]) {
-                        script {
-                            publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
-                        }
+        }
+        stage("Publish") {
+            steps {
+                withCredentials([
+                        usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                    ]) {
+                    script {
+                        publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
                     }
                 }
             }
