@@ -106,6 +106,22 @@ function sync_repo_content {
     reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
 }
 
+function sync_third_party_content {
+    mkdir -p "${BUILDDIR}/third-party"
+    pushd "${BUILDDIR}/third-party"
+    for url in "${THIRD_PARTY_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
+
+    helm repo add haproxy $HAPROXY_URL
+    helm repo add metallb $METALLB_URL
+    helm pull --version $HAPROXY_VERSION haproxy/haproxy 
+    helm pull --version $METALLB_VERSION metallb/metallb
+    popd
+}
+
 function sync_install_content {
     rsync -aq "${VENDOR}/lib/install.sh" "${BUILDDIR}/lib/install.sh"
 
@@ -199,6 +215,7 @@ copy_tests
 copy_docs
 sync_install_content
 setup_nexus_repos
+sync_third_party_content
 sync_repo_content
 sync_image_content
 update_iuf_product_manifest
