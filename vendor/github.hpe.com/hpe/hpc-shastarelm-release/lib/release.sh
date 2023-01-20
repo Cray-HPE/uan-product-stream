@@ -418,7 +418,7 @@ function skopeo-sync() {
                 -v "$(realpath "$index"):/index.yaml:ro" \
                 -v "$(realpath "$destdir"):/data" \
                 "$SKOPEO_IMAGE" \
-                sync --retry-times 5 --src yaml --dest dir --scoped /index.yaml /data
+                sync --src-creds "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" --retry-times 5 --src yaml --dest dir --scoped /index.yaml /data
         then
             function_rc=0
             echo "$(date) skopeo-sync: Attempt #${attempt_number} PASSED!"
