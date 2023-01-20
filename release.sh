@@ -55,7 +55,7 @@ function copy_manifests {
 
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
     # Set any dynamic variables in the UAN manifest
-    sed -i -e "s/@uan_version@/1.11.0-20230119213631+71e9b6d/g" "${BUILDDIR}/helm/index.yaml"
+    sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/helm/index.yaml"
 }
 
 function copy_tests {
