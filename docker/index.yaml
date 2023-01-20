@@ -21,7 +21,7 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-artifactory.algol60.net/uan-docker/stable:
+artifactory.algol60.net/uan-docker/unstable:
   tls-verify: true
   images:
     cray-uan-config:
