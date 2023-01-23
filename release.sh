@@ -101,9 +101,34 @@ function sync_repo_content {
     # sync container images
     skopeo-sync "${BUILDDIR}/docker/index.yaml" "${BUILDDIR}/docker"
 
+    if [ ! -z "$ARTIFACTORY_USER" ] && [ ! -z "$ARTIFACTORY_TOKEN" ]; then
+        REPOCREDSPATH="/tmp/"
+        REPOCREDSFILENAME="repo_creds.json"
+        jq --null-input   --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER"   --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}' > $REPOCREDSPATH$REPOCREDSFILENAME
+        REPO_CREDS_DOCKER_OPTIONS="--mount type=bind,source=${REPOCREDSPATH},destination=/repo_creds_data"
+        REPO_CREDS_RPMSYNC_OPTIONS="-c /repo_creds_data/${REPOCREDSFILENAME}"
+        trap "rm -f '${REPOCREDSPATH}${REPOCREDSFILENAME}'" EXIT
+    fi
+
     # sync uan repos from bloblet
-    reposync "${BLOBLET_URL}/sle-15sp4" "${BUILDDIR}/rpms/sle-15sp4"
-    reposync "${BLOBLET_URL}/sle-15sp3" "${BUILDDIR}/rpms/sle-15sp3"
+    rpm-sync "${ROOTDIR}/rpm/cray/uan/sle-15sp4/index.yaml" "${BUILDDIR}/rpms/sle-15sp4"
+    createrepo "${BUILDDIR}/rpms/sle-15sp4"
+}
+
+function sync_third_party_content {
+    mkdir -p "${BUILDDIR}/third-party"
+    pushd "${BUILDDIR}/third-party"
+    for url in "${THIRD_PARTY_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
+
+    helm repo add haproxy $HAPROXY_URL
+    helm repo add metallb $METALLB_URL
+    helm pull --version $HAPROXY_VERSION haproxy/haproxy 
+    helm pull --version $METALLB_VERSION metallb/metallb
+    popd
 }
 
 function sync_install_content {
@@ -185,7 +210,7 @@ PYTHONPATH=""
 source "${ROOTDIR}/vars.sh"
 source "${ROOTDIR}/assets.sh"
 source "${VENDOR}/lib/release.sh"
-requires rsync tar generate-nexus-config helm-sync skopeo-sync reposync vendor-install-deps sed realpath
+requires rsync tar generate-nexus-config helm-sync skopeo-sync rpm-sync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 
 # initialize build directory
@@ -199,6 +224,7 @@ copy_tests
 copy_docs
 sync_install_content
 setup_nexus_repos
+sync_third_party_content
 sync_repo_content
 sync_image_content
 update_iuf_product_manifest
