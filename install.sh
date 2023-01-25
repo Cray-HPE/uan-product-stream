@@ -112,4 +112,4 @@ podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update \
     -e KUBECONFIG=/.kube/admin.conf \
     -v /etc/kubernetes:/.kube:ro \
     -v ${PWD}:/results:ro \
-    artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update:$PRODUCT_CATALOG_UPDATE_VERSION
+    registry.local/artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update:$PRODUCT_CATALOG_UPDATE_VERSION
