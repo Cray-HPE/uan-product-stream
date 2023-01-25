@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.8] - 2023-01-14
+- Fix issue with air-gapped installs
+
 ## [2.5.7] - 2022-11-17
 - Fix issue with kdump role position in site.yml
 
