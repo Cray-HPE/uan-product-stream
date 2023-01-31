@@ -2,7 +2,7 @@
 
 # Copyright 2020-2022 Hewlett Packard Enterprise Development LP
 
-: "${PACKAGING_TOOLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/internal-docker-stable-local/packaging-tools:0.12.3}"
+: "${PACKAGING_TOOLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/internal-docker-stable-local/packaging-tools:0.12.4}"
 : "${RPM_TOOLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/internal-docker-stable-local/rpm-tools:1.0.0}"
 : "${SKOPEO_IMAGE:=arti.hpc.amslabs.hpecorp.net/quay-remote/skopeo/stable:v1.4.1}"
 : "${CRAY_NEXUS_SETUP_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nexus-setup:0.7.1}"
@@ -95,12 +95,20 @@ function helm-sync() {
 
     [[ -d "$destdir" ]] || mkdir -p "$destdir"
 
-    docker run --rm -u "$(id -u):$(id -g)" ${podman_run_flags[@]} \
+    #pass the repo credentials environment variables to the container that runs helm-sync
+    REPO_CREDS_DOCKER_OPTIONS=""
+    REPO_CREDS_HELMSYNC_OPTIONS=""
+    if [ ! -z "$REPOCREDSVARNAME" ]; then
+        REPO_CREDS_DOCKER_OPTIONS="-e ${REPOCREDSVARNAME}"
+        REPO_CREDS_HELMSYNC_OPTIONS="-c ${REPOCREDSVARNAME}"
+    fi
+    
+    docker run ${REPO_CREDS_DOCKER_OPTIONS} --rm -u "$(id -u):$(id -g)" ${podman_run_flags[@]} \
         ${DOCKER_NETWORK:+"--network=${DOCKER_NETWORK}"} \
         -v "$(realpath "$index"):/index.yaml:ro" \
         -v "$(realpath "$destdir"):/data" \
         "$PACKAGING_TOOLS_IMAGE" \
-        helm-sync -n "${HELM_SYNC_NUM_CONCURRENT_DOWNLOADS:-1}" /index.yaml /data
+        helm-sync ${REPO_CREDS_HELMSYNC_OPTIONS} -n "${HELM_SYNC_NUM_CONCURRENT_DOWNLOADS:-1}" /index.yaml /data
 }
 
 # usage: rpm-sync-latest DIRECTORY ARTIFACTORY_RPM_URL
@@ -142,14 +150,12 @@ function rpm-sync() {
 
     [[ -d "$destdir" ]] || mkdir -p "$destdir"
 
-    #pass the repo credentials environment variables to the container that runs rpm-index
-    REPO_FILENAME=${REPOCREDSFILENAME:-}
-    REPO_FILENAME_PATH=${REPOCREDSPATH:-}
+   #pass the repo credentials environment variables to the container that runs rpm-sync
     REPO_CREDS_DOCKER_OPTIONS=""
     REPO_CREDS_RPMSYNC_OPTIONS=""
-    if [ ! -z "$REPO_FILENAME" ] && [ ! -z "$REPO_FILENAME_PATH" ]; then
-        REPO_CREDS_DOCKER_OPTIONS="--mount type=bind,source=${REPO_FILENAME_PATH},destination=/repo_creds_data"
-        REPO_CREDS_RPMSYNC_OPTIONS="-c /repo_creds_data/${REPO_FILENAME}"
+    if [ ! -z "$REPOCREDSVARNAME" ]; then
+        REPO_CREDS_DOCKER_OPTIONS="-e ${REPOCREDSVARNAME}"
+        REPO_CREDS_RPMSYNC_OPTIONS="-c ${REPOCREDSVARNAME}"
     fi
 
     docker run ${REPO_CREDS_DOCKER_OPTIONS} --rm -u "$(id -u):$(id -g)" ${podman_run_flags[@]} \
@@ -412,6 +418,10 @@ function skopeo-sync() {
     while [ true ]; do
         echo "$(date) skopeo-sync: Beginning attempt #${attempt_number}"
         attempt_start_seconds=${SECONDS}
+        skopeo_args=("--retry-times" "5" "--src" "yaml" "--dest" "dir" "--scoped")
+        if [ -n "$ARTIFACTORY_USER" ] && [ -n "$ARTIFACTORY_TOKEN" ]; then
+            skopeo_args+=("--src-creds" "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}")
+        fi
 
         if docker run --rm -u "$(id -u):$(id -g)" ${podman_run_flags[@]} \
                 ${DOCKER_NETWORK:+"--network=${DOCKER_NETWORK}"} \
@@ -661,8 +671,13 @@ function snyk-scan() {
     local image="$1"
     local image_basename
     image_basename="$(basename "$image")"
+    snyk_environment_arguments=("--env" "SNYK_TOKEN=${SNYK_TOKEN}")
+    if [ -n "$ARTIFACTORY_USER" ] && [ -n "$ARTIFACTORY_TOKEN" ]; then
+        snyk_environment_arguments+=("--env" "SNYK_REGISTRY_USERNAME=${ARTIFACTORY_USER}"
+                                     "--env" "SNYK_REGISTRY_PASSWORD=${ARTIFACTORY_TOKEN}")
+    fi
 
-    docker run --user "$(id -u):$(id -g)" --rm --env "SNYK_TOKEN=${SNYK_TOKEN}" \
+    docker run --user "$(id -u):$(id -g)" --rm "${snyk_environment_arguments[@]}" \
         --mount "type=bind,src=${PWD},target=/workdir" \
         "$SNYK_SCAN_IMAGE" "/workdir" "$image" "$image_basename"
 }
