@@ -39,7 +39,7 @@ function check_auth() {
   fi
 
   # Check if Cray CLI has a valid authentication token...
-  if cray ims images list 2>&1 | egrep --silent "401|403"; then
+  if cray ims images list > /dev/null 2>&1 | egrep --silent "401|403"; then
     echo "cray command not authorized. Authorize with 'cray auth login' and try again"
     exit 1
   fi
