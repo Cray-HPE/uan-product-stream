@@ -235,6 +235,18 @@ sync_image_content
 update_iuf_product_manifest
 iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
+# copy ansible from uan-config container
+REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
+SRC_DIR=$(find ${REGISTRY_DIR} -name "cray-uan-config*")
+extract-from-container ${SRC_DIR} ${BUILDDIR}/vcs/ "content"
+
+# remove these special files from the OCI layers
+find ${BUILDDIR}/vcs -type f -name '.wh..wh..opq' -delete
+
+# Add back error detection mistakenly disabled by the vendor
+# lib extract-from-container function
+set -e
+
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
 
