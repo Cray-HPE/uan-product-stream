@@ -5,7 +5,7 @@
         <topicmeta>
             <shortdesc>This publication provides instructions and examples for installing the UAN product software on an HPE Cray EX supercomputer.</shortdesc>
             <data name="pubsnumber" value="S-8032"></data>
-			<data name="edition" value="UAN Software Release 2.5.8"></data>
+			<data name="edition" value="UAN Software Release @product_version@"></data>
         </topicmeta>
     <topicref href="upgrade/Notable_Changes.md" format="markdown"/>
     <topicref href="upgrade/Upgrade_UAN_Software_Product.md" format="markdown"/>
@@ -21,4 +21,7 @@
     <topicref href="advanced/Enabling_CAN_CHN.md" format="markdown"/>
     <topicref href="install/Install_the_UAN_Product_Stream.md" format="markdown"/>
     <topicref href="upgrade/Merge_UAN_Configuration_Data.md" format="markdown"/>
+    <topicref href="Known_Issues.md" format="markdown">
+        <topicref href="known_issues/KDUMP_Configuration.md" format="markdown"/>
+    </topicref>
 </map>

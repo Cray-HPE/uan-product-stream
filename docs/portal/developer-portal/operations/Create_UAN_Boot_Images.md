@@ -161,24 +161,48 @@ The SAT bootprep input file should have a configuration section that specifies e
 
 Note that the Slingshot Host Software CFS layer is listed first. This is required as the UAN layer will attempt to install DVS and Lustre packages that require SHS be installed first. The correct playbook for Cassini or Mellanox must also be specified. Consult the Slingshot Host Software documentation for more information.
 
+Beginning with UAN version `2.6.0`, CFS configuration roles which are provided by COS are now defined as two separate COS configuration layers as shown in the example below.  Prior to UAN version `2.6.0`, these roles were included in the UAN configuration layer.  Separating these roles into COS layers allows COS updates to be independent from UAN updates.
+
 ```yaml
 configurations:
 - name: uan-config
   layers:
-  - name: slingshot-host-software
+  - name: shs-mellanox_install-integration
     playbook: shs_mellanox_install.yml
     product:
       name: slingshot-host-software
       version: 2.0.0
       branch: integration
-
-  ... add configuration layers for other products here, if desired ...
-
+#  - name: shs-cassini_install-integration
+#    playbook: shs_cassini_install.yml
+#    product:
+#      name: slingshot-host-software
+#      version: 2.0.0
+#      branch: integration
+  - name: cos-application-integration
+    playbook: cos-application.yml
+    product:
+      name: cos
+      version: 2.5
+  - name: csm-packages-integration
+    playbook: csm_packages.yml
+    product:
+      name: csm
+      version: 1.4
   - name: uan
     playbook: site.yml
     product:
       name: uan
-      version: 2.4.0
+      version: 2.6.0
+      branch: integration
+  
+  ... add configuration layers for other products here, if desired ...
+
+  - name: uan-rebuild-initrd
+    playbook: rebuild-initrd.yml
+    product:
+      name: uan
+      version: 2.6.0
       branch: integration
 ```
 

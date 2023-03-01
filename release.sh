@@ -36,6 +36,17 @@ function copy_manifests {
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+    # Set any dynamic variables in the iuf-product-manifest
+    sed -e "s/@product_version@/${VERSION}/g 
+               s/@major@/${MAJOR}/g
+               s/@minor@/${MINOR}/g
+               s/@patch@/${PATCH}/g
+               s/@uan_image_name@/${UAN_IMAGE_NAME}/g
+               s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+               s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+    sed -e "s/@name@/${NAME}/g
+               s/@product_version@/${VERSION}/g
+               s/@doc_product_manifest_version@/${DOC_PRODUCT_MANIFEST_VERSION}/g" "${BUILDDIR}/manifests/docs-product-manifest.yaml" > "${BUILDDIR}/docs-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -55,9 +66,10 @@ function copy_docs {
     DATE="`date`"
     rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
     # Set any dynamic variables in the UAN docs
-    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -type f`;
+    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -o -name "*.ditamap" -type f`;
     do
         sed -i.bak -e "s/@product_version@/${VERSION}/g" "$docfile"
+        sed -i.bak -e "s/@name@/${NAME}/g" "$docfile"
         sed -i.bak -e "s/@date@/${DATE}/g" "$docfile"
     done
     for bakfile in `find "${BUILDDIR}/docs/" -name "*.bak" -type f`;
@@ -101,8 +113,22 @@ function sync_repo_content {
     # sync uan repos from bloblet
     rpm-sync "${ROOTDIR}/rpm/cray/uan/sle-15sp4/index.yaml" "${BUILDDIR}/rpms/sle-15sp4"
     createrepo "${BUILDDIR}/rpms/sle-15sp4"
-    rpm-sync "${ROOTDIR}/rpm/cray/uan/sle-15sp3/index.yaml" "${BUILDDIR}/rpms/sle-15sp3"
-    createrepo "${BUILDDIR}/rpms/sle-15sp3"
+}
+
+function sync_third_party_content {
+    mkdir -p "${BUILDDIR}/third-party"
+    pushd "${BUILDDIR}/third-party"
+    for url in "${THIRD_PARTY_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
+
+    helm repo add haproxy $HAPROXY_URL
+    helm repo add metallb $METALLB_URL
+    helm pull --version $HAPROXY_VERSION haproxy/haproxy 
+    helm pull --version $METALLB_VERSION metallb/metallb
+    popd
 }
 
 function sync_install_content {
@@ -144,16 +170,35 @@ function package_distribution {
 }
 
 function sync_image_content {
-    mkdir -p "${BUILDDIR}/images/application"
-    pushd "${BUILDDIR}/images/application"
-    for url in "${APPLICATION_ASSETS[@]}"; do cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"; done
+    mkdir -p "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    for url in "${APPLICATION_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
     popd
 }
 
-if [ ! -z "$ARTIFACTORY_USER" ] && [ ! -z "$ARTIFACTORY_TOKEN" ]; then
-    export REPOCREDSVARNAME="REPOCREDSVAR"
-    export REPOCREDSVAR=$(jq --null-input --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER"   --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}')
-fi
+function update_iuf_product_manifest {
+    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    for asset in "${APPLICATION_ASSETS[@]}"; do
+      ASSET=$(basename $asset);
+      if [[ ${ASSET} == *squashfs ]]; then
+        UAN_ROOTFS_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+      if [[ ${ASSET} == *kernel ]]; then
+        UAN_KERNEL_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+      if [[ ${ASSET} == *xz ]]; then
+        UAN_INITRD_MD5SUM=$(cat ${ASSET}.md5sum);
+      fi
+    done
+    popd
+    sed -i -e "s/@uan_rootfs_md5sum@/${UAN_ROOTFS_MD5SUM}/g
+               s/@uan_kernel_md5sum@/${UAN_KERNEL_MD5SUM}/g
+               s/@uan_initrd_md5sum@/${UAN_INITRD_MD5SUM}/g" "${BUILDDIR}/iuf-product-manifest.yaml"
+}
 
 # Definitions and sourced variables
 ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
@@ -179,8 +224,11 @@ copy_tests
 copy_docs
 sync_install_content
 setup_nexus_repos
+sync_third_party_content
 sync_repo_content
 sync_image_content
+update_iuf_product_manifest
+iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"

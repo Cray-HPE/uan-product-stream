@@ -1,7 +1,8 @@
+---
 #
 # MIT License
 #
-# (C) Copyright 2023 Hewlett Packard Enterprise Development LP
+# (C) Copyright [2022] Hewlett Packard Enterprise Development LP
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -21,10 +22,51 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-https://artifactory.algol60.net/artifactory/uan-rpms/hpe/stable/sle-15sp3/:
+
+iuf_version: ^0.1.0
+name: uan
+description: >
+  User Access Nodes (UAN).
+version: @product_version@
+
+content:
+  docker:
+  - path: docker
+
+  helm:
+  - path: helm
+
+  loftsman:
+  - path: manifests/uan.yaml
+    use_manifestgen: true
+    deploy: true
+
+  nexus_blob_stores:
+    yaml_path: 'nexus-blobstores.yaml'
+
+  nexus_repositories:
+    yaml_path: 'nexus-repositories.yaml'
+
   rpms:
-    - cray-uan-boot-parameters-shasta-uan-1.2.0-1.x86_64
-    - cray-uan-diagnostics-1.2.0-1.x86_64
-    - cray-uan-load-drivers-shasta-uan-1.2.0-1.x86_64
-    - cray-uan-goss-0.3.18-1.noarch
-    - cray-uan-systemd-presets-1.2.0-1.noarch
+  - path: rpms/sle-15sp4
+    repository_name: uan-@major@.@minor@.@patch@-sle-15sp4
+    repository_type: raw
+  - path: third-party
+    repository_name: uan-@major@.@minor@.@patch@-third-party
+    repository_type: raw
+
+  vcs:
+    path: ansible
+
+  ims:
+    images:
+    - path: images/application/@uan_image_name@
+      rootfs:
+        path: application-@uan_image_version@.squashfs
+        md5sum: @uan_rootfs_md5sum@
+      kernel:
+        path: @uan_kernel_version@-@uan_image_version@.kernel
+        md5sum: @uan_kernel_md5sum@
+      initrd:
+        path: initrd.img-@uan_image_version@.xz
+        md5sum: @uan_initrd_md5sum@

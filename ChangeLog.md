@@ -5,13 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Update cray-uan-config to use cf-gitea-import:1.9.1
-
-## [2.5.8] - 2023-01-14
-- Fix issue with air-gapped installs
-
-## [2.5.7] - 2022-11-17
-- Fix issue with kdump role position in site.yml
+- Restructure UAN CFS and remove COS CFS roles
+- Update Application image to 0.2.1
+- Enable install.sh to work on GCP vshastav2
+- Add support for unified docs project - docs-product-manifest.yaml
+- Update documentation for new COS CFS layers
+- Add support for the install and upgrade framework (IUF)
+- Include assets for k3s, haproxy, and metallb
+- Update to support CFS for k3s, haproxy, and metallb
 
 ## [2.5.6] - 2022-10-14
 - Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf

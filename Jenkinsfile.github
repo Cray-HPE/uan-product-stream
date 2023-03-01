@@ -49,23 +49,37 @@ pipeline {
         RELEASE_VERSION = sh(returnStdout: true, script: "./version.sh").trim()
         GIT_TAG = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
         IS_STABLE = getBuildIsStable()
+        DOCKER_ARGS = getDockerBuildArgs(name: env.NAME, description: env.DESCRIPTION)
     }
 
     stages {
         stage("Build") {
-            steps {
-                  withCredentials([
-                            usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
-                    ]) {
-                    sh "make"
+            parallel {
+                stage("Release") {
+                    steps {
+                          withCredentials([
+                                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                            ]) {
+                            sh "make generate_release"
+                        }
+                    }
+                }
+
+                stage("Docs") {
+                    steps {
+                          withCredentials([
+                                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                            ]) {
+                            sh "make build_docs"
+                        }
+                    }
                 }
             }
         }
-
         stage("Publish") {
             steps {
-                  withCredentials([
-                            usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
+                withCredentials([
+                        usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
                     ]) {
                     script {
                         publishUan(isStable: env.IS_STABLE, version: env.RELEASE_VERSION, pattern: "${WORKSPACE}/dist/uan-"+env.RELEASE_VERSION+".tar.gz")
@@ -74,6 +88,7 @@ pipeline {
             }
         }
     }
+
 
     post {
         always {
