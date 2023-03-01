@@ -1,195 +1,89 @@
-# SHASTARELM/release
+# uan-product-stream
 
-SHSATARELM/release contains utilities for creating release distributions (e.g.,
-packaging assets) and facilitating installation (e.g., configuring Nexus,
-uploading assets). It may be _vendored_ into a product stream repository as
-appropriate.
+The uan-product-stream repo provides release.sh and install.sh
+scripts for generating a UAN product release distribution and
+installing it, respectively.
 
+Bloblet generation is currently done in master and release/shasta-X.Y
+branches, not main or release/uan-X.Y branches (where X.Y is the
+UAN major/minor version, not the overarching "Shasta" version).
 
-## Release Distributions
+## Building a Release Distribution
 
-To facilitate integration with future CI pipeline enhancements, product stream
-repositories should contain a `release.sh` script that generates a release
-distribution, a tar-gzipped file containing all necessary assets and scripts to
-configure and install the corresponding product.
+### Setup vars.sh
 
-Release distributions are tar-gzipped files and are expected to maintain the
-following conventional structure:
+Use `UAN_RELEASE_VERSION` and `UAN_RELEASE_PREFIX` to switch between builds that
+package up master (unstable) or release (stable) builds. These variables define
+the location of the bloblet so ensure the locations exist on DST servers before
+attempting to build a release distribution.
 
-* `README` -- Description of product and contents of the release distribution.
+### Update Pointers to Artifacts and Install Content
 
-* `INSTALL` -- High-level installation documentation describing how to run
-  `install.sh`, including available options and recommended settings, as well
-  as where to find more comprehensive documentation (e.g., URL, in
-  `docs/install.html`).
+1. Update the versions of docker images, helm charts, and manifests in
+   the docker, helm, and manifests directories, respectively.
 
-* `install.sh` -- The entry point script that facilitates installation.
+1. Update the Nexus repos and the blob locations where they will gather
+   RPMs from in `nexus-repositories.yaml.tmpl`
 
-* `lib/` -- Directory containing helper scripts used in `install.sh`.
+1. Update `include/INSTALL.tmpl` for installation instructions and
+   `include/README` for general user-facing information.
 
-* `vendor/` -- Directory containing installation tools vendored from upstream
-  sources.
+1. Make any changes necessary for building and packaging artifacts for the
+   release distribution in release.sh.
 
-* `nexus-blobstores.yaml` and `nexus-repositories.yaml` -- Nexus configuration
-  files for blob stores and repositories to be created during `install.sh`.
+1. Ensure the documentation for the UAN is up-to-date in `docs/` for the
+   artifacts that are referenced in the manifests.
 
-* `manifests/` -- Directory containing Loftsman manifests defining Helm charts
-  to be deployed. Manifests are expected to be _generated_ using `manifestgen`
-  along with the system’s `customizations.yaml` before being deployed using
-  `loftsman ship`.
+1. Run `git vendor update shastarelm-release` to update the shared libraries
+provided by the Shasta Release Management release tools.
 
-* `docs/` -- Directory containing rendered/generated (e.g., HTML, PDF) product
-  documentation; may also include source files and build scripts (e.g.,
-  `Makefile`).
+### Generate a Release Distribution (local)
 
-Asset directories, assuming the release distribution packages assets of that type:
+Run `./release.sh` to create a release distribution. The distribution will
+appear as a `dist/${NAME}-${VERSION}.tar.gz` file. This is the
+default release distribution and is meant for airgapped system installations.
 
-* `docker/` -- Directory containing ~~Docker~~ container images. Note that this
-  directory is often generated from a Skopeo sync index and should have
-  subdirectories based on image repositories. Container images should be
-  uploaded to the `registry` supported by CSM. (Exposing access to additional
-  registries will require changes to Nexus’ ingress configuration; i.e., _these
-  aren’t the droids you’re looking for_.)
+### Generate a Release Distribution (Official)
 
-* `helm/` -- Directory containing Helm charts. Note that Helm charts are
-  commonly uploaded to the `charts` repository supported by CSM; however,
-  subdirectories are recommended if charts will be uploaded to different
-  product-specific Nexus repositories.
+1. All changes should be made to the `main` branch in this repository through
+   a pull request.
+1. If not already done, create a release branch format of `release/uan-{major}.{minor}`.
+   If the branch already exists, create a PR to pull in main to the release
+   branch. Approve and merge the PR (for existing branches). 
+1. Tag the commit at the tip of the release branch with the format
+   `v{major}.{minor}.{patch}` for official/stable releases. Add release
+   candidate/alpha/beta information to the tag if this is a dev/unstable build.
+1. Wait for the build pipeline to build the package. The build pipeline in this
+   repository is tracking changes to tags. Creating the version tag will
+   automatically build the release distribution with the version specified.
+1. [Unstable builds](https://arti.dev.cray.com/artifactory/shasta-distribution-unstable-local/uan/)
+    are available for download and installation. Any build that is not tagged with
+    `v{major}.{minor}.{patch}` (e.g. v1.2.3-RC1) is considered an unstable (dev) build.
+1. [Stable builds](https://arti.dev.cray.com/artifactory/shasta-distribution-stable-local/uan/)
+   are available for download and installation as well.
 
-* `rpms/` -- Directory containing RPM repositories. Subdirectories are expected
-  to correspond to Nexus repositories (defined in `neuxs-repositories.yaml`)
-  and must contain valid repository metadata (i.e., repodata/repomd.xml).
+### Versioning
 
-* `squashfs/` -- Directory containing SquashFS files. Subdirectories are
-  recommended if files will be uploaded to different Nexus repositories.
+The `$VERSION` used when creating a release distribution is based on the latest
+git tag in the repository. Git tags are used to determine the version of the
+overall UAN product, it is NOT set in any file in this repository.
 
+Rather, the `version.sh` script reads the latest tag in the repository and
+appends additional SEMVER-compatible versioning information to the release
+distribution name. Version tags in this repository must start with a "v" and be
+SEMVER-compliant.
 
-## Vendor SHASTARELM/release
+* If the current commit is tagged, the version will be `${git_tag}`, minus the "v".
+* If the current commit has progressed past the tag, the output of `git describe`
+  will be used (minus the "v") and appended with as is done with `describe` output:
+  `${git_tag}-{# commits since tag}-g{commit}`
+* If there are unstaged changes, `-dirty` is appended to the version string.
 
-Use [`git-vendor`](https://github.com/brettlangdon/git-vendor), a wrapper
-around `git-subtree` commands for checking out and updating vendored
-dependencies. Installation via Homebrew is simply `brew install git-vendor`.
-Once installed, vendor this library into a product release repository via:
+This naming scheme is in place to ensure that development release distributions
+can be created and not conflict with official releases.
 
-```bash
-$ git vendor add release git@github.hpe.com:hpe/hpc-shastarelm-release.git master
-+ git subtree add --prefix vendor/github.hpe.com/hpe/hpc-shastarelm-release --message 'Add "release" from "git@github.hpe.com:hpe/hpc-shastarelm-release.git@master"
+## Documentation
 
-git-vendor-name: release
-git-vendor-dir: vendor/github.hpe.com/hpe/hpc-shastarelm-release
-git-vendor-repository: git@github.hpe.com:hpe/hpc-shastarelm-release.git
-git-vendor-ref: master
-' git@github.hpe.com:hpe/hpc-shastarelm-release.git master --squash
-git fetch git@github.hpe.com:hpe/hpc-shastarelm-release.git master
-remote: Enumerating objects: 172, done.
-remote: Counting objects: 100% (21/21), done.
-remote: Compressing objects: 100% (16/16), done.
-remote: Total 172 (delta 8), reused 15 (delta 5), pack-reused 151
-Receiving objects: 100% (172/172), 39.91 KiB | 510.00 KiB/s, done.
-Resolving deltas: 100% (81/81), done.
-From github.hpe.com:hpe/hpc-shastarelm-release
- * branch            master     -> FETCH_HEAD
-Added dir 'vendor/github.hpe.com/hpe/hpc-shastarelm-release'
-```
-
-
-## Nexus Setup
-
-The `lib/install.sh` library contains some helper functions for setting up and
-configuring Nexus. In particular:
-
-* `nexus-setup` -- Facilitates setup of blob stores and repositories
-* `nexus-upload` -- Uploads a directory of assets to a repository
-* `nexus-sync` -- Uploads container images to a registry
-
-In order to use the above helpers, release distributions should vendor the
-installer dependencies using the `vendor-install-deps` from `lib/release.sh`.
-Before using the helpers, installers must load them using `load-install-deps`
-and are expected to clean them up using `clean-install-deps`. In particular, be
-aware that `load-install-deps` sets environment variables to identify the
-install tools, which are then used in the above helpers.
-
-More advanced operations may use the Nexus REST API directly at
-https://packages.local/service/rest.
-
-
-### Naming RPM Repositories
-
-RPM repositories should be named `<product>[-<product version>]-<os dist>-<os
-version>[-compute][-<arch>]` where
-
-* `<product>` indicates the product (e.g, ‘cos’, ‘csm’, ‘sma’)
-
-* `-<product version>` indicates the product version (e.g., `-1.4.0`,
-  `-latest`, `-stable`); group or proxy repositories that represent _current_
-  or _active_ repositories omit `-<product version>`
-
-* `-<os dist>` indicates the OS distribution (e.g., `-sle`)
-
-* `-<os version>` indicates the OS version (e.g., `-15sp1`, `-15sp2`)
-
-* `-compute` must be specified if the repository contains RPMs specific to
-  compute nodes and omitted otherwise; there is no suffix for repositories
-  containing NCN RPMs
-
-* `-<arch>` must be specified if the repository is specific to a system
-  architecture (e.g., `-noarch`, `-x86_64`) and omitted otherwise
-
-
-### Deleting Blob Stores and Repositories
-
-The `nexus-setup` helper attempts to first create and then update resources. In
-general, it is able to adjust various settings for existing resources provided
-they are of the same `type`. However, if the existing resource is of a
-different type (e.g., when creating a `hosted` repository when a `proxy` one
-already exists), it will most likely fail. When this happens, the typical
-resolution is to delete the existing repository to allow `nexus-setup` to
-recreate it with the desired configuration.
-
-To delete a blob store, send an HTTP `DELETE` to
-`/service/rest/v1/blobstores/<name>`. For example,
-
-```
-# curl -sfkSL -X DELETE "https://packages.local/service/rest/v1/blobstores/<name>"
-```
-
-To delete a repository, send an HTTP `DELETE` to
-`/service/rest/beta/repositories/<name>`. For example,
-
-```
-# curl -sfkSL -X DELETE "https://packages.local/service/rest/beta/repositories/<name>”
-```
-
-Using `yq` all the blob stores or repositories defined in
-`nexus-blobstores.yaml` or `nexus-repositories.yaml` may be deleted with a
-single command. For blob stores, use:
-
-`yq` v3:
-
-```
-# yq r -d '*' nexus-blobstores.yaml name | while read blobstore; do curl -sfkSL -X DELETE "https://packages.local/service/rest/v1/blobstores/${blobstore}"; done
-```
-
-`yq` v4:
-
-```
-# yq e -N '.name' nexus-blobstores.yaml | while read blobstore; do curl -sfkSL -X DELETE "https://packages.local/service/rest/v1/blobstores/${blobstore}"; done
-```
-
-For repositories, use:
-
-`yq` v3:
-
-```
-# yq r -d '*' nexus-repositories.yaml name | while read repo; do curl -sfkSL -X DELETE "https://packages.local/service/rest/beta/repositories/${repo}"; done
-```
-
-`yq` v4:
-
-```
- yq e -N '.name' nexus-repositories.yaml | while read repo; do curl -sfkSL -X DELETE "https://packages.local/service/rest/beta/repositories/${repo}"; done
-```
-
-**WARNING:** It is strongly recommended that installers do **NOT**
-automatically delete resources as part of Nexus setup. Otherwise valid content
-may be inadvertently deleted.
+UAN documentation is stored in the `docs` directory. Please keep it up to date
+with the procedures associated with the artifacts that are referenced in the UAN
+manifest(s).
