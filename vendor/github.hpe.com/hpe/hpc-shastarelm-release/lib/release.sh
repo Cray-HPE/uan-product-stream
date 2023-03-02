@@ -12,7 +12,7 @@
 : "${SNYK_SCAN_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-scan:1.1.0}"
 : "${SNYK_AGGREGATE_RESULTS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-aggregate-results:1.0.1}"
 : "${SNYK_TO_HTML_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/snyk-to-html:1.0.0}"
-: "${CRAY_NLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nls:0.9.8}"
+: "${CRAY_NLS_IMAGE:=arti.hpc.amslabs.hpecorp.net/csm-docker-remote/stable/cray-nls:0.10.0}"
 
 
 # Prefer to use docker, but for environments with podman
@@ -428,7 +428,7 @@ function skopeo-sync() {
                 -v "$(realpath "$index"):/index.yaml:ro" \
                 -v "$(realpath "$destdir"):/data" \
                 "$SKOPEO_IMAGE" \
-                sync --src-creds "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" --retry-times 5 --src yaml --dest dir --scoped /index.yaml /data
+                sync "${skopeo_args[@]}" "/index.yaml" "/data"
         then
             function_rc=0
             echo "$(date) skopeo-sync: Attempt #${attempt_number} PASSED!"
