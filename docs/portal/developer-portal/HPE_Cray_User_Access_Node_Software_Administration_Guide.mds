@@ -1,0 +1,48 @@
+---
+title: HPE Cray User Access Node (UAN) Software Administration Guide
+---
+
+# About UAN Administration
+
+_include operations/About_UAN_Configuration.md
+
+---
+
+# Manage UAN Boot Images
+
+_include operations/Create_UAN_Boot_Images.md
+
+_include operations/Build_a_New_UAN_Image_Using_the_COS_Recipe.md
+
+---
+
+# Administrative Tasks
+
+_include operations/Configure_Interfaces_on_UANs.md
+
+_include operations/Configure_Pluggable_Authentication_Modules_(PAM)_on_UANs.md
+
+_include operations/Mount_a_New_File_System_on_an_UAN.md
+
+---
+
+# Advanced Administrative Tasks
+
+_include advanced/Customizing_UAN_Images_Manually.md
+
+---
+
+# Troubleshooting
+
+_include troubleshooting/Troubleshoot_UAN_Boot_Issues.md
+
+_include troubleshooting/Troubleshoot_UAN_CFS_and_Network_Configuration_Issues.md
+
+_include troubleshooting/Troubleshoot_UAN_Disk_Configuration_Issues.md
+
+---
+
+# Reference
+
+_include operations/UAN_Ansible_Roles.md
+
