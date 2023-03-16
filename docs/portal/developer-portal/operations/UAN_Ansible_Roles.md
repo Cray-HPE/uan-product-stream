@@ -164,9 +164,47 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-### `uan_can_setup`
+`uan_nmn_bond`
 
-`uan_can_setup` is a boolean variable controlling the configuration of user
+`uan_nmn_bond` is a boolean variable controlling the configuration of the Node Management Network (NMN).
+When true, the NMN network connection will be configured as a bonded pair of interfaces defined by the members of the
+`uan_nmn_bond_slaves` variable. The bonded NMN interface is named `nmnb0`. When false, the NMN network connection
+will be configured as a single interface named `nmn0`.
+
+The default value of `uan_nmn_bond` is `no`.
+
+```yaml
+uan_nmn_bond: no
+```
+
+`uan_nmn_bond_slaves`
+
+`uan_nmn_bond_slaves` is a list of the interfaces to use as the bond slave pair when `uan_nmn_bond` is true.
+
+The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f0`
+which is the first port of the NIC in slot 10.  
+
+**NOTE:** `ens10f0` is typically the first port of the OCP 25Gb card that
+the node PXE boots.
+
+**IMPORTANT!** The first interface in the list must be the `nmn0` interface which is configured during the
+initial image boot, typically `ens10f0`.  This is required because the MAC address of the `nmn0` interface
+is the MAC associated with the IP address of the UAN.  The bonded `nmnb0` interface and the bond slaves
+will assume this MAC and the IP address of `nmn0` to preserve connectivity.
+
+The second interface is typically the first port of a different 25Gb NIC for resiliency.
+
+The default values of `uan_nmn_bond_slaves` are shown here.  They may need to be changed to match the actual
+node cabling and NIC configuration.
+```yaml
+uan_nmn_bond_slaves:
+  - "ens10f0"
+  - "ens1f0"
+```
+
+`uan_can_setup`
+
+Boolean variable controlling the configuration of user
 access to UAN nodes.  When true, user access is configured over either the
 Customer Access Network (CAN) or Customer High Speed Network (CHN), depending on which is configured on the system.
 
@@ -180,7 +218,26 @@ The default value of `uan_can_setup` is `no`.
 uan_can_setup: no
 ```
 
-### `uan_customer_default_route`
+`uan_can_bond_slaves`
+
+`uan_can_bond_slaves` is a list of the interfaces to use as the bond slave pair when `uan_can_setup` is true, `uan_nmn_bond` is true, and the Customer Access Network (CAN) is configured on the system.  This variable is ignored if `uan_nmn_bond` is false.
+
+The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f1`
+which is the second port of the NIC in slot 10.  
+
+**NOTE:** `ens10f1` is typically the second port of the OCP 25Gb card and is used as one of the bond
+slaves in the CAN `bond0` interface.
+
+The second interface is typically the second port of a different 25Gb NIC for resiliency.
+
+The default values of `uan_can_bond_slaves` are shown here.  They may need to be changed to match the actual
+node cabling and NIC configuration.
+
+```yaml
+uan_can_bond_slaves:
+  - "ens10f1"
+  - "ens1f1"
+```
 
 `uan_customer_default_route` is a boolean variable that allows the default route
 to be set by the `customer_uan_routes` data when `uan_can_setup` is true.
