@@ -150,6 +150,11 @@ function sync_image_content {
     popd
 }
 
+if [ ! -z "$ARTIFACTORY_USER" ] && [ ! -z "$ARTIFACTORY_TOKEN" ]; then
+    export REPOCREDSVARNAME="REPOCREDSVAR"
+    export REPOCREDSVAR=$(jq --null-input --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER"   --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}')
+fi
+
 # Definitions and sourced variables
 ROOTDIR="$(dirname "${BASH_SOURCE[0]}")"
 VENDOR="${ROOTDIR}/vendor/github.hpe.com/hpe/hpc-shastarelm-release/"
