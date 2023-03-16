@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.9] - 2023-03-16
+- Support bonded NMN
+
 ## [2.5.8] - 2023-01-14
 - Fix issue with air-gapped installs
 
