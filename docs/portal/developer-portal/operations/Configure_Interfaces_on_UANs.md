@@ -46,6 +46,15 @@ If the HPE Cray EX CAN or CHN is desired, set the `uan_can_setup` variable to `y
     # use the Shasta CAN or CHN network for user access.
     # By default, uan_can_setup is set to 'no'.
     uan_can_setup: yes
+
+    ## uan_can_bond_slaves
+    # This variable only applies when the system default route is CAN
+    # and `uan_nmn_bond` is true.
+    # These are the default CAN bond slaves.  They may need to be
+    # changed based on the actual system hardware configuration.
+    uan_can_bond_slaves:
+      - "ens10f1"
+      - "ens1f1"
     ```
 
     To allow a custom default route when CAN or CHN is selected:
@@ -54,6 +63,23 @@ If the HPE Cray EX CAN or CHN is desired, set the `uan_can_setup` variable to `y
     ## uan_customer_default_route
     # Allow a custom default route when CAN or CHN is selected.
     uan_customer_default_route: no
+    ```
+
+   To enable bonded NMN interfaces:
+
+    ```bash
+    ## uan_nmn_bond
+    # Set uan_nmn_bond to 'yes' if the site will
+    # implement a bonded NMN connection.
+    # By default, uan_nmn_bond is set to 'no'.
+    uan_nmn_bond: yes
+
+    ## uan_nmn_bond_slaves
+    # These are the default NMN bond slaves.  They may need to be
+    # changed based on the actual system hardware configuration.
+    uan_nmn_bond_slaves:
+      - "ens10f0"
+      - "ens1f0"
     ```
 
     To define interfaces:
