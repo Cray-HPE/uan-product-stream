@@ -123,7 +123,7 @@ To validate the K3s cluster once deployed, see the [Validation Checks](#validati
 
 ## Configuring K3s, MetalLB, HAProxy, and SSHD for use with Podman
 
-Each of the sections below describe how the various comonents deployed to K3s and the UANs may be configured to enable users to SSH to rootless podman containers. As there is no one configuration to fit any one use case, read and understand each section to modify the configuration as needed. Once each section has been completed, see [Deploy K3s to the UAN](#deploy-k3s-to-the-uan).
+Each of the sections below describe how the various components deployed to K3s and the UANs may be configured to enable users to SSH to rootless podman containers. As there is no one configuration to fit any one use case, read and understand each section to modify the configuration as needed. Once each section has been completed, see [Deploy K3s to the UAN](#deploy-k3s-to-the-uan).
 
 ### MetalLB 
 
