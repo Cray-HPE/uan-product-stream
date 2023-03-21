@@ -1,19 +1,22 @@
 ## Overview
-The following procedure may be performed to validate K3s on UAN is able to start the services necessary to replicate UAIs as podman containers. 
+Perform this procedure to verify that K3s on UANs can launch the services necessary to replicate UAIs as Podman containers. 
 
 The steps in this guide are biased towards simplicity and light on explanation. For more detail on all of the possible configuration permutations, consult [Enabling K3s](../advanced/Enabling_K3s.md).
 
 This procedure assumes familiarity with the commands `cray cfs`, `cray bos` and, optionally, access to `sat bootprep` automation files to assist in reconfiguration of the UAN.
 
 ## Configuration  
-To execute this test plan, first identify a UAN that has been fully booted and configured with COS. This means the UAN is configured with the CAN or CHN, and is able to authenticate non-root users.
+1. Identify a UAN that has been fully booted and configured with COS. 
+
+  The UAN chosen must be configured with the CAN or CHN, and be able to authenticate non-root users.
+  
 1. Verify the UAN has the CAN or CHN configured by checking the default route (IP address masked with `x.x.x.x`):
 ```
 $ ip r | grep default
 default via x.x.x.x dev can0
 ```
 
-1. Verify non-root SSH access to the UAN (make sure to use chn or can based on the default route):
+1. Verify non-root SSH access to the UAN.  Use `chn` or `can` depending on the default route):
 ```
 $ ssh uan01.can.lemondrop.hpc.amslabs.hpecorp.net
 (alanm@uan01.can.lemondrop.hpc.amslabs.hpecorp.net) Password:
@@ -23,7 +26,9 @@ lemondrop
 alanm@uan01:~
 ```
 
-1. Once a target UAN has been identified to test, checkout the UAN CFS repository from VCS, and create a new branch. In the following example, the currently booted UAN was configured with `integration-2.6.0`, so that was used as the starting point. Use the correct branch for the UAN being tested.
+1. Checkout the UAN CFS repository from VCS and create a new branch. 
+
+  In the following example, the currently booted UAN was configured with `integration-2.6.0`, so that was used as the starting point. Use the correct branch for the UAN being tested.
 ```
 $ git clone https://auth.cmn.lemondrop.hpc.amslabs.hpecorp.net/vcs/cray/uan-config-management.git
 
@@ -35,7 +40,9 @@ $ git checkout k3s
 Switched to branch 'k3s'
 Your branch is up to date with 'origin/integration-2.6.0'.
 ```
-1. Complete the [MetalLB section](../advanced/Enabling_K3s.md#metallb) of the Enabling K3s guide. Once completed, modify `vars/uan_helm.yml` (IP addresses masked with `x.x.x.x`) and commit the change.
+1. Complete the [MetalLB section](../advanced/Enabling_K3s.md#metallb) of the Enabling K3s guide. 
+
+1. Modify `vars/uan_helm.yml` (IP addresses masked with `x.x.x.x`) and commit the change.
 ```
 $ git diff
 diff --git a/vars/uan_helm.yml b/vars/uan_helm.yml
@@ -55,7 +62,9 @@ $ git commit -m "Add MetalLB IP Address range" vars/uan_helm.yml
 [k3s 1dde4ab] Add MetalLB IP Address range
  1 file changed, 2 insertions(+), 2 deletions()
 ```
-1. Complete the [HAProxy section](../advanced/Enabling_K3s.md#haproxy-configuration) of the Enabling K3s guide. The following changes to `vars/uan_helm.yml` would be suitable changes for validation (make sure to change the DNS name for the UAN selected for this test):
+1. Complete the [HAProxy section](../advanced/Enabling_K3s.md#haproxy-configuration) of the Enabling K3s guide. Replace `uan01 uan01.can.lemondrop.hpc.amslabs.hpecorp.net:9000` with the DNS of the UAN chosen for this test.
+
+The following changes to `vars/uan_helm.yml` would be suitable changes for validation:
 ```
 $ git diff
 diff --git a/vars/uan_helm.yml b/vars/uan_helm.yml
@@ -90,7 +99,9 @@ $ git commit -m "Add HAProxy configuration" vars/uan_helm.yml
 [k3s 1b54db9] Add HAProxy configuration
  1 file changed, 19 insertions(+)
 ```
-1. Complete the  [SSHD section](../advanced/Enabling_K3s.md#sshd-configuration) of the Enabling K3s guide. These changes to `vars/uan_sshd.yml` may be used as a valid test of a podman configuration:
+1. Complete the  [SSHD section](../advanced/Enabling_K3s.md#sshd-configuration) of the Enabling K3s guide. 
+
+  These changes to `vars/uan_sshd.yml` may be used as a valid test of a podman configuration:
 ```
 arbus ~/supercomputers/lemondrop/uan-config-management2 (k3s) $ git diff
 diff --git a/vars/uan_sshd.yml b/vars/uan_sshd.yml
@@ -148,7 +159,9 @@ TEST_USER=<non-root username>
 if ! grep -sq $TEST_USER /etc/subuid; then echo $TEST_USER:200000000:$(id -u $TEST_USER) >> /etc/subuid; fi
 if ! grep -sq $TEST_USER /etc/subgid; then echo $TEST_USER:200000000:$(id -u $TEST_USER) >> /etc/subgid; fi
 ```
-1. Create and upload a podman container to the CSM registry. The following example uses the default container image from the User Access Service and should be run from an NCN:
+1. Create and upload a podman container to the CSM registry. 
+
+The following example uses the default container image from the User Access Service and should be run from an NCN:
 ```
 mkdir podman_img; cd podman_img
 
@@ -174,7 +187,7 @@ cray cfs configurations describe --format json $CFS_CONFIG | jq 'del(.lastUpdate
 
 vim $CFS_CONFIG.json
 ```
-1. The modified CFS configuration should include the following new playbook after the standard UAN `site.yaml` playbook:
+The modified CFS configuration should include the following new playbook after the standard UAN `site.yaml` playbook:
 ```
     {
       "cloneUrl": "https://api-gw-service-nmn.local/vcs/cray/uan-config-management.git",
