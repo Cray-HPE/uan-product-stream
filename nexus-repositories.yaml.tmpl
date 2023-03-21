@@ -30,3 +30,19 @@ type: group
 group:
   memberNames:
   - @name@-@major@.@minor@.@patch@-sle-15sp3
+
+---
+name: @name@-@major@.@minor@.@patch@-third-party
+format: raw
+storage:
+  blobStoreName: @name@
+
+---
+name: @name@-@major@.@minor@-third-party
+format: raw
+storage:
+  blobStoreName: @name@
+type: group
+group:
+  memberNames:
+  - @name@-@major@.@minor@.@patch@-third-party
