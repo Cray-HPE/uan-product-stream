@@ -33,7 +33,7 @@ PATCH=`./vendor/semver get patch ${VERSION}`
 
 # Versions for container images and helm charts
 PRODUCT_CATALOG_UPDATE_VERSION=1.3.1
-UAN_CONFIG_VERSION=1.9.12
+UAN_CONFIG_VERSION=1.9.11
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE=stable
