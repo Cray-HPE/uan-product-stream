@@ -40,3 +40,15 @@ artifactory.algol60.net/csm-docker/stable:
 
     docker.io/haproxytech/haproxy-alpine:
     - @haproxy_version@
+
+    docker.io/rancher/local-path-provisioner:
+    - @local_path_provisioner_version@
+
+    docker.io/rancher/mirrored-coredns-coredns:
+    - @mirrored_coredns_cordns@
+
+    docker.io/rancher/mirrored-metrics-server:
+    - @mirrored_metrics_server@
+
+    docker.io/rancher/mirrored-pause:
+    - @mirrored_pause@

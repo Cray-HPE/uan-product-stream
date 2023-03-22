@@ -44,6 +44,10 @@ function copy_manifests {
     sed -i -e "s/@metallb_controller_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@metallb_speaker_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@haproxy_version@/${HAPROXY_CONTAINER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@local_path_provisioner_version@/${LOCAL_PATH_PROVISIONER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_coredns_cordns@/${MIRRORED_COREDNS_CORDNS}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_metrics_server@/${MIRRORED_METRICS_SERVER}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_pause@/${MIRRORED_PAUSE}/g" "${BUILDDIR}/docker/index.yaml"
 
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
     # Set any dynamic variables in the UAN manifest
