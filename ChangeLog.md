@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.10] - 2023-03-21
+- Add preview release of K3s support
+
 ## [2.5.9] - 2023-03-16
 - Support bonded NMN
 - Update cf-gitea-import to 1.9.1

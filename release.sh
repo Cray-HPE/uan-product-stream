@@ -41,6 +41,13 @@ function copy_manifests {
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@product_catalog_version@/${PRODUCT_CATALOG_UPDATE_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@metallb_controller_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@metallb_speaker_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@haproxy_version@/${HAPROXY_CONTAINER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@local_path_provisioner_version@/${LOCAL_PATH_PROVISIONER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_coredns_cordns@/${MIRRORED_COREDNS_CORDNS}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_metrics_server@/${MIRRORED_METRICS_SERVER}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@mirrored_pause@/${MIRRORED_PAUSE}/g" "${BUILDDIR}/docker/index.yaml"
 
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
     # Set any dynamic variables in the UAN manifest
@@ -103,6 +110,22 @@ function sync_repo_content {
     createrepo "${BUILDDIR}/rpms/sle-15sp4"
     rpm-sync "${ROOTDIR}/rpm/cray/uan/sle-15sp3/index.yaml" "${BUILDDIR}/rpms/sle-15sp3"
     createrepo "${BUILDDIR}/rpms/sle-15sp3"
+}
+
+function sync_third_party_content {
+    mkdir -p "${BUILDDIR}/third-party"
+    pushd "${BUILDDIR}/third-party"
+    for url in "${THIRD_PARTY_ASSETS[@]}"; do
+      cmd_retry curl -sfSLOR "$url"
+      ASSET=$(basename $url)
+      md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
+    done
+
+    helm repo add haproxy $HAPROXY_URL
+    helm repo add metallb $METALLB_URL
+    helm pull --version $HAPROXY_VERSION haproxy/haproxy 
+    helm pull --version $METALLB_VERSION metallb/metallb
+    popd
 }
 
 function sync_install_content {
@@ -179,6 +202,7 @@ copy_tests
 copy_docs
 sync_install_content
 setup_nexus_repos
+sync_third_party_content
 sync_repo_content
 sync_image_content
 
