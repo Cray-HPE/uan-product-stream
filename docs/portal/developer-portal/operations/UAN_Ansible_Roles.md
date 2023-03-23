@@ -166,10 +166,7 @@ Available variables are listed below, along with default values (see `defaults/m
 
 `uan_nmn_bond`
 
-`uan_nmn_bond` is a boolean variable controlling the configuration of the Node Management Network (NMN).
-When true, the NMN network connection will be configured as a bonded pair of interfaces defined by the members of the
-`uan_nmn_bond_slaves` variable. The bonded NMN interface is named `nmnb0`. When false, the NMN network connection
-will be configured as a single interface named `nmn0`.
+`uan_nmn_bond` is a boolean variable controlling the configuration of the Node Management Network (NMN). When true, the NMN network connection will be configured as a bonded pair of interfaces defined by the members of the `uan_nmn_bond_slaves` variable. The bonded NMN interface is named `nmnb0`. When false, the NMN network connection will be configured as a single interface named `nmn0`.
 
 The default value of `uan_nmn_bond` is `no`.
 
@@ -181,21 +178,17 @@ uan_nmn_bond: no
 
 `uan_nmn_bond_slaves` is a list of the interfaces to use as the bond slave pair when `uan_nmn_bond` is true.
 
-The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f0`
-which is the first port of the NIC in slot 10.  
+The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f0` which is the first port of the NIC in slot 10.
 
 **NOTE:** `ens10f0` is typically the first port of the OCP 25Gb card that
 the node PXE boots.
 
-**IMPORTANT!** The first interface in the list must be the `nmn0` interface which is configured during the
-initial image boot, typically `ens10f0`.  This is required because the MAC address of the `nmn0` interface
-is the MAC associated with the IP address of the UAN.  The bonded `nmnb0` interface and the bond slaves
-will assume this MAC and the IP address of `nmn0` to preserve connectivity.
+**IMPORTANT!** The first interface in the list must be the `nmn0` interface which is configured during the initial image boot, typically `ens10f0`.  This is required because the MAC address of the `nmn0` interface is the MAC associated with the IP address of the UAN.  The bonded `nmnb0` interface and the bond slaves will assume this MAC and the IP address of `nmn0` to preserve connectivity.
 
 The second interface is typically the first port of a different 25Gb NIC for resiliency.
 
-The default values of `uan_nmn_bond_slaves` are shown here.  They may need to be changed to match the actual
-node cabling and NIC configuration.
+The default values of `uan_nmn_bond_slaves` are shown here.  They may need to be changed to match the actual node cabling and NIC configuration.
+
 ```yaml
 uan_nmn_bond_slaves:
   - "ens10f0"
@@ -204,7 +197,7 @@ uan_nmn_bond_slaves:
 
 `uan_can_setup`
 
-Boolean variable controlling the configuration of user
+`uan_can_setup` is a boolean variable controlling the configuration of user
 access to UAN nodes.  When true, user access is configured over either the
 Customer Access Network (CAN) or Customer High Speed Network (CHN), depending on which is configured on the system.
 
@@ -222,16 +215,13 @@ uan_can_setup: no
 
 `uan_can_bond_slaves` is a list of the interfaces to use as the bond slave pair when `uan_can_setup` is true, `uan_nmn_bond` is true, and the Customer Access Network (CAN) is configured on the system.  This variable is ignored if `uan_nmn_bond` is false.
 
-The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f1`
-which is the second port of the NIC in slot 10.  
+The interface names must be in a format which doesn't change between reboots of the node, such as `ens10f1` which is the second port of the NIC in slot 10.
 
-**NOTE:** `ens10f1` is typically the second port of the OCP 25Gb card and is used as one of the bond
-slaves in the CAN `bond0` interface.
+**NOTE:** `ens10f1` is typically the second port of the OCP 25Gb card and is used as one of the bond slaves in the CAN `bond0` interface.
 
 The second interface is typically the second port of a different 25Gb NIC for resiliency.
 
-The default values of `uan_can_bond_slaves` are shown here.  They may need to be changed to match the actual
-node cabling and NIC configuration.
+The default values of `uan_can_bond_slaves` are shown here.  They may need to be changed to match the actual node cabling and NIC configuration.
 
 ```yaml
 uan_can_bond_slaves:
@@ -266,7 +256,7 @@ This value should not be changed.
 
 `uan_required_dns_options`
 
-: `uan_required_dns_options` is a list of DNS options.  By default, `single-request` is set and must not be removed.
+`uan_required_dns_options` is a list of DNS options.  By default, `single-request` is set and must not be removed.
 
   Example:
 
@@ -277,7 +267,7 @@ This value should not be changed.
 
 `customer_uan_interfaces`
 
-: `customer_uan_interfaces` is as list of interface names used for constructing `ifcfg-<customer_uan_interfaces.name>` files. Define ifcfg fields for each interface here. Field names are converted to uppercase in the generated `ifcfg-<name>` file(s).
+`customer_uan_interfaces` is as list of interface names used for constructing `ifcfg-<customer_uan_interfaces.name>` files. Define ifcfg fields for each interface here. Field names are converted to uppercase in the generated `ifcfg-<name>` file(s).
 
   Interfaces should be defined in order of dependency.
   
