@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update to support CFS for k3s, haproxy, and metallb
 - Update cf-gitea-import to 1.9.1 for CVE resolution in cray-uan-config
 - NMN Bonding (disabled by default) and CAN interface changes
+- Update CHN configuration to support interfaces other than hsn0
 
 ## [2.5.6] - 2022-10-14
 - Fix issue configuring CHN on computes nodes after COS 2.4.79 enabled cray-ifconf
