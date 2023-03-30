@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.11] - 2023-03-31
+- Update CHN configuration
+
 ## [2.5.10] - 2023-03-21
 - Add preview release of K3s support
 
