@@ -33,13 +33,13 @@ Perform the following steps to repurpose a compute node for use as a UAN.
 1. Verify the system is configured to use the `CHN` as the System Default Route. If the `SystemDefaultRoute` is not `CHN`, the compute nodes may not be repurposed as UAN.
 
     ```bash
-    ncn-m001# cray sls networks describe BICAN  --format json | jq -r '.ExtraProperties.SystemDefaultRoute'
+    ncn-m001# cray sls networks describe BICAN --format json | jq -r '.ExtraProperties.SystemDefaultRoute'
     ```
 
 1. Verify a CHN IP address exists in SLS for each repurposed compute node. Repeat the following command and replace `<XNAME>` with the xname of each repurposed compute node. The compute node must have a CHN IP address in SLS or it cannot be repurposed as a UAN.  See `Add Compute IP addresses to CHN SLS data` section of the Cray System Management documentation for information on adding compute nodes to the CHN.
 
     ```bash
-    ncn-m001# cray sls networks describe CHN | q -r '.ExtraProperties.Subnets[] | select(.FullName == "CHN Bootstrap DHCP Subnet") | .IPReservations[] | select(.Comment == "<XNAME>")'
+    ncn-m001# cray sls networks describe CHN --format json | jq -r '.ExtraProperties.Subnets[] | select(.FullName == "CHN Bootstrap DHCP Subnet") | .IPReservations[] | select(.Comment == "<XNAME>")'
     ```
 
 1. Verify that `uan_can_setup: true` is set in the `uan-config-management` CFS repo.  See [Enabling the Customer Access Network (CAN) or the Customer High Speed Network (CHN)](../advanced/Enabling_CAN_CHN.md) for more information.
