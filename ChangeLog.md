@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.13] - 2023-04-27
+- DVS CFS changes
+
 ## [2.5.12] - 2023-04-19
 - Fix missing backport step in uan_interfaces
 
