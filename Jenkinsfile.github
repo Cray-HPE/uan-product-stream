@@ -64,16 +64,6 @@ pipeline {
                         }
                     }
                 }
-
-                stage("Docs") {
-                    steps {
-                          withCredentials([
-                                    usernamePassword(credentialsId: 'artifactory-algol60-publish', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_TOKEN')
-                            ]) {
-                            sh "make build_docs"
-                        }
-                    }
-                }
             }
         }
         stage("Publish") {
