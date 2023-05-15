@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update SLE Application image from the new build pipeline
 - Fix HAProxy and MetalLB IPBO
 - Remove docs in favor of the docs-uan repo
+- Fix K3s airgap install of images
 
 ## [2.6.0] - 2023-04-10
 - Restructure UAN CFS and remove COS CFS roles
