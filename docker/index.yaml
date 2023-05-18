@@ -32,3 +32,11 @@ artifactory.algol60.net/csm-docker/stable:
   images:
     cray-product-catalog-update:
     - @product_catalog_version@
+
+    quay.io/metallb/speaker:
+    - v@metallb_speaker_version@
+    quay.io/metallb/controller:
+    - v@metallb_controller_version@
+
+    docker.io/haproxytech/haproxy-alpine:
+    - @haproxy_version@

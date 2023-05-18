@@ -33,13 +33,13 @@ PATCH=`./vendor/semver get patch ${VERSION}`
 
 # Versions for container images and helm charts
 PRODUCT_CATALOG_UPDATE_VERSION=1.3.2
-UAN_CONFIG_VERSION=1.12.6
+UAN_CONFIG_VERSION=1.12.7
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE=stable
-UAN_IMAGE_VERSION=0.5.26
+UAN_IMAGE_VERSION=0.5.33
 UAN_IMAGE_ARCH=x86_64
-UAN_KERNEL_VERSION=5.14.21-150400.24.60-default
+UAN_KERNEL_VERSION=5.14.21-150400.24.63-default
 UAN_IMAGE_NAME=cray-application-sles15sp4.$UAN_IMAGE_ARCH-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_RELEASE/application
 
@@ -47,6 +47,7 @@ UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_
 K3S_VERSION=1.26.0
 METALLB_VERSION=0.13.7
 HAPROXY_VERSION=1.17.3
+HAPROXY_CONTAINER_VERSION=2.6.6
 K3S_URL=https://github.com/k3s-io/k3s/releases/download/v$K3S_VERSION%2Bk3s1
 K3S_INSTALLER=https://get.k3s.io
 METALLB_URL=https://metallb.github.io/metallb
