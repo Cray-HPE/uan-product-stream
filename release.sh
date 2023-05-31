@@ -217,7 +217,6 @@ sync_third_party_content
 sync_repo_content
 sync_image_content
 update_iuf_product_manifest
-iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # copy ansible from uan-config container
 REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
@@ -233,6 +232,8 @@ set -e
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
+
+iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # Package the distribution into an archive
 package_distribution
