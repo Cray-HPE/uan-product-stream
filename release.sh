@@ -43,6 +43,7 @@ function copy_manifests {
                s/@patch@/${PATCH}/g
                s/@uan_image_name@/${UAN_IMAGE_NAME}/g
                s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+               s/@uan_image_arch@/${UAN_IMAGE_ARCH}/g
                s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
