@@ -62,11 +62,11 @@ content:
     images:
     - path: images/application/@uan_image_name@
       rootfs:
-        path: application-@uan_image_version@.squashfs
+        path: application-@uan_image_version@-@uan_image_arch@.squashfs
         md5sum: @uan_rootfs_md5sum@
       kernel:
-        path: @uan_kernel_version@-@uan_image_version@.kernel
+        path: @uan_kernel_version@-@uan_image_version@-@uan_image_arch@.kernel
         md5sum: @uan_kernel_md5sum@
       initrd:
-        path: initrd.img-@uan_image_version@.xz
+        path: initrd.img-@uan_image_version@-@uan_image_arch@.xz
         md5sum: @uan_initrd_md5sum@
