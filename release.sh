@@ -43,15 +43,16 @@ function copy_manifests {
                s/@patch@/${PATCH}/g
                s/@uan_image_name@/${UAN_IMAGE_NAME}/g
                s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+               s/@uan_image_arch@/${UAN_IMAGE_ARCH}/g
                s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
-    sed -e "s/@name@/${NAME}/g
-               s/@product_version@/${VERSION}/g
-               s/@doc_product_manifest_version@/${DOC_PRODUCT_MANIFEST_VERSION}/g" "${BUILDDIR}/manifests/docs-product-manifest.yaml" > "${BUILDDIR}/docs-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@product_catalog_version@/${PRODUCT_CATALOG_UPDATE_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@metallb_controller_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@metallb_speaker_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@haproxy_version@/${HAPROXY_CONTAINER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
 
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
     # Set any dynamic variables in the UAN manifest
@@ -60,22 +61,6 @@ function copy_manifests {
 
 function copy_tests {
     rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
-}
-
-function copy_docs {
-    DATE="`date`"
-    rsync -aq "${ROOTDIR}/docs/" "${BUILDDIR}/docs/"
-    # Set any dynamic variables in the UAN docs
-    for docfile in `find "${BUILDDIR}/docs/" -name "*.md" -o -name "*.ditamap" -type f`;
-    do
-        sed -i.bak -e "s/@product_version@/${VERSION}/g" "$docfile"
-        sed -i.bak -e "s/@name@/${NAME}/g" "$docfile"
-        sed -i.bak -e "s/@date@/${DATE}/g" "$docfile"
-    done
-    for bakfile in `find "${BUILDDIR}/docs/" -name "*.bak" -type f`;
-    do
-        rm $bakfile
-    done
 }
 
 function setup_nexus_repos {
@@ -156,6 +141,7 @@ UAN_CONFIG_VERSION=$UAN_CONFIG_VERSION
 PRODUCT_CATALOG_UPDATE_VERSION=$PRODUCT_CATALOG_UPDATE_VERSION
 UAN_IMAGE_VERSION=$UAN_IMAGE_VERSION
 UAN_IMAGE_NAME=$UAN_IMAGE_NAME
+UAN_IMAGE_ARCH=$UAN_IMAGE_ARCH
 UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
 EOF
 
@@ -226,14 +212,12 @@ mkdir -p "${BUILDDIR}/lib"
 # Create the Release Distribution
 copy_manifests
 copy_tests
-copy_docs
 sync_install_content
 setup_nexus_repos
 sync_third_party_content
 sync_repo_content
 sync_image_content
 update_iuf_product_manifest
-iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # copy ansible from uan-config container
 REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
@@ -249,6 +233,8 @@ set -e
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
+
+iuf-validate "${BUILDDIR}/iuf-product-manifest.yaml"
 
 # Package the distribution into an archive
 package_distribution
