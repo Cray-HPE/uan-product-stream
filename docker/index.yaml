@@ -37,6 +37,8 @@ artifactory.algol60.net/csm-docker/stable:
     - v@metallb_speaker_version@
     quay.io/metallb/controller:
     - v@metallb_controller_version@
+    quay.io/frrouting/frr:
+    - @frr_version@
 
     docker.io/haproxytech/haproxy-alpine:
     - @haproxy_version@

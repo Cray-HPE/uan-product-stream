@@ -47,6 +47,7 @@ UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_
 K3S_VERSION=1.27.3
 METALLB_VERSION=0.13.10
 HAPROXY_VERSION=1.19.2
+FRR_VERSION=8.4.2
 HAPROXY_CONTAINER_VERSION=2.8.1
 K3S_URL=https://github.com/k3s-io/k3s/releases/download/v$K3S_VERSION%2Bk3s1
 K3S_INSTALLER=https://get.k3s.io
