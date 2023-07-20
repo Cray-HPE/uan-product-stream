@@ -48,9 +48,6 @@ content:
     yaml_path: 'nexus-repositories.yaml'
 
   rpms:
-  - path: rpms/sle-15sp4
-    repository_name: uan-@major@.@minor@.@patch@-sle-15sp4
-    repository_type: raw
   - path: third-party
     repository_name: uan-@major@.@minor@.@patch@-third-party
     repository_type: raw

@@ -52,6 +52,7 @@ function copy_manifests {
     sed -i -e "s/@product_catalog_version@/${PRODUCT_CATALOG_UPDATE_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@metallb_controller_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@metallb_speaker_version@/${METALLB_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
+    sed -i -e "s/@frr_version@/${FRR_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
     sed -i -e "s/@haproxy_version@/${HAPROXY_CONTAINER_VERSION}/g" "${BUILDDIR}/docker/index.yaml"
 
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
@@ -85,19 +86,6 @@ function sync_repo_content {
 
     # sync container images
     skopeo-sync "${BUILDDIR}/docker/index.yaml" "${BUILDDIR}/docker"
-
-    if [ ! -z "$ARTIFACTORY_USER" ] && [ ! -z "$ARTIFACTORY_TOKEN" ]; then
-        REPOCREDSPATH="/tmp/"
-        REPOCREDSFILENAME="repo_creds.json"
-        jq --null-input   --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER"   --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}' > $REPOCREDSPATH$REPOCREDSFILENAME
-        REPO_CREDS_DOCKER_OPTIONS="--mount type=bind,source=${REPOCREDSPATH},destination=/repo_creds_data"
-        REPO_CREDS_RPMSYNC_OPTIONS="-c /repo_creds_data/${REPOCREDSFILENAME}"
-        trap "rm -f '${REPOCREDSPATH}${REPOCREDSFILENAME}'" EXIT
-    fi
-
-    # sync uan repos from bloblet
-    rpm-sync "${ROOTDIR}/rpm/cray/uan/sle-15sp4/index.yaml" "${BUILDDIR}/rpms/sle-15sp4"
-    createrepo "${BUILDDIR}/rpms/sle-15sp4"
 }
 
 function sync_third_party_content {
