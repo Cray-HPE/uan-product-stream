@@ -45,11 +45,11 @@ UAN_IMAGE_NAME_AARCH64=$UAN_IMAGE_NAME.aarch64-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_RELEASE/compute
 
 # Dependencies for UAIs on Application nodes
-K3S_VERSION=1.27.3
-METALLB_VERSION=0.13.10
-HAPROXY_VERSION=1.19.2
-FRR_VERSION=8.4.2
-HAPROXY_CONTAINER_VERSION=2.8.1
+K3S_VERSION=@k3s_version@
+METALLB_VERSION=@metallb_version@
+HAPROXY_VERSION=@haproxy_version@
+FRR_VERSION=@frr_version@
+HAPROXY_CONTAINER_VERSION=@haproxy_container_version@
 K3S_URL=https://github.com/k3s-io/k3s/releases/download/v$K3S_VERSION%2Bk3s1
 K3S_INSTALLER=https://get.k3s.io
 METALLB_URL=https://metallb.github.io/metallb
@@ -74,5 +74,3 @@ THIRD_PARTY_ASSETS=(
 )
 
 HPE_SIGNING_KEY=https://arti.hpc.amslabs.hpecorp.net:443/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
-
-BLOBLET_URL="https://artifactory.algol60.net/artifactory/uan-rpms/hpe/stable"

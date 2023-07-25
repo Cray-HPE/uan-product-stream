@@ -31,6 +31,27 @@ function notify {
 }
 trap notify ERR
 
+# Extract ansible from the UAN CFS container for IUF and version scanning
+function extract_ansible {
+    # copy ansible from uan-config container
+    REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
+    SRC_DIR=$(find ${REGISTRY_DIR} -name "cray-uan-config*")
+    extract-from-container ${SRC_DIR} ${BUILDDIR}/vcs/ "content"
+
+    # remove these special files from the OCI layers
+    find ${BUILDDIR}/vcs -type f -name '.wh..wh..opq' -delete
+
+    # Add back error detection mistakenly disabled by the vendor
+    # lib extract-from-container function
+    set -e
+}
+
+# Scan the UAN CFS (ansible) for version information. This prevents duplication
+# of version fields and helps decouple the ansible from the release build pipeline
+function extract_versions {
+
+}
+
 function copy_manifests {
     rsync -aq "${ROOTDIR}/manifests/" "${BUILDDIR}/manifests/"
     # Set any dynamic variables in the UAN manifest
@@ -74,7 +95,6 @@ function setup_nexus_repos {
             s/@minor@/${MINOR}/g
             s/@patch@/${PATCH}/g
             s/@version@/${VERSION}/g
-            s#@bloblet_url@#${BLOBLET_URL}#g
             s/@name@/${NAME}/g" ${REPOFILE} | \
         generate-nexus-config repository  > "${BUILDDIR}/nexus-repositories.yaml"
 }
@@ -211,6 +231,8 @@ mkdir -p "${BUILDDIR}/lib"
 mkdir -p "${BUILDDIR}/iuf_hooks"
 
 # Create the Release Distribution
+extract_ansible
+extract_versions
 copy_manifests
 copy_tests
 sync_install_content
@@ -221,18 +243,6 @@ sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
 sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
 update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64 x86_64
 update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64 aarch64
-
-# copy ansible from uan-config container
-REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
-SRC_DIR=$(find ${REGISTRY_DIR} -name "cray-uan-config*")
-extract-from-container ${SRC_DIR} ${BUILDDIR}/vcs/ "content"
-
-# remove these special files from the OCI layers
-find ${BUILDDIR}/vcs -type f -name '.wh..wh..opq' -delete
-
-# Add back error detection mistakenly disabled by the vendor
-# lib extract-from-container function
-set -e
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
