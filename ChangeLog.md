@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update versions of k3s, metallb, and haproxy
 - Remove distro rpm repo and replace via ansible
 - Support HA k3s
+- Auto configure HSM groups for k3s support
 
 ## [2.6.2] - 2023-05-30
 - Improvements to the uan_interfaces role for scalability
