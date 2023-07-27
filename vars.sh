@@ -69,6 +69,6 @@ THIRD_PARTY_ASSETS=(
     $K3S_INSTALLER/k3s-install.sh
 )
 
-HPE_SIGNING_KEY=https://arti.dev.cray.com/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
+HPE_SIGNING_KEY=https://arti.hpc.amslabs.hpecorp.net:443/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
 
 BLOBLET_URL="https://artifactory.algol60.net/artifactory/uan-rpms/hpe/stable"
