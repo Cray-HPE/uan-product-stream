@@ -139,14 +139,16 @@ fi
 # Set $K3S_SERVER_GROUP to first $NODE_ROLE $NODE_SUBROLE node
 K3S_SERVER=${NODE_ARRAY[0]}
 
-# Set K3S_AGENT_LIST to remaining $NODE_ROLE $NODE_SUBROLE nodes
-# K3S_AGENT_LIST must be comma-separated, so replace so replace space with comma
-K3S_AGENT_LIST=$( echo ${NODE_ARRAY[@]:1} | sed 's/ /,/g' )
-
 # Create $K3S_SERVER_GROUP HSM group
 create_node_group "$K3S_SERVER" "$K3S_EXCLUSIVE_GROUP" "$K3S_SERVER_GROUP_DESC" "$K3S_SERVER_GROUP"
 
-# Create $K3S_AGENT_GROUP HSM group
-create_node_group "$K3S_AGENT_LIST" "$K3S_EXCLUSIVE_GROUP" "$K3S_AGENT_GROUP_DESC" "$K3S_AGENT_GROUP"
+# Set K3S_AGENT_LIST to remaining $NODE_ROLE $NODE_SUBROLE nodes
+if [ ${#NODE_ARRAY[@]} -gt 1 ]; then
+  # K3S_AGENT_LIST must be comma-separated, so replace so replace space with comma
+  K3S_AGENT_LIST=$( echo ${NODE_ARRAY[@]:1} | sed 's/ /,/g' )
+
+  # Create $K3S_AGENT_GROUP HSM group
+  create_node_group "$K3S_AGENT_LIST" "$K3S_EXCLUSIVE_GROUP" "$K3S_AGENT_GROUP_DESC" "$K3S_AGENT_GROUP"
+fi
 
 exit 0
