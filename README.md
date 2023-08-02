@@ -56,10 +56,10 @@ default release distribution and is meant for airgapped system installations.
 1. Wait for the build pipeline to build the package. The build pipeline in this
    repository is tracking changes to tags. Creating the version tag will
    automatically build the release distribution with the version specified.
-1. [Unstable builds](https://arti.dev.cray.com/artifactory/shasta-distribution-unstable-local/uan/)
+1. [Unstable builds](https://artifactory.algol60.net/artifactory/uan/hpe/unstable/)
     are available for download and installation. Any build that is not tagged with
     `v{major}.{minor}.{patch}` (e.g. v1.2.3-RC1) is considered an unstable (dev) build.
-1. [Stable builds](https://arti.dev.cray.com/artifactory/shasta-distribution-stable-local/uan/)
+1. [Stable builds](https://artifactory.algol60.net/artifactory/uan/hpe/stable/)
    are available for download and installation as well.
 
 ### Versioning

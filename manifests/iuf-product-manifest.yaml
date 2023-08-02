@@ -29,6 +29,11 @@ description: >
   User Access Nodes (UAN).
 version: @product_version@
 
+hooks:
+  deliver_product:
+    post:
+      script_path: iuf_hooks/setup_k3s_groups.sh
+
 content:
   docker:
   - path: docker

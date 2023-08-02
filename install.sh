@@ -129,3 +129,6 @@ podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update \
     -v /etc/kubernetes:/.kube:ro \
     -v ${PWD}:/results:ro \
     registry.local/artifactory.algol60.net/csm-docker/stable/cray-product-catalog-update:$PRODUCT_CATALOG_UPDATE_VERSION
+
+# Setup K3s node groups in HSM
+iuf_hooks/setup_k3s_groups.sh

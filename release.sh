@@ -136,6 +136,7 @@ EOF
     rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/init-ims-image.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
+    rsync -aq "${ROOTDIR}/iuf_hooks/setup_k3s_groups.sh" "${BUILDDIR}/iuf_hooks/setup_k3s_groups.sh"
 }
 
 function package_distribution {
@@ -196,6 +197,7 @@ BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 [[ -d "$BUILDDIR" ]] && rm -fr "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 mkdir -p "${BUILDDIR}/lib"
+mkdir -p "${BUILDDIR}/iuf_hooks"
 
 # Create the Release Distribution
 copy_manifests
