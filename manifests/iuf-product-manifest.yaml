@@ -30,6 +30,9 @@ description: >
 version: @product_version@
 
 hooks:
+  pre_install_check:
+    post:
+      script_path: validate-pre-install.sh
   deliver_product:
     post:
       script_path: iuf_hooks/setup_k3s_groups.sh
