@@ -37,10 +37,10 @@ UAN_CONFIG_VERSION=1.14.4
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE=stable
-UAN_IMAGE_VERSION=0.5.33
+UAN_IMAGE_VERSION=6.1.4
 UAN_IMAGE_ARCH=x86_64
 UAN_KERNEL_VERSION=5.14.21-150400.24.63-default
-UAN_IMAGE_NAME=cray-application-sles15sp4.$UAN_IMAGE_ARCH-$UAN_IMAGE_VERSION
+UAN_IMAGE_NAME=cray-application-sles15sp5.$UAN_IMAGE_ARCH-$UAN_IMAGE_VERSION
 UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_RELEASE/application
 
 # Dependencies for UAIs on Application nodes
