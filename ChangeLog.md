@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove distro rpm repo and replace via ansible
 - Support HA k3s
 - Auto configure HSM groups for k3s support
+- Support reading K3s MetalLB IP pool from SLS
 
 ## [2.6.2] - 2023-05-30
 - Improvements to the uan_interfaces role for scalability
