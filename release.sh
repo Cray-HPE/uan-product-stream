@@ -43,7 +43,6 @@ function copy_manifests {
                s/@patch@/${PATCH}/g
                s/@uan_image_name@/${UAN_IMAGE_NAME}/g
                s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
-               s/@uan_image_arch@/${UAN_IMAGE_ARCH}/g
                s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
@@ -128,8 +127,9 @@ UAN_PRODUCT_VERSION=$VERSION
 UAN_CONFIG_VERSION=$UAN_CONFIG_VERSION
 PRODUCT_CATALOG_UPDATE_VERSION=$PRODUCT_CATALOG_UPDATE_VERSION
 UAN_IMAGE_VERSION=$UAN_IMAGE_VERSION
+UAN_IMAGE_NAME_X86_64=$UAN_IMAGE_NAME_X86_64
+UAN_IMAGE_NAME_AARCH64=$UAN_IMAGE_NAME_AARCH64
 UAN_IMAGE_NAME=$UAN_IMAGE_NAME
-UAN_IMAGE_ARCH=$UAN_IMAGE_ARCH
 UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
 EOF
 
@@ -145,20 +145,24 @@ function package_distribution {
 }
 
 function sync_image_content {
-    mkdir -p "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
-    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    mkdir -p "${BUILDDIR}/images/application/$1"
+    pushd "${BUILDDIR}/images/application/$1"
     for url in "${APPLICATION_ASSETS[@]}"; do
+      if [[ ${url} != *$2* ]]; then continue; fi
       cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"
       ASSET=$(basename $url)
       md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
     done
+    find .
     popd
 }
 
 function update_iuf_product_manifest {
-    pushd "${BUILDDIR}/images/application/${UAN_IMAGE_NAME}"
+    pushd "${BUILDDIR}/images/application/$1"
+    find .
     for asset in "${APPLICATION_ASSETS[@]}"; do
       ASSET=$(basename $asset);
+      if [[ ${asset} != *$2* ]]; then continue; fi
       if [[ ${ASSET} == *squashfs ]]; then
         UAN_ROOTFS_MD5SUM=$(cat ${ASSET}.md5sum);
       fi
@@ -170,14 +174,21 @@ function update_iuf_product_manifest {
       fi
     done
     popd
-    sed -i -e "s/@uan_rootfs_md5sum@/${UAN_ROOTFS_MD5SUM}/g
-               s/@uan_kernel_md5sum@/${UAN_KERNEL_MD5SUM}/g
-               s/@uan_initrd_md5sum@/${UAN_INITRD_MD5SUM}/g" "${BUILDDIR}/iuf-product-manifest.yaml"
+    if [[ $1 == *x86_64* ]]; then
+      sed -i -e "s/@uan_rootfs_md5sum_x86_64@/${UAN_ROOTFS_MD5SUM}/g
+                 s/@uan_kernel_md5sum_x86_64@/${UAN_KERNEL_MD5SUM}/g
+                 s/@uan_initrd_md5sum_x86_64@/${UAN_INITRD_MD5SUM}/g" "${BUILDDIR}/iuf-product-manifest.yaml"
+    else
+      sed -i -e "s/@uan_rootfs_md5sum_aarch64@/${UAN_ROOTFS_MD5SUM}/g
+                 s/@uan_kernel_md5sum_aarch64@/${UAN_KERNEL_MD5SUM}/g
+                 s/@uan_initrd_md5sum_aarch64@/${UAN_INITRD_MD5SUM}/g" "${BUILDDIR}/iuf-product-manifest.yaml"
+    fi
+
 }
 
 if [ ! -z "$ARTIFACTORY_USER" ] && [ ! -z "$ARTIFACTORY_TOKEN" ]; then
     export REPOCREDSVARNAME="REPOCREDSVAR"
-    export REPOCREDSVAR=$(jq --null-input --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER"   --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}')
+    export REPOCREDSVAR=$(jq --null-input --arg url "https://artifactory.algol60.net/artifactory/" --arg realm "Artifactory Realm" --arg user "$ARTIFACTORY_USER" --arg password "$ARTIFACTORY_TOKEN"   '{($url): {"realm": $realm, "user": $user, "password": $password}}')
 fi
 
 # Definitions and sourced variables
@@ -206,8 +217,10 @@ sync_install_content
 setup_nexus_repos
 sync_third_party_content
 sync_repo_content
-sync_image_content
-update_iuf_product_manifest
+sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
+sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
+update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64 x86_64
+update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64 aarch64
 
 # copy ansible from uan-config container
 REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"

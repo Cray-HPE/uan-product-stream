@@ -62,6 +62,27 @@ function list_ims_images {
     set -x
 }
 
+function ims_image_upload {
+    IMG_NAME=${1}
+    ARCH=${2}
+    ARTIFACT_PATH=${ROOTDIR}/images/application/${IMG_NAME}
+    KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-$ARCH.kernel
+    INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION-$ARCH.xz
+    ROOTFS=${ARTIFACT_PATH}/compute-$UAN_IMAGE_VERSION-$ARCH.squashfs
+
+    # Check for the existence of the SLES image to be installed
+    IMAGE_ID=$(list_ims_images | jq --arg IMG_NAME  "$IMG_NAME" -r 'sort_by(.created) | .[] | select(.name == $IMG_NAME ) | .id' | head -1)
+    if [ -z $IMAGE_ID ]; then
+        ${ROOTDIR}/init-ims-image.sh -n ${IMG_NAME} -k ${KERNEL} -i ${INITRD}  -r ${ROOTFS} &> ${IMG_NAME}_install.log
+        IMAGE_ID=$(list_ims_images | jq --arg IMG_NAME "$IMG_NAME" -r 'sort_by(.created) | .[] | select(.name == $IMG_NAME ) | .id' | head -1)
+    fi
+    if [ -z $IMAGE_ID ]; then
+        echo "Could not find an IMS Image ID for $IMG_NAME"
+        exit 1
+    fi
+    echo $IMAGE_ID
+}
+
 source "${ROOTDIR}/lib/install.sh"
 source "${ROOTDIR}/vars.sh"
 
@@ -94,29 +115,16 @@ fi
 # Deploy manifests
 loftsman ship --charts-path "${ROOTDIR}/helm" --manifest-path "${ROOTDIR}/build/manifests/uan.yaml"
 
-ARTIFACT_PATH=${ROOTDIR}/images/application/${UAN_IMAGE_NAME}
-KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-$UAN_IMAGE_ARCH.kernel
-INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION-$UAN_IMAGE_ARCH.xz
-ROOTFS=${ARTIFACT_PATH}/application-$UAN_IMAGE_VERSION-$UAN_IMAGE_ARCH.squashfs
+# Upload image(s)
+IMAGE_ID_X86_64=$(ims_image_upload $UAN_IMAGE_NAME_X86_64 x86_64)
+IMAGE_ID_AARCH64=$(ims_image_upload $UAN_IMAGE_NAME_AARCH64 aarch64)
 
-# Check for the existence of the SLES image to be installed
-IMAGE_ID=$(list_ims_images | jq --arg UAN_IMAGE_NAME "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $UAN_IMAGE_NAME ) | .id' | head -1)
-if [ -z $IMAGE_ID ]; then
-  ${ROOTDIR}/init-ims-image.sh -n ${UAN_IMAGE_NAME} -k ${KERNEL} -i ${INITRD}  -r ${ROOTFS}
-  IMAGE_ID=$(list_ims_images | jq --arg UAN_IMAGE_NAME "$UAN_IMAGE_NAME" -r 'sort_by(.created) | .[] | select(.name == $UAN_IMAGE_NAME ) | .id' | head -1)
-else
-  echo "Found $UAN_IMAGE_NAME already exists as $IMAGE_ID... Skipping image upload"
-fi
-
-if [ -z $IMAGE_ID ]; then
-    echo "Could not find an IMS Image ID for $UAN_IMAGE_NAME"
-    exit 1
-fi
-
-cat << EOF > "$UAN_PRODUCT_VERSION-$IMAGE_ID.json"
+cat << EOF > "$UAN_PRODUCT_VERSION-$UAN_IMAGE_NAME.json"
 images:
-  $UAN_IMAGE_NAME:
-    id: $IMAGE_ID
+  $UAN_IMAGE_NAME_X86_64:
+    id: $IMAGE_ID_X86_64
+  $UAN_IMAGE_NAME_AARCH64:
+    id: $IMAGE_ID_AARCH64
 EOF
 
 # Register the image with the product catalog
@@ -124,7 +132,7 @@ podman run --rm --name uan-$UAN_PRODUCT_VERSION-image-catalog-update \
     -u $USER \
     -e PRODUCT=uan \
     -e PRODUCT_VERSION=$UAN_PRODUCT_VERSION \
-    -e YAML_CONTENT=/results/$UAN_PRODUCT_VERSION-$IMAGE_ID.json \
+    -e YAML_CONTENT=/results/$UAN_PRODUCT_VERSION-$UAN_IMAGE_NAME.json \
     -e KUBECONFIG=/.kube/admin.conf \
     -v /etc/kubernetes:/.kube:ro \
     -v ${PWD}:/results:ro \
