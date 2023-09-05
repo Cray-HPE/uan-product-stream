@@ -148,6 +148,7 @@ function sync_image_content {
     mkdir -p "${BUILDDIR}/images/application/$1"
     pushd "${BUILDDIR}/images/application/$1"
     for url in "${APPLICATION_ASSETS[@]}"; do
+      if [[ ${url} != *$2* ]]; then continue; fi
       cmd_retry curl -sfSLOR -u "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" "$url"
       ASSET=$(basename $url)
       md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
@@ -213,8 +214,8 @@ sync_install_content
 setup_nexus_repos
 sync_third_party_content
 sync_repo_content
-sync_image_content $UAN_IMAGE_NAME_X86_64
-sync_image_content $UAN_IMAGE_NAME_AARCH64
+sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
+sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
 update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64
 update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64
 
