@@ -162,6 +162,7 @@ function update_iuf_product_manifest {
     find .
     for asset in "${APPLICATION_ASSETS[@]}"; do
       ASSET=$(basename $asset);
+      if [[ ${asset} != *$2* ]]; then continue; fi
       if [[ ${ASSET} == *squashfs ]]; then
         UAN_ROOTFS_MD5SUM=$(cat ${ASSET}.md5sum);
       fi
@@ -218,8 +219,8 @@ sync_third_party_content
 sync_repo_content
 sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
 sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
-update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64
-update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64
+update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64 x86_64
+update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64 aarch64
 
 # copy ansible from uan-config container
 REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
