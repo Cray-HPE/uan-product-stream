@@ -153,11 +153,13 @@ function sync_image_content {
       ASSET=$(basename $url)
       md5sum $ASSET | cut -d " " -f1 > ${ASSET}.md5sum
     done
+    find .
     popd
 }
 
 function update_iuf_product_manifest {
     pushd "${BUILDDIR}/images/application/$1"
+    find .
     for asset in "${APPLICATION_ASSETS[@]}"; do
       ASSET=$(basename $asset);
       if [[ ${ASSET} == *squashfs ]]; then
