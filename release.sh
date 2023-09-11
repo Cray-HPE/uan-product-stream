@@ -48,17 +48,23 @@ function extract_ansible {
 
 # Scan the UAN CFS (ansible) for version information. This prevents duplication
 # of version fields and helps decouple the ansible from the release build pipeline
-function extract_versions {
-    UAN_VCS_VERSIONS="${BUILDDIR}/vcs/vars/uan_versions.yml"
-    if [[ ! -f ${UAN_VCS_VERSIONS} ]]; then
-        echo "Could not find ${UAN_VCS_VERSIONS}"
+function extract_and_replace_versions {
+    cmd_retry curl -sfSLOR "$UAN_VCS_VERSIONS_URL"
+    if [[ ! $? ]]; then
+        echo "Could not curl $UAN_VCS_VERSIONS_FILE"
         exit 1
     fi
-    K3S_VERSION=$(yq '.k3s_version' $UAN_VCS_VERSIONS)
-    METALLB_VERSION=$(yq '.metallb_version' $UAN_VCS_VERSIONS)
-    HAPROXY_VERSION=$(yq '.haproxy_version' $UAN_VCS_VERSIONS)
-    FRR_VERSION=$(yq '.frr_version' $UAN_VCS_VERSIONS)
-    HAPROXY_CONTAINER_VERSION=$(yq '.haproxy_container_version' $UAN_VCS_VERSIONS)
+    METALLB_VERSION=$(yq '.metallb_version' $UAN_VCS_VERSIONS_FILE)
+    HAPROXY_VERSION=$(yq '.haproxy_version' $UAN_VCS_VERSIONS_FILE)
+    K3S_VERSION=$(yq '.k3s_version' $UAN_VCS_VERSIONS_FILE)
+    FRR_VERSION=$(yq '.frr_version' $UAN_VCS_VERSIONS_FILE)
+    HAPROXY_CONTAINER_VERSION=$(yq '.haproxy_container_version' $UAN_VCS_VERSIONS_FILE)
+
+    sed -e "s/@metallb_version@/${METALLB_VERSION}/g
+            s/@haproxy_version@/${HAPROXY_VERSION}/g
+            s/@k3s_version@/${K3S_VERSION}/g
+            s/@frr_version@/${FRR_VERSION}/g
+            s/@haproxy_container_version@/${HAPROXY_CONTAINER_VERSION}/g" "${ROOTDIR}/vars.sh"
 }
 
 function copy_manifests {
@@ -66,14 +72,15 @@ function copy_manifests {
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+
     # Set any dynamic variables in the iuf-product-manifest
     sed -e "s/@product_version@/${VERSION}/g 
-               s/@major@/${MAJOR}/g
-               s/@minor@/${MINOR}/g
-               s/@patch@/${PATCH}/g
-               s/@uan_image_name@/${UAN_IMAGE_NAME}/g
-               s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
-               s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+            s/@major@/${MAJOR}/g
+            s/@minor@/${MINOR}/g
+            s/@patch@/${PATCH}/g
+            s/@uan_image_name@/${UAN_IMAGE_NAME}/g
+            s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+            s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -87,10 +94,6 @@ function copy_manifests {
     rsync -aq "${ROOTDIR}/helm/" "${BUILDDIR}/helm/"
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/helm/index.yaml"
-}
-
-function copy_tests {
-    rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
 }
 
 function setup_nexus_repos {
@@ -162,6 +165,7 @@ UAN_IMAGE_NAME=$UAN_IMAGE_NAME
 UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
 EOF
 
+    rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
     rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/init-ims-image.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
@@ -233,17 +237,18 @@ source "${VENDOR}/lib/release.sh"
 requires rsync tar generate-nexus-config helm-sync skopeo-sync rpm-sync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 
-# initialize build directory
+# Initialize build directory
 [[ -d "$BUILDDIR" ]] && rm -fr "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 mkdir -p "${BUILDDIR}/lib"
 mkdir -p "${BUILDDIR}/iuf_hooks"
 
+# Collect version information from UAN VCS and inject into vars.sh
+extract_and_replace_versions
+source "${ROOTDIR}/vars.sh"
+
 # Create the Release Distribution
-extract_ansible
-extract_versions
 copy_manifests
-copy_tests
 sync_install_content
 setup_nexus_repos
 sync_third_party_content
@@ -252,6 +257,7 @@ sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
 sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
 update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64 x86_64
 update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64 aarch64
+extract_ansible
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"

@@ -31,46 +31,48 @@ MAJOR=`./vendor/semver get major ${VERSION}`
 MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
 
-# Versions for container images and helm charts
-PRODUCT_CATALOG_UPDATE_VERSION=1.3.2
-UAN_CONFIG_VERSION=1.14.7
+# Versions for UAN CFS and Product Catalog Update
+PRODUCT_CATALOG_UPDATE_VERSION="1.3.2"
+UAN_CONFIG_VERSION='1.14.7'
+UAN_VCS_VERSIONS_FILE='uan_versions.yml'
+UAN_VCS_VERSIONS_URL="https://raw.githubusercontent.com/Cray-HPE/uan/$UAN_CONFIG_VERSION/ansible/vars/$UAN_VCS_VERSIONS_FILE"
 
 # Versions for UAN images
-UAN_IMAGE_RELEASE=stable
-UAN_IMAGE_VERSION=5.2.18
-UAN_KERNEL_VERSION=5.14.21-150500.55.19-default
-UAN_IMAGE_NAME=cray-application-sles15sp5
-UAN_IMAGE_NAME_X86_64=$UAN_IMAGE_NAME.x86_64-$UAN_IMAGE_VERSION
-UAN_IMAGE_NAME_AARCH64=$UAN_IMAGE_NAME.aarch64-$UAN_IMAGE_VERSION
-UAN_IMAGE_URL=https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_RELEASE/compute
+UAN_IMAGE_RELEASE='stable'
+UAN_IMAGE_VERSION='5.2.18'
+UAN_KERNEL_VERSION='5.14.21-150500.55.19-default'
+UAN_IMAGE_NAME='cray-application-sles15sp5'
+UAN_IMAGE_NAME_X86_64="$UAN_IMAGE_NAME.x86_64-$UAN_IMAGE_VERSION"
+UAN_IMAGE_NAME_AARCH64="$UAN_IMAGE_NAME.aarch64-$UAN_IMAGE_VERSION"
+UAN_IMAGE_URL="https://artifactory.algol60.net/artifactory/csm-images/$UAN_IMAGE_RELEASE/compute"
 
 # Dependencies for UAIs on Application nodes
-K3S_VERSION=@k3s_version@
-METALLB_VERSION=@metallb_version@
-HAPROXY_VERSION=@haproxy_version@
-FRR_VERSION=@frr_version@
-HAPROXY_CONTAINER_VERSION=@haproxy_container_version@
-K3S_URL=https://github.com/k3s-io/k3s/releases/download/v$K3S_VERSION%2Bk3s1
-K3S_INSTALLER=https://get.k3s.io
-METALLB_URL=https://metallb.github.io/metallb
-HAPROXY_URL=https://haproxytech.github.io/helm-charts
+METALLB_VERSION='@metallb_version@'
+HAPROXY_VERSION='@haproxy_version@'
+K3S_VERSION='@k3s_version@'
+FRR_VERSION='@frr_version@'
+HAPROXY_CONTAINER_VERSION='@haproxy_container_version@'
+K3S_URL="https://github.com/k3s-io/k3s/releases/download/v@k3s_version@%2Bk3s1"
+K3S_INSTALLER="https://get.k3s.io"
+METALLB_URL="https://metallb.github.io/metallb"
+HAPROXY_URL="https://haproxytech.github.io/helm-charts"
 
 # Versions for doc product manifest
 DOC_PRODUCT_MANIFEST_VERSION="^0.1.0" # Keep this field like this until further notice
 
 APPLICATION_ASSETS=(
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/compute-$UAN_IMAGE_VERSION-x86_64.squashfs
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-x86_64.kernel
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION-x86_64.xz
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/compute-$UAN_IMAGE_VERSION-aarch64.squashfs
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-aarch64.kernel
-    $UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION-aarch64.xz
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/compute-$UAN_IMAGE_VERSION-x86_64.squashfs"
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-x86_64.kernel"
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION-x86_64.xz"
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/compute-$UAN_IMAGE_VERSION-aarch64.squashfs"
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-aarch64.kernel"
+    "$UAN_IMAGE_URL/$UAN_IMAGE_VERSION/initrd.img-$UAN_IMAGE_VERSION-aarch64.xz"
 )
 
 THIRD_PARTY_ASSETS=(
-    $K3S_URL/k3s
-    $K3S_URL/k3s-airgap-images-amd64.tar
-    $K3S_INSTALLER/k3s-install.sh
+    "$K3S_URL/k3s"
+    "$K3S_URL/k3s-airgap-images-amd64.tar"
+    "$K3S_INSTALLER/k3s-install.sh"
 )
 
-HPE_SIGNING_KEY=https://arti.hpc.amslabs.hpecorp.net:443/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc
+HPE_SIGNING_KEY="https://arti.hpc.amslabs.hpecorp.net:443/artifactory/dst-misc-stable-local/SigningKeys/HPE-SHASTA-RPM-PROD.asc"
