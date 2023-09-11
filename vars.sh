@@ -31,6 +31,8 @@ MAJOR=`./vendor/semver get major ${VERSION}`
 MINOR=`./vendor/semver get minor ${VERSION}`
 PATCH=`./vendor/semver get patch ${VERSION}`
 
+YQ="artifactory.algol60.net/csm-docker/stable/docker.io/mikefarah/yq:4"
+
 # Versions for UAN CFS and Product Catalog Update
 PRODUCT_CATALOG_UPDATE_VERSION="1.3.2"
 UAN_CONFIG_VERSION='1.14.7'

@@ -54,11 +54,11 @@ function extract_and_replace_versions {
         echo "Could not curl $UAN_VCS_VERSIONS_FILE"
         exit 1
     fi
-    METALLB_VERSION=$(yq '.metallb_version' $UAN_VCS_VERSIONS_FILE)
-    HAPROXY_VERSION=$(yq '.haproxy_version' $UAN_VCS_VERSIONS_FILE)
-    K3S_VERSION=$(yq '.k3s_version' $UAN_VCS_VERSIONS_FILE)
-    FRR_VERSION=$(yq '.frr_version' $UAN_VCS_VERSIONS_FILE)
-    HAPROXY_CONTAINER_VERSION=$(yq '.haproxy_container_version' $UAN_VCS_VERSIONS_FILE)
+    METALLB_VERSION=$($YQ '.metallb_version' $UAN_VCS_VERSIONS_FILE)
+    HAPROXY_VERSION=$($YQ '.haproxy_version' $UAN_VCS_VERSIONS_FILE)
+    K3S_VERSION=$($YQ '.k3s_version' $UAN_VCS_VERSIONS_FILE)
+    FRR_VERSION=$($YQ '.frr_version' $UAN_VCS_VERSIONS_FILE)
+    HAPROXY_CONTAINER_VERSION=$($YQ '.haproxy_container_version' $UAN_VCS_VERSIONS_FILE)
 
     sed -e "s/@metallb_version@/${METALLB_VERSION}/g
             s/@haproxy_version@/${HAPROXY_VERSION}/g
