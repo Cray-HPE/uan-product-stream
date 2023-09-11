@@ -49,7 +49,16 @@ function extract_ansible {
 # Scan the UAN CFS (ansible) for version information. This prevents duplication
 # of version fields and helps decouple the ansible from the release build pipeline
 function extract_versions {
-
+    UAN_VCS_VERSIONS="${BUILDDIR}/vcs/vars/uan_versions.yml"
+    if [[ ! -f ${UAN_VCS_VERSIONS} ]]; then
+        echo "Could not find ${UAN_VCS_VERSIONS}"
+        exit 1
+    fi
+    K3S_VERSION=$(yq '.k3s_version' $UAN_VCS_VERSIONS)
+    METALLB_VERSION=$(yq '.metallb_version' $UAN_VCS_VERSIONS)
+    HAPROXY_VERSION=$(yq '.haproxy_version' $UAN_VCS_VERSIONS)
+    FRR_VERSION=$(yq '.frr_version' $UAN_VCS_VERSIONS)
+    HAPROXY_CONTAINER_VERSION=$(yq '.haproxy_container_version' $UAN_VCS_VERSIONS)
 }
 
 function copy_manifests {
