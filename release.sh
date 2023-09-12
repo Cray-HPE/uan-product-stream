@@ -54,17 +54,17 @@ function extract_and_replace_versions {
         echo "Could not curl $UAN_VCS_VERSIONS_FILE"
         exit 1
     fi
-    METALLB_VERSION=$($YQ '.metallb_version' $UAN_VCS_VERSIONS_FILE)
-    HAPROXY_VERSION=$($YQ '.haproxy_version' $UAN_VCS_VERSIONS_FILE)
-    K3S_VERSION=$($YQ '.k3s_version' $UAN_VCS_VERSIONS_FILE)
-    FRR_VERSION=$($YQ '.frr_version' $UAN_VCS_VERSIONS_FILE)
-    HAPROXY_CONTAINER_VERSION=$($YQ '.haproxy_container_version' $UAN_VCS_VERSIONS_FILE)
+    METALLB_VERSION=$($YQ '.metallb_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    HAPROXY_VERSION=$($YQ '.haproxy_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    K3S_VERSION=$($YQ '.k3s_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    FRR_VERSION=$($YQ '.frr_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    HAPROXY_CONTAINER_VERSION=$($YQ '.haproxy_container_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
 
     sed -e "s/@metallb_version@/${METALLB_VERSION}/g
             s/@haproxy_version@/${HAPROXY_VERSION}/g
             s/@k3s_version@/${K3S_VERSION}/g
             s/@frr_version@/${FRR_VERSION}/g
-            s/@haproxy_container_version@/${HAPROXY_CONTAINER_VERSION}/g" "${ROOTDIR}/vars.sh"
+            s/@haproxy_container_version@/${HAPROXY_CONTAINER_VERSION}/g" "${ROOTDIR}/vars.sh" > "${ROOTDIR}/vars_replaced.sh"
 }
 
 function copy_manifests {
@@ -245,7 +245,12 @@ mkdir -p "${BUILDDIR}/iuf_hooks"
 
 # Collect version information from UAN VCS and inject into vars.sh
 extract_and_replace_versions
-source "${ROOTDIR}/vars.sh"
+source "${ROOTDIR}/vars_replaced.sh"
+
+echo "VARS FILE IS HERE"
+cat ${ROOTDIR}/vars_replaced.sh
+
+env
 
 # Create the Release Distribution
 copy_manifests
