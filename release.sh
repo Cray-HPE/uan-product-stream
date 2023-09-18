@@ -247,11 +247,6 @@ mkdir -p "${BUILDDIR}/iuf_hooks"
 extract_and_replace_versions
 source "${ROOTDIR}/vars_replaced.sh"
 
-echo "VARS FILE IS HERE"
-cat ${ROOTDIR}/vars_replaced.sh
-
-env
-
 # Create the Release Distribution
 copy_manifests
 sync_install_content
