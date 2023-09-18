@@ -35,13 +35,13 @@ YQ="docker run -i artifactory.algol60.net/csm-docker/stable/docker.io/mikefarah/
 
 # Versions for UAN CFS and Product Catalog Update
 PRODUCT_CATALOG_UPDATE_VERSION="1.3.2"
-UAN_CONFIG_VERSION='1.14.7'
+UAN_CONFIG_VERSION='1.14.8'
 UAN_VCS_VERSIONS_FILE='uan_versions.yml'
 UAN_VCS_VERSIONS_URL="https://raw.githubusercontent.com/Cray-HPE/uan/$UAN_CONFIG_VERSION/ansible/vars/$UAN_VCS_VERSIONS_FILE"
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE='stable'
-UAN_IMAGE_VERSION='5.2.18'
+UAN_IMAGE_VERSION='5.2.26'
 UAN_KERNEL_VERSION='5.14.21-150500.55.19-default'
 UAN_IMAGE_NAME='cray-application-sles15sp5'
 UAN_IMAGE_NAME_X86_64="$UAN_IMAGE_NAME.x86_64-$UAN_IMAGE_VERSION"
