@@ -31,19 +31,56 @@ function notify {
 }
 trap notify ERR
 
+# Extract ansible from the UAN CFS container for IUF and version scanning
+function extract_ansible {
+    # copy ansible from uan-config container
+    REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
+    SRC_DIR=$(find ${REGISTRY_DIR} -name "cray-uan-config*")
+    extract-from-container ${SRC_DIR} ${BUILDDIR}/vcs/ "content"
+
+    # remove these special files from the OCI layers
+    find ${BUILDDIR}/vcs -type f -name '.wh..wh..opq' -delete
+
+    # Add back error detection mistakenly disabled by the vendor
+    # lib extract-from-container function
+    set -e
+}
+
+# Scan the UAN CFS (ansible) for version information. This prevents duplication
+# of version fields and helps decouple the ansible from the release build pipeline
+function extract_and_replace_versions {
+    cmd_retry curl -sfSLOR "$UAN_VCS_VERSIONS_URL"
+    if [[ ! $? ]]; then
+        echo "Could not curl $UAN_VCS_VERSIONS_FILE"
+        exit 1
+    fi
+    METALLB_VERSION=$($YQ '.metallb_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    HAPROXY_VERSION=$($YQ '.haproxy_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    K3S_VERSION=$($YQ '.k3s_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    FRR_VERSION=$($YQ '.frr_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+    HAPROXY_CONTAINER_VERSION=$($YQ '.haproxy_container_version' < ${ROOTDIR}/$UAN_VCS_VERSIONS_FILE)
+
+    sed -e "s/@metallb_version@/${METALLB_VERSION}/g
+            s/@haproxy_version@/${HAPROXY_VERSION}/g
+            s/@k3s_version@/${K3S_VERSION}/g
+            s/@frr_version@/${FRR_VERSION}/g
+            s/@haproxy_container_version@/${HAPROXY_CONTAINER_VERSION}/g" "${ROOTDIR}/vars.sh" > "${ROOTDIR}/vars_replaced.sh"
+}
+
 function copy_manifests {
     rsync -aq "${ROOTDIR}/manifests/" "${BUILDDIR}/manifests/"
     # Set any dynamic variables in the UAN manifest
     sed -i -e "s/@product_version@/${VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/manifests/uan.yaml"
+
     # Set any dynamic variables in the iuf-product-manifest
     sed -e "s/@product_version@/${VERSION}/g 
-               s/@major@/${MAJOR}/g
-               s/@minor@/${MINOR}/g
-               s/@patch@/${PATCH}/g
-               s/@uan_image_name@/${UAN_IMAGE_NAME}/g
-               s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
-               s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+            s/@major@/${MAJOR}/g
+            s/@minor@/${MINOR}/g
+            s/@patch@/${PATCH}/g
+            s/@uan_image_name@/${UAN_IMAGE_NAME}/g
+            s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
+            s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -59,10 +96,6 @@ function copy_manifests {
     sed -i -e "s/@uan_version@/${UAN_CONFIG_VERSION}/g" "${BUILDDIR}/helm/index.yaml"
 }
 
-function copy_tests {
-    rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
-}
-
 function setup_nexus_repos {
     # generate Nexus blob store configuration
     sed s/@name@/${NAME}/g nexus-blobstores.yaml.tmpl | generate-nexus-config blobstore > "${BUILDDIR}/nexus-blobstores.yaml"
@@ -74,7 +107,6 @@ function setup_nexus_repos {
             s/@minor@/${MINOR}/g
             s/@patch@/${PATCH}/g
             s/@version@/${VERSION}/g
-            s#@bloblet_url@#${BLOBLET_URL}#g
             s/@name@/${NAME}/g" ${REPOFILE} | \
         generate-nexus-config repository  > "${BUILDDIR}/nexus-repositories.yaml"
 }
@@ -133,6 +165,7 @@ UAN_IMAGE_NAME=$UAN_IMAGE_NAME
 UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
 EOF
 
+    rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
     rsync -aq "${ROOTDIR}/install.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/init-ims-image.sh" "${BUILDDIR}/"
     rsync -aq "${ROOTDIR}/validate-pre-install.sh" "${BUILDDIR}/"
@@ -204,15 +237,18 @@ source "${VENDOR}/lib/release.sh"
 requires rsync tar generate-nexus-config helm-sync skopeo-sync rpm-sync vendor-install-deps sed realpath
 BUILDDIR="$(realpath -m "$ROOTDIR/dist/${NAME}-${VERSION}")"
 
-# initialize build directory
+# Initialize build directory
 [[ -d "$BUILDDIR" ]] && rm -fr "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 mkdir -p "${BUILDDIR}/lib"
 mkdir -p "${BUILDDIR}/iuf_hooks"
 
+# Collect version information from UAN VCS and inject into vars.sh
+extract_and_replace_versions
+source "${ROOTDIR}/vars_replaced.sh"
+
 # Create the Release Distribution
 copy_manifests
-copy_tests
 sync_install_content
 setup_nexus_repos
 sync_third_party_content
@@ -221,18 +257,7 @@ sync_image_content $UAN_IMAGE_NAME_X86_64 x86_64
 sync_image_content $UAN_IMAGE_NAME_AARCH64 aarch64
 update_iuf_product_manifest $UAN_IMAGE_NAME_X86_64 x86_64
 update_iuf_product_manifest $UAN_IMAGE_NAME_AARCH64 aarch64
-
-# copy ansible from uan-config container
-REGISTRY_DIR="${BUILDDIR}/docker/artifactory.algol60.net/uan-docker/stable"
-SRC_DIR=$(find ${REGISTRY_DIR} -name "cray-uan-config*")
-extract-from-container ${SRC_DIR} ${BUILDDIR}/vcs/ "content"
-
-# remove these special files from the OCI layers
-find ${BUILDDIR}/vcs -type f -name '.wh..wh..opq' -delete
-
-# Add back error detection mistakenly disabled by the vendor
-# lib extract-from-container function
-set -e
+extract_ansible
 
 # Save cray/nexus-setup and quay.io/skopeo/stable images for use in install.sh
 vendor-install-deps "$(basename "$BUILDDIR")" "${BUILDDIR}/vendor"
