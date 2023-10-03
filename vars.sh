@@ -41,7 +41,7 @@ UAN_VCS_VERSIONS_URL="https://raw.githubusercontent.com/Cray-HPE/uan/$UAN_CONFIG
 
 # Versions for UAN images
 UAN_IMAGE_RELEASE='stable'
-UAN_IMAGE_VERSION='5.2.26'
+UAN_IMAGE_VERSION='5.2.33'
 UAN_KERNEL_VERSION='5.14.21-150500.55.19-default'
 UAN_IMAGE_NAME='cray-application-sles15sp5'
 UAN_IMAGE_NAME_X86_64="$UAN_IMAGE_NAME.x86_64-$UAN_IMAGE_VERSION"
