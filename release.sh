@@ -80,7 +80,8 @@ function copy_manifests {
             s/@patch@/${PATCH}/g
             s/@uan_image_name@/${UAN_IMAGE_NAME}/g
             s/@uan_image_version@/${UAN_IMAGE_VERSION}/g
-            s/@uan_kernel_version@/${UAN_KERNEL_VERSION}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
+            s/@uan_kernel_version_x86_64@/${UAN_KERNEL_VERSION_x86_64}/g
+            s/@uan_kernel_version_aarch64@/${UAN_KERNEL_VERSION_aarch64}/g" "${BUILDDIR}/manifests/iuf-product-manifest.yaml" > "${BUILDDIR}/iuf-product-manifest.yaml"
 
     rsync -aq "${ROOTDIR}/docker/" "${BUILDDIR}/docker/"
     # Set any dynamic variables in the UAN manifest
@@ -162,7 +163,8 @@ UAN_IMAGE_VERSION=$UAN_IMAGE_VERSION
 UAN_IMAGE_NAME_X86_64=$UAN_IMAGE_NAME_X86_64
 UAN_IMAGE_NAME_AARCH64=$UAN_IMAGE_NAME_AARCH64
 UAN_IMAGE_NAME=$UAN_IMAGE_NAME
-UAN_KERNEL_VERSION=$UAN_KERNEL_VERSION
+UAN_KERNEL_VERSION_x86_64=$UAN_KERNEL_VERSION_x86_64
+UAN_KERNEL_VERSION_aarch64=$UAN_KERNEL_VERSION_aarch64
 EOF
 
     rsync -aq "${ROOTDIR}/tests/" "${BUILDDIR}/tests/"
