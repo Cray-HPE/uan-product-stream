@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.3] - 2023-10-23
+- Update to cf-gitea-import:1.9.6 resolving CVEs in cray-uan-config:1.12.9
+
 ## [2.6.2] - 2023-05-30
 - Improvements to the uan_interfaces role for scalability
 - Fixes to uan_interfaces and uan_hardening roles to make them idempotent with NMN bonding
