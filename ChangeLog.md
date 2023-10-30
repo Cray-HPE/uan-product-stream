@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add evince
 - Add podman configuration changes
 - Misc k3s fixes
+- curl CVE fix
+- Add apparmor-parser
+- subuid|subgid overwrite
 
 ## [2.6.2] - 2023-05-30
 - Improvements to the uan_interfaces role for scalability

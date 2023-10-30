@@ -67,7 +67,7 @@ content:
         path: compute-@uan_image_version@-x86_64.squashfs
         md5sum: @uan_rootfs_md5sum_x86_64@
       kernel:
-        path: @uan_kernel_version@-@uan_image_version@-x86_64.kernel
+        path: @uan_kernel_version_x86_64@-@uan_image_version@-x86_64.kernel
         md5sum: @uan_kernel_md5sum_x86_64@
       initrd:
         path: initrd.img-@uan_image_version@-x86_64.xz
@@ -78,7 +78,7 @@ content:
         path: compute-@uan_image_version@-aarch64.squashfs
         md5sum: @uan_rootfs_md5sum_aarch64@
       kernel:
-        path: @uan_kernel_version@-@uan_image_version@-aarch64.kernel
+        path: @uan_kernel_version_aarch64@-@uan_image_version@-aarch64.kernel
         md5sum: @uan_kernel_md5sum_aarch64@
       initrd:
         path: initrd.img-@uan_image_version@-aarch64.xz

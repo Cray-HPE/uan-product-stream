@@ -66,7 +66,11 @@ function ims_image_upload {
     IMG_NAME=${1}
     ARCH=${2}
     ARTIFACT_PATH=${ROOTDIR}/images/application/${IMG_NAME}
-    KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION-$UAN_IMAGE_VERSION-$ARCH.kernel
+    if [[ $ARCH == *x86_64* ]]; then
+      KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION_x86_64-$UAN_IMAGE_VERSION-$ARCH.kernel
+    else
+      KERNEL=${ARTIFACT_PATH}/$UAN_KERNEL_VERSION_aarch64-$UAN_IMAGE_VERSION-$ARCH.kernel
+    fi
     INITRD=${ARTIFACT_PATH}/initrd.img-$UAN_IMAGE_VERSION-$ARCH.xz
     ROOTFS=${ARTIFACT_PATH}/compute-$UAN_IMAGE_VERSION-$ARCH.squashfs
 
