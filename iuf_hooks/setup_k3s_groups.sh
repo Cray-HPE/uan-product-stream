@@ -23,6 +23,10 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 #
 
+# This script expects some commands to return non-zero
+# in the case that node groups do not exist.
+set +e
+
 K3S_SERVER_GROUP="k3s_server"
 K3S_SERVER_GROUP_DESC="K3S server nodes"
 K3S_AGENT_GROUP="k3s_agent"
@@ -84,7 +88,7 @@ function create_node_group() {
 
 function check_node_group() {
 
-  cray hsm groups members list $1 | wc -l | xargs
+  cray hsm groups members list $1 2> /dev/null | wc -l | xargs
 
 }
 
@@ -140,7 +144,9 @@ fi
 K3S_SERVER=${NODE_ARRAY[0]}
 
 # Create $K3S_SERVER_GROUP HSM group
-create_node_group "$K3S_SERVER" "$K3S_EXCLUSIVE_GROUP" "$K3S_SERVER_GROUP_DESC" "$K3S_SERVER_GROUP"
+if [ $NUM_K3S_SERVER_NODES -eq 0 ]; then
+  create_node_group "$K3S_SERVER" "$K3S_EXCLUSIVE_GROUP" "$K3S_SERVER_GROUP_DESC" "$K3S_SERVER_GROUP"
+fi
 
 # Set K3S_AGENT_LIST to remaining $NODE_ROLE $NODE_SUBROLE nodes
 if [ ${#NODE_ARRAY[@]} -gt 1 ]; then
