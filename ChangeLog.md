@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.1] - 2023-11-03
+- Fixes to setup_k3s_groups.sh
+
 ## [2.7.0] - 2023-10-04
 - Better default HAProxy configuration
 - Update versions of k3s, metallb, and haproxy
