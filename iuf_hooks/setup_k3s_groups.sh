@@ -136,8 +136,8 @@ fi
 get_node_xnames $NODE_ROLE $NODE_SUBROLE 
 # The K3s configuration requires at least one $NODE_ROLE $NODE_SUBROLE nodes
 if [ ${#NODE_ARRAY[@]} -lt 1 ]; then
-  echo "ERROR There are not enough $NODE_ROLE $NODE_SUBROLE nodes to support K3s configuration"
-  exit 1
+  echo "WARNING There are not enough $NODE_ROLE $NODE_SUBROLE nodes to support K3s configuration"
+  exit 0
 fi
     
 # Set $K3S_SERVER_GROUP to first $NODE_ROLE $NODE_SUBROLE node
