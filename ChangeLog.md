@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Issue a warning in setup_k3s_groups.sh if no UANs are present
 
+## [2.7.2]
+- Issue a warning in setup_k3s_groups.sh if no UANs are present
+
 ## [2.7.1] - 2023-11-03
 - Fixes to setup_k3s_groups.sh
 
