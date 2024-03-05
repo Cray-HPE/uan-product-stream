@@ -35,7 +35,7 @@ YQ="docker run -i artifactory.algol60.net/csm-docker/stable/docker.io/mikefarah/
 
 # Versions for UAN CFS and Product Catalog Update
 PRODUCT_CATALOG_UPDATE_VERSION="1.3.2"
-UAN_CONFIG_VERSION='1.14.11'
+UAN_CONFIG_VERSION='1.15.1'
 UAN_VCS_VERSIONS_FILE='uan_versions.yml'
 UAN_VCS_VERSIONS_URL="https://raw.githubusercontent.com/Cray-HPE/uan/$UAN_CONFIG_VERSION/ansible/vars/$UAN_VCS_VERSIONS_FILE"
 
